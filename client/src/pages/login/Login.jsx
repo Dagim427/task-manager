@@ -4,7 +4,6 @@ import { useNavigate, Link } from "react-router-dom";
 import "../register/register.css";
 const Login = () => {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });

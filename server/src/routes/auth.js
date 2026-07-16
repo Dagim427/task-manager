@@ -1,12 +1,16 @@
-import express from 'express';
-import { registerUser, loginUser } from '../controller/authController.js';
+import express from "express";
+import {
+  registerUser,
+  loginUser,
+  getCurrentUser,
+} from "../controller/authController.js";
+
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Route: POST /api/auth/register
-router.post('/register', registerUser);
-
-// Route: POST /api/auth/login
-router.post('/login', loginUser);
+router.post("/register", registerUser);
+router.post("/login", loginUser);
+router.get("/me", authMiddleware, getCurrentUser);
 
 export default router;
