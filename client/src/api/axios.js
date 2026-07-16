@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { storage } from '../utils/storage'; // Import the utility
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:5000/api', // Centralized backend base URL
+  baseURL: 'http://localhost:5000/api', 
   timeout: 10000, 
   headers: {
     'Content-Type': 'application/json',
@@ -11,18 +12,15 @@ const apiClient = axios.create({
 // Add a request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    // Read the JWT from storage
-    const token = localStorage.getItem('token');
+    // Clean, abstracted token retrieval
+    const token = storage.getToken(); 
     
-    // Send it in the Authorization header
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export default apiClient;

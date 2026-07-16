@@ -1,33 +1,27 @@
 import { useState } from "react";
-import { useAuth } from "../../hooks/useAuth.js";
 import { useNavigate, Link } from "react-router-dom";
-import "../register/register.css";
-const Login = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+import { useAuth } from "../../context/Authcontext.jsx"; 
+import "./auth.css"; 
 
+const Login = () => {
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const { loading, error, success, loginUser } = useAuth();
-  const { email, password } = formData;
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isSuccess = await loginUser(formData);
+    
+    // Professionals navigate immediately upon success
     if (isSuccess) {
-      setFormData({ email: "", password: "" });
-
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
+      navigate("/dashboard", { replace: true });
     }
   };
 
@@ -44,7 +38,7 @@ const Login = () => {
           <input
             type="email"
             name="email"
-            value={email}
+            value={formData.email}
             onChange={handleChange}
             placeholder="Enter your email"
             className="form-input"
@@ -57,7 +51,7 @@ const Login = () => {
           <input
             type="password"
             name="password"
-            value={password}
+            value={formData.password}
             onChange={handleChange}
             placeholder="Enter your password"
             className="form-input"
@@ -70,15 +64,9 @@ const Login = () => {
         </button>
       </form>
 
-      <p
-        className="auth-footer"
-        style={{ marginTop: "1rem", textAlign: "center", color: "#9ca3af" }}
-      >
+      <p className="auth-footer" style={{ marginTop: "1rem", textAlign: "center", color: "#9ca3af" }}>
         Don't have an account?{" "}
-        <Link
-          to="/register"
-          style={{ color: "#3b82f6", textDecoration: "none" }}
-        >
+        <Link to="/register" style={{ color: "#3b82f6", textDecoration: "none" }}>
           Register here
         </Link>
       </p>

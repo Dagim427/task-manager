@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth.js";
-import "./register.css";
+import { Link } from "react-router-dom";
+import "./auth.css";
 const Register = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -74,6 +75,12 @@ const Register = () => {
         <button type="submit" disabled={loading} className="btn-submit">
           {loading ? "Registering..." : "Register"}
         </button>
+        <Link
+          to="/login"
+          style={{ color: "#3b82f6", textDecoration: "none"}}
+        >
+          Already have an account? Login here
+        </Link>
       </form>
     </div>
   );

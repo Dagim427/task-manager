@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import apiClient from "../api/axios.js";
 
 export const useTasks = () => {
@@ -6,77 +6,75 @@ export const useTasks = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 1. Fetch all tasks
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null); // Clear previous errors
       const response = await apiClient.get("/tasks");
+      
       if (response.data.success) {
         setTasks(response.data.data);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Fetch tasks error:", err);
       setError("Failed to fetch tasks.");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // 2. Add a new task
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
   const addTask = async (title) => {
     try {
+      setError(null);
       const response = await apiClient.post("/tasks", { title });
+      
       if (response.data.success) {
-        setTasks([response.data.data, ...tasks]);
+        // Professional update: Use previous state to prevent stale closures
+        setTasks((prevTasks) => [response.data.data, ...prevTasks]);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Add task error:", err);
       setError("Failed to add task.");
     }
   };
 
-  // 3. Toggle task completion
   const toggleTask = async (id, currentStatus) => {
     try {
+      setError(null);
       const response = await apiClient.put(`/tasks/${id}`, {
         completed: !currentStatus,
       });
+      
       if (response.data.success) {
-        setTasks(
-          tasks.map((task) =>
-            task.id === id ? { ...task, completed: !currentStatus } : task,
-          ),
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === id ? { ...task, completed: !currentStatus } : task
+          )
         );
       }
     } catch (err) {
-      console.error(err);
+      console.error("Toggle task error:", err);
       setError("Failed to update task.");
     }
   };
 
-  // 4. Delete a task
   const deleteTask = async (id) => {
     try {
+      setError(null);
       const response = await apiClient.delete(`/tasks/${id}`);
+      
       if (response.data.success) {
-        setTasks(tasks.filter((task) => task.id !== id));
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
       }
     } catch (err) {
-      console.error(err);
+      console.error("Delete task error:", err);
       setError("Failed to delete task.");
     }
   };
 
-  return {
-    tasks,
-    loading,
-    error,
-    addTask,
-    toggleTask,
-    deleteTask,
-  };
+  return { tasks, loading, error, addTask, toggleTask, deleteTask };
 };

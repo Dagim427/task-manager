@@ -1,23 +1,25 @@
-import { useTasks } from "../hooks/useTasks.js";
-import TaskForm from "../components/tasks/TaskFrom.jsx"
-import TaskItem from "../components/tasks/TaskItem.jsx";
+import { useTasks } from "../../hooks/useTasks.js"; 
+import TaskForm from "../../components/tasks/TaskFrom.jsx";
+import TaskItem from "../../components/tasks/TaskItem.jsx";
 
-const Dashboard = () => {
-  // We extract all the logic into this custom hook
+const Taskboard = () => {
   const { tasks, loading, error, addTask, toggleTask, deleteTask } = useTasks();
 
   return (
     <div className="dashboard-container">
       <h1 className="page-title">Task Manager Dashboard</h1>
 
-      {/* Form component receives the addTask function */}
       <TaskForm onAddTask={addTask} />
 
-      {/* Conditional rendering for loading and error states */}
+      {/* Render states */}
       {loading && <p className="status-message">Loading tasks safely...</p>}
       {error && <p className="status-error">{error}</p>}
 
-      {/* The list renders the items, passing down the toggle/delete handlers */}
+      {/* Render tasks */}
+      {!loading && tasks.length === 0 && (
+        <p className="status-message">No tasks found. Add one above!</p>
+      )}
+
       <ul className="task-list">
         {tasks.map((task) => (
           <TaskItem
@@ -32,4 +34,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Taskboard;
