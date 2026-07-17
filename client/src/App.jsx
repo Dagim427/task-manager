@@ -5,7 +5,7 @@ import { AuthProvider, useAuth } from "./context/Authcontext.jsx";
 // import Dashboard from "./pages/dashboard/Dashboard.jsx";
 import Taskboard from "./pages/tasks/Taskboard.jsx";
 import Register from "./pages/auth/Register.jsx";
-import Login from "./pages/auth/Login.jsx";
+import Login from "./pages/auth/login/Login.jsx";
 import Dashboard from "./pages/home/Dashboard.jsx";
 
 // A clean component to protect private routes

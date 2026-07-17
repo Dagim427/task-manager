@@ -1,11 +1,24 @@
-/* Global Reset and Typography */
-body {
-  font-family: sans-serif;
-  background-color: #f4f4f9;
-  color: #333;
+* {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: Inter, sans-serif;
+}
+
+:root {
+  --Primary: #4f46e5;
+  --Background: #f8fafc;
+  --Cards: White;
+  --Success: #22c55e;
+  --Warning: #f59e0b;
+  --Danger: #ef4444;
+  --Text: #111827;
+  --Secondary-Text: #6b7280;
+  --Borders: #e5e7eb;
+}
+
+button {
+  all: unset;
 }
 
 /* Layout */
@@ -16,7 +29,7 @@ body {
 }
 
 .page-title {
-  color: #4F46E5;
+  color: #4f46e5;
   text-align: center;
   margin-bottom: 30px;
 }
@@ -47,13 +60,13 @@ body {
 }
 
 .task-input:focus {
-  border-color: #4F46E5;
+  border-color: #4f46e5;
 }
 
 .task-button {
   padding: 12px 20px;
   font-size: 16px;
-  background-color: #4F46E5;
+  background-color: #4f46e5;
   color: white;
   border: none;
   border-radius: 0 4px 4px 0;
@@ -81,7 +94,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .task-title {
@@ -97,11 +110,11 @@ body {
 }
 
 .badge-done {
-  background-color: #DEF7EC;
-  color: #03543F;
+  background-color: #def7ec;
+  color: #03543f;
 }
 
 .badge-pending {
-  background-color: #FEF3C7;
-  color: #92400E;
+  background-color: #fef3c7;
+  color: #92400e;
 }

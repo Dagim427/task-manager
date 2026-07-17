@@ -14,6 +14,27 @@ export const AuthProvider = ({ children }) => {
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
+  // --- AUTO-CLEAR ALERTS AFTER 5 SECONDS ---
+  // Whenever an error is set, it will automatically clear 5 seconds later
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError("");
+      }, 3000);
+      return () => clearTimeout(timer); // Cleanup old timer if a new error drops in
+    }
+  }, [error]);
+
+  // Whenever a success state is set, it will automatically clear 5 seconds later
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess("");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
   // --- LOGOUT USER ---
   const logout = useCallback(() => {
     storage.clearAuth();
