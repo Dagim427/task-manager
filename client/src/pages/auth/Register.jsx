@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useAuth } from "../../hooks/useAuth.js";
-import { Link } from "react-router-dom";
+import { useAuth } from "../../context/Authcontext.jsx";
+import { Link, useNavigate } from "react-router-dom";
 import "./auth.css";
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +10,7 @@ const Register = () => {
   });
 
   const { loading, error, success, registerUser } = useAuth();
+  const navigate = useNavigate();
   const { name, email, password } = formData;
 
   const handleChange = (e) => {
@@ -24,6 +25,8 @@ const Register = () => {
     const isSaved = await registerUser(formData);
     if (isSaved) {
       setFormData({ name: "", email: "", password: "" });
+      // Navigate to login after successful registration
+      navigate("/login", { replace: true });
     }
   };
 

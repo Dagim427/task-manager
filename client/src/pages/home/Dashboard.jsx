@@ -1,5 +1,6 @@
 import { useAuth } from "../../context/Authcontext.jsx";
 import "./dashboard.css";
+import Taskboard from "../tasks/Taskboard.jsx";
 
 const Dashboard = () => {
   // Professionally consume global state instead of fetching data locally
@@ -24,6 +25,8 @@ const Dashboard = () => {
         <button onClick={logout} className="btn-logout">
           Logout
         </button>
+
+        <Taskboard />
       </div>
     </div>
   );

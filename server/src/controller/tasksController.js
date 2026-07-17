@@ -1,11 +1,14 @@
 import db from "../config/db.js";
 
-// @desc    Get all tasks
+// @desc    Get all tasks for the current user
 // @route   GET /api/tasks
 export const getTasks = async (req, res) => {
   try {
+    const userId = req.user.id;
+    
     const [rows] = await db.query(
-      "SELECT * FROM tasks ORDER BY created_at DESC",
+      "SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC",
+      [userId]
     );
 
     res.status(200).json({
@@ -22,10 +25,11 @@ export const getTasks = async (req, res) => {
   }
 };
 
-// @desc     Create new Task
+// @desc     Create new Task for the current user
 // @route    POST /api/tasks
 export const createTask = async (req, res) => {
   try {
+    const userId = req.user.id;
     const { title } = req.body;
 
     // validate title
@@ -37,13 +41,14 @@ export const createTask = async (req, res) => {
     }
 
     // insert into database safely using prepare statement (?) to prevent sql injection
-    const [result] = await db.query("INSERT INTO tasks (title) VALUES (?)", [title]);
+    const [result] = await db.query("INSERT INTO tasks (title, user_id) VALUES (?, ?)", [title, userId]);
 
     // construct the newly created task object
    const newTask = {
       id: result.insertId,
       title: title,
-      completed: 0 // MySQL stores booleans as 0 (false) and 1 (true)
+      completed: 0, // MySQL stores booleans as 0 (false) and 1 (true)
+      user_id: userId
     };
 
     res.status(201).json({
@@ -56,17 +61,18 @@ export const createTask = async (req, res) => {
   }
 };
 
-// @desc    Update task status (toggle completed)
+// @desc    Update task status (toggle completed) for the current user
 // @route   PUT /api/tasks/:id
 export const updateTask = async (req, res) => {
   try {
+    const userId = req.user.id;
     const { id } = req.params;
     const { completed } = req.body; // Expecting a boolean (true/false)
 
     // Convert boolean to MySQL tinyint (1 or 0)
     const isCompleted = completed ? 1 : 0;
 
-    const [result] = await db.query('UPDATE tasks SET completed = ? WHERE id = ?', [isCompleted, id]);
+    const [result] = await db.query('UPDATE tasks SET completed = ? WHERE id = ? AND user_id = ?', [isCompleted, id, userId]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ success: false, error: 'Task not found' });
@@ -79,13 +85,14 @@ export const updateTask = async (req, res) => {
   }
 };
 
-// @desc    Delete a task
+// @desc    Delete a task for the current user
 // @route   DELETE /api/tasks/:id
 export const deleteTask = async (req, res) => {
   try {
+    const userId = req.user.id;
     const { id } = req.params;
 
-    const [result] = await db.query('DELETE FROM tasks WHERE id = ?', [id]);
+    const [result] = await db.query('DELETE FROM tasks WHERE id = ? AND user_id = ?', [id, userId]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ success: false, error: 'Task not found' });
