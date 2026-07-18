@@ -5,10 +5,10 @@ import db from "../config/db.js";
 export const getTasks = async (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     const [rows] = await db.query(
       "SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC",
-      [userId]
+      [userId],
     );
 
     res.status(200).json({
@@ -30,25 +30,48 @@ export const getTasks = async (req, res) => {
 export const createTask = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { title } = req.body;
+    
+    const {
+      title,
+      description = null,
+      priority = "medium",
+      status = "to do",
+      due_date,
+      is_important = false,
+    } = req.body;
 
     // validate title
-    if (!title) {
+    if (!title || title.trim() === "") {
       return res.status(400).json({
         success: false,
-        error: "please provide title for task",
+        message: "please provide title for task",
+      });
+    }
+
+    // validate due date
+    if (!due_date) {
+      return res.status(400).json({
+        success: false,
+        message: "please provide due date for task",
       });
     }
 
     // insert into database safely using prepare statement (?) to prevent sql injection
-    const [result] = await db.query("INSERT INTO tasks (title, user_id) VALUES (?, ?)", [title, userId]);
+    const [result] = await db.query(
+      "INSERT INTO tasks (title, description, priority, status, due_date, is_important, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [title, description, priority, status, due_date, is_important, userId],
+    );
 
     // construct the newly created task object
-   const newTask = {
+    const newTask = {
       id: result.insertId,
       title: title,
-      completed: 0, // MySQL stores booleans as 0 (false) and 1 (true)
-      user_id: userId
+      description: description,
+      priority: priority,
+      status: status,
+      due_date: due_date,
+      is_important: is_important,
+      user_id: userId,
     };
 
     res.status(201).json({
@@ -72,16 +95,23 @@ export const updateTask = async (req, res) => {
     // Convert boolean to MySQL tinyint (1 or 0)
     const isCompleted = completed ? 1 : 0;
 
-    const [result] = await db.query('UPDATE tasks SET completed = ? WHERE id = ? AND user_id = ?', [isCompleted, id, userId]);
+    const [result] = await db.query(
+      "UPDATE tasks SET completed = ? WHERE id = ? AND user_id = ?",
+      [isCompleted, id, userId],
+    );
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, error: 'Task not found' });
+      return res.status(404).json({ success: false, error: "Task not found" });
     }
 
-    res.status(200).json({ success: true, message: 'Task updated successfully' });
+    res
+      .status(200)
+      .json({ success: true, message: "Task updated successfully" });
   } catch (error) {
     console.error(`Error in updateTask: ${error.message}`);
-    res.status(500).json({ success: false, error: 'Server Error: Unable to update task' });
+    res
+      .status(500)
+      .json({ success: false, error: "Server Error: Unable to update task" });
   }
 };
 
@@ -92,15 +122,22 @@ export const deleteTask = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
 
-    const [result] = await db.query('DELETE FROM tasks WHERE id = ? AND user_id = ?', [id, userId]);
+    const [result] = await db.query(
+      "DELETE FROM tasks WHERE id = ? AND user_id = ?",
+      [id, userId],
+    );
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, error: 'Task not found' });
+      return res.status(404).json({ success: false, error: "Task not found" });
     }
 
-    res.status(200).json({ success: true, message: 'Task deleted successfully' });
+    res
+      .status(200)
+      .json({ success: true, message: "Task deleted successfully" });
   } catch (error) {
     console.error(`Error in deleteTask: ${error.message}`);
-    res.status(500).json({ success: false, error: 'Server Error: Unable to delete task' });
+    res
+      .status(500)
+      .json({ success: false, error: "Server Error: Unable to delete task" });
   }
 };

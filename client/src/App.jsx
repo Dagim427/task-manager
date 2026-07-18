@@ -1,18 +1,21 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./context/Authcontext.jsx";
+import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
+
+// Layouts
+import MainLayout from "./components/layouts/mainLayout/MainLayout.jsx";
 
 // Pages
-// import Dashboard from "./pages/dashboard/Dashboard.jsx";
-import Taskboard from "./pages/tasks/Taskboard.jsx";
 import Register from "./pages/auth/registeration/Register.jsx";
 import Login from "./pages/auth/login/Login.jsx";
-import Dashboard from "./pages/home/Dashboard.jsx";
+import Dashboard from "./pages/dashboard/Dashboard.jsx";
+import Taskboard from "./pages/tasks/Taskboard.jsx";
 
 // A clean component to protect private routes
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
-  if (loading) return <div>Loading...</div>;
+  // Tip: Replace this div with a professional full-page Spinner component later
+  if (loading) return <div className="page-loader">Loading...</div>; 
   if (!user) return <Navigate to="/login" replace />;
   
   return children;
@@ -21,36 +24,37 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <Router>
-      {/* Global state wrapper */}
       <AuthProvider>
-        <main className="app-container">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
+        <Routes>
+          {/* 
+            PUBLIC ROUTES
+            These render without the Sidebar/Header 
+          */}
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
 
-            {/* Protected Routes */}
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/task" 
-              element={
-                <ProtectedRoute>
-                  <Taskboard />
-                </ProtectedRoute>
-              } 
-            />
+          {/* 
+            PROTECTED ROUTES
+            Wrapped in MainLayout to provide persistent Sidebar and Header
+          */}
+          <Route 
+            element={
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          >
+            {/* These child routes inject into the <Outlet /> inside MainLayout */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/task" element={<Taskboard />} />
             
-            {/* Fallback route */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </main>
+            {/* Default redirect for authenticated users hitting the root path */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Route>
+          
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
       </AuthProvider>
     </Router>
   );

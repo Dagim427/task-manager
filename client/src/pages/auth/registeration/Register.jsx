@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../../../context/Authcontext.jsx";
+import { useAuth } from "../../../context/AuthContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import "./register.css";
 import LeftPanel from "./LeftPanel.jsx";
@@ -222,6 +222,7 @@ const Register = () => {
             </p> */}
 
             {/* Dynamic Button UI */}
+
             <button type="submit" className="btn-primary" disabled={loading}>
               {loading ? (
                 <span className="spinner-container">

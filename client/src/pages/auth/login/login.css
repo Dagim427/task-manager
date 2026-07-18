@@ -94,7 +94,7 @@
 
 /* Card Rotations */
 .card-1 {
-  transform: rotate(-2deg) translateY(10px);
+  transform: rotate(-2deg) translateX(-12px);
   z-index: 3;
   position: relative;
 }
@@ -143,10 +143,11 @@
 }
 
 .badge {
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   padding: 0.2rem 0.6rem;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.15);
+  font-weight: bold;
 }
 .badge-done {
   color: #34d399;
@@ -241,7 +242,7 @@
 
 .login-wrapper {
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
 }
 
 .login-wrapper h2 {
@@ -343,6 +344,7 @@
 
 .btn-primary {
   width: 100%;
+  box-sizing: border-box !important;
   text-align: center !important;
   background: #4f3af0;
   color: white;
