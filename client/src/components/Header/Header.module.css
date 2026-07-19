@@ -1,11 +1,10 @@
 .header__container {
-  margin: 10px;
-  max-width: 400px;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  padding: 6px;
+  box-sizing: border-box;
 }
 
 /* -- MENU SECTION --- */
@@ -20,7 +19,7 @@
   padding: 8px;
   border-radius: 8px;
   color: #111;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.15s;
   cursor: pointer;
 }
 
@@ -32,13 +31,16 @@
 /* -- SEARCH SECTION --- */
 .search__section {
   display: flex;
-  justify-content: center;
   align-items: center;
+  flex: 1;
+  max-width: 600px;
+  justify-content: start;
 }
 
 .input__wrapper {
   display: flex;
   position: relative;
+  flex: 1;
 }
 
 .search__icon {
@@ -55,8 +57,9 @@
   border: 1px solid #e1e1e1;
   border-radius: 8px;
   outline: none;
-  transition: all 0.3s ease;
+  transition: all 0.15s;
   background-color: var(--Background);
+  width: 100%;
 }
 
 .form__control:hover {
@@ -69,12 +72,25 @@
   box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
 
+/* --New Task SECTION */
+.new__task_btn {
+  background-color: var(--Primary);
+  padding: 8px 14px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  color: #f3f3f3;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
 /* -- ACCOUNT SECTION */
 .account__section {
   display: flex;
   align-items: center;
   justify-content: center;
   color: #111;
+  max-width: 138px;
 }
 
 .notification__wrapper {
@@ -83,7 +99,7 @@
   border-radius: 8px;
   cursor: pointer;
   padding: 8px;
-  transition: background-color 0.2s ;
+  transition: background-color 0.15s;
 }
 
 .notification__wrapper:hover {
@@ -109,7 +125,7 @@
   position: absolute;
   left: 18px;
   bottom: 20px;
-  background-color: red;
+  background-color: rgb(228, 10, 10);
   border-radius: 100%;
   font-size: 10px;
   color: #fff;
@@ -124,6 +140,7 @@
 
 .profile__wrapper {
   display: flex;
+  position: relative;
 }
 
 .profile__icon_wrapper {
@@ -133,7 +150,7 @@
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ;
+  transition: background-color 0.15s;
 }
 
 .profile__icon_wrapper:hover {
@@ -143,11 +160,91 @@
 }
 
 .user__icon_wrapper {
-  background-color: #4a90e2;
+  background-color: #4f46e5;
+  opacity: 0.7;
   padding: 4px;
   align-items: center;
   display: flex;
   justify-content: center;
   border-radius: 100%;
   color: #fff;
+}
+
+.profile__dropdown_wrapper {
+  position: absolute;
+  right: 10px;
+  top: 60px;
+  border: 2px solid var(--Borders);
+  border-radius: 16px;
+  padding-top: 10px;
+  width: 150px;
+}
+
+.name__section h3 {
+  padding: 0 8px;
+  color: var(--Text);
+  font-size: 0.9rem;
+  padding-bottom: 4px;
+}
+
+.name__section p {
+  padding: 0 8px;
+  color: var(--Secondary-Text);
+  font-size: 0.6rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #bbb;
+}
+
+.profile__section {
+  font-size: 0.9rem;
+}
+
+.profile__section ul {
+  list-style: none;
+  border-bottom: 1px solid #bbb;
+}
+
+.profile__section li {
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.profile__section li:hover {
+  background-color: var(--Background);
+}
+
+.logout__section {
+  padding: 8px;
+  font-size: 0.9rem;
+  color: red;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.logout__section:hover {
+  background-color: #fecfcf;
+}
+/* -- RESPONSIVE MEDIA QUERY --- */
+/* Tablet (and larger) */
+@media (min-width: 768px) {
+  .new__task_btn {
+    display: flex;
+  }
+}
+
+/* Laptop (and larger) */
+@media (min-width: 992px) {
+  .header__container {
+    width: 1024px;
+    margin: 0 auto;
+  }
+  .menu__section {
+    display: none;
+  }
+  .search__section {
+    margin-left: 264px;
+  }
 }

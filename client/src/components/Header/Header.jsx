@@ -1,7 +1,10 @@
-import { Menu, Search, Bell, User, ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { Menu, Search, Bell, User, ChevronDown, Plus } from "lucide-react";
 import classes from "./Header.module.css";
 
 function Header() {
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
   return (
     <>
       <div className={classes.header__container}>
@@ -24,6 +27,11 @@ function Header() {
           </div>
         </div>
 
+        <div className={classes.new__task_btn}>
+          <Plus className={classes.plus__icon} />
+          New Task
+        </div>
+
         <div className={classes.account__section}>
           <div className={classes.notification__wrapper}>
             <div className={classes.notification__count}>0</div>
@@ -33,13 +41,35 @@ function Header() {
           </div>
 
           <div className={classes.profile__wrapper}>
-            <div className={classes.profile__icon_wrapper}>
+            <div
+              className={classes.profile__icon_wrapper}
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+            >
               <div className={classes.user__icon_wrapper}>
                 <User className={classes.user__icon} />
               </div>
               <ChevronDown />
             </div>
           </div>
+
+          {isProfileOpen && (
+            <div className={classes.profile__dropdown_wrapper}>
+              <div className={classes.name__section}>
+                <h3>Alex Johnson</h3>
+                <p>alex@gmail.com</p>
+              </div>
+
+              <div className={classes.profile__section}>
+                <ul>
+                  <li>Profile</li>
+                  <li>Settings</li>
+                </ul>
+              </div>
+              <div className={classes.logout__section}>
+                <button className={classes.logout__btn}>Sign out</button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
