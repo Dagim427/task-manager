@@ -7,14 +7,14 @@
 
 :root {
   --Primary: #4f46e5;
-  --Background: #f8fafc;
+  --Background: #f9f9f9;
   --Cards: White;
   --Success: #22c55e;
   --Warning: #f59e0b;
   --Danger: #ef4444;
   --Text: #111827;
   --Secondary-Text: #6b7280;
-  --Borders: #e5e7eb;
+  --Borders: #e1e1e1;;
 }
 
 button {

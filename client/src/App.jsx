@@ -2,12 +2,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 
 // Layouts
-import MainLayout from "./components/layouts/mainLayout/MainLayout.jsx";
+
 
 // Pages
 import Register from "./pages/auth/registeration/Register.jsx";
 import Login from "./pages/auth/login/Login.jsx";
-import Dashboard from "./pages/dashboard/Dashboard.jsx";
+import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import Taskboard from "./pages/tasks/Taskboard.jsx";
 
 // A clean component to protect private routes
@@ -37,21 +37,22 @@ function App() {
             PROTECTED ROUTES
             Wrapped in MainLayout to provide persistent Sidebar and Header
           */}
-          <Route 
+        
+          {/* <Route 
             element={
               <ProtectedRoute>
                 <MainLayout />
               </ProtectedRoute>
             }
-          >
-            {/* These child routes inject into the <Outlet /> inside MainLayout */}
-            <Route path="/dashboard" element={<Dashboard />} />
+          > */}
+            {/* These child routes inject into the <Outlet /> inside MainLayout
             <Route path="/task" element={<Taskboard />} />
             
             {/* Default redirect for authenticated users hitting the root path */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          </Route>
+            {/* <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Route> */} 
           
+          <Route path="/dashboard" element={<Dashboard />} />
           {/* Fallback route */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

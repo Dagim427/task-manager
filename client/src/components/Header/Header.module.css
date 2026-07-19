@@ -1,0 +1,153 @@
+.header__container {
+  margin: 10px;
+  max-width: 400px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* -- MENU SECTION --- */
+.menu__section {
+  max-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu__icon {
+  padding: 8px;
+  border-radius: 8px;
+  color: #111;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.menu__icon:hover {
+  background-color: var(--Background);
+  border: 1px solid #e1e1e1;
+}
+
+/* -- SEARCH SECTION --- */
+.search__section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input__wrapper {
+  display: flex;
+  position: relative;
+}
+
+.search__icon {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  color: #aaa;
+  transition: color 0.3s ease;
+  pointer-events: none;
+}
+
+.form__control {
+  padding: 10px 8px 10px 48px;
+  border: 1px solid #e1e1e1;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: var(--Background);
+}
+
+.form__control:hover {
+  border-color: #bbb;
+}
+
+.form__control:focus {
+  border-color: #4a90e2;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+/* -- ACCOUNT SECTION */
+.account__section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+}
+
+.notification__wrapper {
+  display: flex;
+  position: relative;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 8px;
+  transition: background-color 0.2s ;
+}
+
+.notification__wrapper:hover {
+  background-color: var(--Background);
+  border: 1px solid #e1e1e1;
+}
+
+.bell__icon_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  color: #111;
+}
+
+.bell__icon {
+  width: 28px;
+  height: 28px;
+}
+
+.notification__count {
+  position: absolute;
+  left: 18px;
+  bottom: 20px;
+  background-color: red;
+  border-radius: 100%;
+  font-size: 10px;
+  color: #fff;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.profile__wrapper {
+  display: flex;
+}
+
+.profile__icon_wrapper {
+  padding: 8px;
+  display: flex;
+  margin-left: 16px;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ;
+}
+
+.profile__icon_wrapper:hover {
+  background-color: var(--Background);
+  border: 1px solid #e1e1e1;
+  border-radius: 8px;
+}
+
+.user__icon_wrapper {
+  background-color: #4a90e2;
+  padding: 4px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: 100%;
+  color: #fff;
+}
