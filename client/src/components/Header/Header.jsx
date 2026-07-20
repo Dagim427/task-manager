@@ -1,78 +1,63 @@
-import { useState } from "react";
-import { Menu, Search, Bell, User, ChevronDown, Plus } from "lucide-react";
 import classes from "./Header.module.css";
+import { Search, Bell, Menu } from "lucide-react";
 
-function Header() {
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-
+function Header({ onToggleSidebar }) {
   return (
-    <>
-      <div className={classes.header__container}>
-        <div className={classes.menu__section}>
-          <div className={classes.menu__icon}>
-            <Menu size={20} />
-          </div>
+    <header className={classes.header}>
+      {/* LEFT SECTION */}
+      <div className={classes.header__left}>
+        {/* Hamburger Menu Button (visible on tablet/mobile) */}
+        <button 
+          className={classes.menu__btn} 
+          onClick={onToggleSidebar}
+          aria-label="Toggle menu"
+        >
+          <Menu size={22} />
+        </button>
+
+        {/* Welcome Text (Desktop & Tablet) */}
+        <div className={classes.welcome__box}>
+          <h1 className={classes.welcome__title}>
+            Welcome back, Dagi <span className={classes.wave}>👋</span>
+          </h1>
+          <p className={classes.welcome__date}>Monday, July 20</p>
         </div>
 
-        <div className={classes.search__section}>
-          <div className={classes.input__wrapper}>
-            <Search size={20} className={classes.search__icon} />
-            <input
-              type="text"
-              name=""
-              id=""
-              className={classes.form__control}
-              placeholder="Search task"
-            />
-          </div>
-        </div>
-
-        <div className={classes.new__task_btn}>
-          <Plus className={classes.plus__icon} />
-          New Task
-        </div>
-
-        <div className={classes.account__section}>
-          <div className={classes.notification__wrapper}>
-            <div className={classes.notification__count}>0</div>
-            <div className={classes.bell__icon_wrapper}>
-              <Bell className={classes.bell__icon} />
-            </div>
-          </div>
-
-          <div className={classes.profile__wrapper}>
-            <div
-              className={classes.profile__icon_wrapper}
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-            >
-              <div className={classes.user__icon_wrapper}>
-                <User className={classes.user__icon} />
-              </div>
-              <ChevronDown />
-            </div>
-          </div>
-
-          {isProfileOpen && (
-            <div className={classes.profile__dropdown_wrapper}>
-              <div className={classes.name__section}>
-                <h3>Alex Johnson</h3>
-                <p>alex@gmail.com</p>
-              </div>
-
-              <div className={classes.profile__section}>
-                <ul>
-                  <li>Profile</li>
-                  <li>Settings</li>
-                </ul>
-              </div>
-              <div className={classes.logout__section}>
-                <button className={classes.logout__btn}>Sign out</button>
-              </div>
-            </div>
-          )}
+        {/* Mobile Logo Text (Shown on small mobile screens) */}
+        <div className={classes.mobile__logo}>
+          <h2>TaskFlow</h2>
         </div>
       </div>
-    </>
+
+      {/* CENTER SECTION: SEARCH BAR (Desktop only) */}
+      <div className={classes.header__center}>
+        <div className={classes.search__box}>
+          <Search className={classes.search__icon} size={18} />
+          <input
+            type="text"
+            placeholder="Search anything..."
+            className={classes.search__input}
+          />
+        </div>
+      </div>
+
+      {/* RIGHT SECTION */}
+      <div className={classes.header__right}>
+        {/* Notification Bell with Red Badge */}
+        <button className={classes.notification__btn} aria-label="Notifications">
+          <Bell size={20} />
+          <span className={classes.notification__badge} />
+        </button>
+
+        {/* User Profile */}
+        <div className={classes.user__profile}>
+          <div className={classes.user__avatar}>
+            <span>D</span>
+          </div>
+          <span className={classes.user__name}>Dagi</span>
+        </div>
+      </div>
+    </header>
   );
 }
 

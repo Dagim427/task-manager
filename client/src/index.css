@@ -1,3 +1,5 @@
+
+
 * {
   margin: 0;
   padding: 0;
@@ -7,14 +9,14 @@
 
 :root {
   --Primary: #4f46e5;
-  --Background: #f9f9f9;
-  --Cards: White;
+  --Background: #f8fafc;
+  --Surface: #fff;
   --Success: #22c55e;
   --Warning: #f59e0b;
   --Danger: #ef4444;
-  --Text: #333;
-  --Secondary-Text: #6b7280;
-  --Borders: #e1e1e1;
+  --Text-Primary: #111827;
+  --Text-Secondary: #6b7280;
+  --Border: #e5e7eb;
 }
 
 button {

@@ -1,12 +1,9 @@
-import Header from "../../components/Header/Header";
 import "./Dashboard.css";
 
 function Dashboard() {
-  return (
-    <>
-      <Header />
-    </>
-  );
+  return <>
+  hi Dashboard
+  </>;
 }
 
 export default Dashboard;

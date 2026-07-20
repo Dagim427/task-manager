@@ -1,257 +1,204 @@
-.header__container {
+/* --- HEADER CONTAINER --- */
+.header {
+  width: 100%;
+  height: 70px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 6px;
+  padding: 0 24px;
   box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* -- MENU SECTION --- */
-.menu__section {
-  max-width: 50px;
+/* --- LEFT SECTION --- */
+.header__left {
   display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu__btn {
+  display: none; /* Hidden by default on desktop */
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
   align-items: center;
   justify-content: center;
 }
 
-.menu__icon {
-  padding: 8px;
-  border-radius: 8px;
-  color: #111;
-  transition: background-color 0.15s;
-  cursor: pointer;
+.menu__btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
 }
 
-.menu__icon:hover {
-  background-color: var(--Background);
-  border: 1px solid #e1e1e1;
-}
-
-/* -- SEARCH SECTION --- */
-.search__section {
+.welcome__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
   display: flex;
   align-items: center;
-  flex: 1;
-  max-width: 600px;
-  justify-content: start;
+  gap: 6px;
 }
 
-.input__wrapper {
-  display: flex;
-  position: relative;
+.welcome__date {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 2px 0 0 0;
+}
+
+.mobile__logo {
+  display: none; /* Hidden by default */
+}
+
+.mobile__logo h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* --- CENTER SECTION (SEARCH) --- */
+.header__center {
   flex: 1;
+  max-width: 480px;
+  margin: 0 24px;
+}
+
+.search__box {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .search__icon {
   position: absolute;
-  left: 12px;
-  top: 10px;
-  color: #aaa;
-  transition: color 0.3s ease;
+  left: 14px;
+  color: #94a3b8;
   pointer-events: none;
 }
 
-.form__control {
-  padding: 10px 8px 10px 48px;
-  border: 1px solid #e1e1e1;
-  border-radius: 8px;
-  outline: none;
-  transition: all 0.15s;
-  background-color: var(--Background);
+.search__input {
   width: 100%;
+  padding: 10px 16px 10px 42px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
-.form__control:hover {
-  border-color: #bbb;
+.search__input::placeholder {
+  color: #94a3b8;
 }
 
-.form__control:focus {
-  border-color: #4a90e2;
-  background-color: #fff;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+.search__input:focus {
+  background-color: #ffffff;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-/* --New Task SECTION */
-.new__task_btn {
-  background-color: var(--Primary);
-  padding: 8px 14px;
-  display: none;
+/* --- RIGHT SECTION --- */
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.notification__btn {
+  position: relative;
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification__btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Red Notification Indicator Dot */
+.notification__badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+}
+
+/* User Profile Badge */
+.user__profile {
+  display: flex;
   align-items: center;
   gap: 10px;
-  color: #f3f3f3;
-  font-weight: 700;
-  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.15s;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
 
-.new__task_btn:hover {
-  background-color: #1c14ae;
-}
-
-/* -- ACCOUNT SECTION */
-.account__section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #111;
-  max-width: 138px;
-}
-
-.notification__wrapper {
-  display: flex;
-  position: relative;
-  border-radius: 8px;
-  cursor: pointer;
-  padding: 8px;
-  transition: background-color 0.15s;
-}
-
-.notification__wrapper:hover {
-  background-color: var(--Background);
-  border: 1px solid #e1e1e1;
-}
-
-.bell__icon_wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  transition: background-color 0.2s ease;
-  color: #111;
-}
-
-.bell__icon {
-  width: 28px;
-  height: 28px;
-}
-
-.notification__count {
-  position: absolute;
-  left: 18px;
-  bottom: 20px;
-  background-color: rgb(228, 10, 10);
-  border-radius: 100%;
-  font-size: 10px;
-  color: #fff;
-  font-weight: 700;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.user__avatar {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-}
-
-.profile__wrapper {
+  background-color: #6366f1;
+  color: #ffffff;
   display: flex;
-  position: relative;
-}
-
-.profile__icon_wrapper {
-  padding: 8px;
-  display: flex;
-  margin-left: 16px;
   align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: background-color 0.15s;
-}
-
-.profile__icon_wrapper:hover {
-  background-color: var(--Background);
-  border: 1px solid #e1e1e1;
-  border-radius: 8px;
-}
-
-.user__icon_wrapper {
-  background-color: #4f46e5;
-  opacity: 0.7;
-  padding: 4px;
-  align-items: center;
-  display: flex;
   justify-content: center;
-  border-radius: 100%;
-  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
 }
 
-.profile__dropdown_wrapper {
-  position: absolute;
-  right: 10px;
-  top: 60px;
-  border: 2px solid var(--Borders);
-  border-radius: 16px;
-  padding-top: 10px;
-  width: 150px;
+.user__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
 }
 
-.name__section h3 {
-  padding: 0 8px;
-  color: var(--Text);
-  font-size: 0.9rem;
-  padding-bottom: 4px;
-}
+/* ==========================================================================
+   MEDIA QUERIES (Responsive Logic based on Screenshots)
+   ========================================================================== */
 
-.name__section p {
-  padding: 0 8px;
-  color: var(--Secondary-Text);
-  font-size: 0.6rem;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #bbb;
-}
-
-.profile__section {
-  font-size: 0.9rem;
-}
-
-.profile__section ul {
-  list-style: none;
-  border-bottom: 1px solid #bbb;
-}
-
-.profile__section li {
-  padding: 8px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.profile__section li:hover {
-  background-color: var(--Background);
-}
-
-.logout__section {
-  padding: 8px;
-  font-size: 0.9rem;
-  color: red;
-  cursor: pointer;
-  transition: all 0.15s;
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
-}
-
-.logout__section:hover {
-  background-color: #fecfcf;
-}
-/* -- RESPONSIVE MEDIA QUERY --- */
-/* Tablet (and larger) */
-@media (min-width: 768px) {
-  .new__task_btn {
+/* Tablet View (Screenshot 2: Hide Search Bar, Show Hamburger Icon) */
+@media (max-width: 900px) {
+  .menu__btn {
     display: flex;
   }
-}
 
-/* Laptop (and larger) */
-@media (min-width: 992px) {
-  .header__container {
-    width: 1024px;
-    margin: 0 auto;
-  }
-  .menu__section {
+  .header__center {
     display: none;
   }
-  .search__section {
-    margin-left: 264px;
+}
+
+/* Small Mobile View (Screenshot 3: Hide Welcome Msg, Show Logo, Hide User Name) */
+@media (max-width: 580px) {
+  .header {
+    padding: 0 16px;
+  }
+
+  .welcome__box {
+    display: none;
+  }
+
+  .mobile__logo {
+    display: block;
+  }
+
+  .user__name {
+    display: none;
   }
 }
