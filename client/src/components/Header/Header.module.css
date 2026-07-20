@@ -82,6 +82,13 @@
   color: #f3f3f3;
   font-weight: 700;
   border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.new__task_btn:hover {
+  background-color: #1c14ae;
 }
 
 /* -- ACCOUNT SECTION */
