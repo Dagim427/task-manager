@@ -10,6 +10,8 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Layout from "./components/layout/Layout.jsx";
+import CreateTask from "./pages/CreateTask.jsx";
+import EditTask from "./pages/EditTask.jsx";
 
 function App() {
   return (
@@ -28,7 +30,13 @@ function App() {
             <Route path="/important" element={<Dashboard />} />
             {/* <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} /> */}
+
+            {/* Form Routes */}
+          <Route path="/create-task" element={<CreateTask />} />
+          <Route path="/edit-task/:id" element={<EditTask />} />
           </Route>
+
+
 
           {/* Root Redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />
