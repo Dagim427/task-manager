@@ -2,18 +2,18 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
 } from "react-router-dom";
 // import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 
 // Layouts
 
 // Pages
-import Register from "./pages/auth/registeration/Register.jsx";
-import Login from "./pages/auth/login/Login.jsx";
+// import Register from "./pages/auth/registeration/Register.jsx";
+// import Login from "./pages/auth/login/Login.jsx";
 import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 // import Taskboard from "./pages/tasks/Taskboard.jsx";
 import Layout from "./components/layout/Layout.jsx";
+import Login from "./pages/Login.jsx";
 
 // A clean component to protect private routes
 // const ProtectedRoute = ({ children }) => {
@@ -66,7 +66,9 @@ function App() {
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider> */}
+
       <Routes>
+        <Route path="/" element={<Login />}></Route>
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>

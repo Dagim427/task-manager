@@ -1,24 +1,7 @@
+@import "tailwindcss";
 
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Inter, sans-serif;
-}
-
-:root {
-  --Primary: #4f46e5;
-  --Background: #f8fafc;
-  --Surface: #fff;
-  --Success: #22c55e;
-  --Warning: #f59e0b;
-  --Danger: #ef4444;
-  --Text-Primary: #111827;
-  --Text-Secondary: #6b7280;
-  --Border: #e5e7eb;
-}
-
-button {
-  all: unset;
+@media (max-width: 768px) {
+  .hidden-mobile {
+    display: none !important;
+  }
 }
