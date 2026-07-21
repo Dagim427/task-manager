@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../api/axios";
 import { storage } from "../utils/storage";
@@ -14,31 +14,17 @@ export const AuthProvider = ({ children }) => {
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  // --- AUTO-CLEAR ALERTS AFTER 5 SECONDS ---
-  // Whenever an error is set, it will automatically clear 5 seconds later
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError("");
-      }, 3000);
-      return () => clearTimeout(timer); // Cleanup old timer if a new error drops in
-    }
-  }, [error]);
-
-  // Whenever a success state is set, it will automatically clear 5 seconds later
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        setSuccess("");
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [success]);
+  // Helper to clear error and success states manually
+  const clearMessages = () => {
+    setError("");
+    setSuccess("");
+  };
 
   // --- LOGOUT USER ---
   const logout = useCallback(() => {
     storage.clearAuth();
     setUser(null);
+    clearMessages();
     navigate("/login");
   }, [navigate]);
 
@@ -73,8 +59,7 @@ export const AuthProvider = ({ children }) => {
 
   // --- REGISTER USER ---
   const registerUser = async (formData) => {
-    setError("");
-    setSuccess("");
+    clearMessages();
     setLoading(true);
 
     if (!formData.name || !formData.email || !formData.password) {
@@ -86,7 +71,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiClient.post("/auth/register", formData);
       if (response.data.success) {
-        setSuccess("Registration successfully! You can login.");
+        setSuccess("Registration successful! You can now log in.");
         return true;
       }
       return false;
@@ -100,8 +85,7 @@ export const AuthProvider = ({ children }) => {
 
   // --- LOGIN USER ---
   const loginUser = async (formData) => {
-    setError("");
-    setSuccess("");
+    clearMessages();
     setLoading(true);
 
     if (!formData.email || !formData.password) {
@@ -113,7 +97,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiClient.post("/auth/login", formData);
       if (response.data.success) {
-        // Use the centralized storage utility instead of direct localStorage
+        // Use the centralized storage utility
         storage.setToken(response.data.token);
         storage.setUser(response.data.user);
         
@@ -140,6 +124,7 @@ export const AuthProvider = ({ children }) => {
         registerUser,
         loginUser,
         logout,
+        clearMessages,
         setError,
         setSuccess,
       }}

@@ -8,6 +8,7 @@ function Btn({ children, onClick, variant = "primary", size = "md", full }) {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
+    height: "44px",
     gap: 6,
     fontFamily: "inherit",
     fontWeight: 600,
