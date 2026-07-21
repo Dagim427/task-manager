@@ -35,10 +35,13 @@ export const useTask = () => {
       setTimeout(() => {
         setSuccess(false);
       }, 1500);
+
+      return true
     } catch (err) {
       setError(
         err.response?.data?.message || "An error occurred during create task",
       );
+      return false
     } finally {
       setLoading(false);
     }

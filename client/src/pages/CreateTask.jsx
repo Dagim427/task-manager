@@ -7,7 +7,7 @@ export default function CreateTask() {
   const { createTask, loading, error, success, clearError } = useTask();
 
   const handleSubmit = async (taskData) => {
-    await createTask(taskData);
+    return await createTask(taskData);
   };
 
   return (

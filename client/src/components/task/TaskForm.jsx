@@ -36,8 +36,8 @@ export function TaskForm({
   };
 
   // Deliver the form values back to parent on submit
-  const handleSubmit = () => {
-    onSubmit({
+  const handleSubmit = async () => {
+    const isSuccess = await onSubmit({
       title,
       description,
       priority,
@@ -45,8 +45,16 @@ export function TaskForm({
       dueDate,
       important,
     });
-  };
 
+    if (isSuccess) {
+      setTitle("");
+      setDescription("");
+      setPriority("Medium");
+      setStatus("To Do");
+      setDueDate("");
+      setImportant(false);
+    }
+  };
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: "32px" }}>
       <div style={{ maxWidth: 640, margin: "0 auto" }}>
