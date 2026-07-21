@@ -80,7 +80,7 @@ export const createTask = async (req, res) => {
     });
   } catch (error) {
     console.error(`Error in createTask: ${error.message}`);
-    res.status(500).json({ error: "Server Error: unable to create task" });
+    res.status(500).json({ message: "Server Error: unable to create task" });
   }
 };
 

@@ -240,7 +240,7 @@ export default function Dashboard({
           {!searchQuery &&
             statusFilter === "All" &&
             priorityFilter === "All" && (
-              <Btn onClick={() => navigate("/create")} size="sm">
+              <Btn onClick={() => navigate("/create-task")} size="sm">
                 Create Task
               </Btn>
             )}

@@ -1,80 +1,48 @@
-import { useState, useEffect, useCallback } from "react";
-import apiClient from "../api/axios.js";
+import { useState } from "react";
+import apiClient from "../api/axios";
 
-export const useTasks = () => {
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
+export const useTask = () => {
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
-  const fetchTasks = useCallback(async () => {
+  const clearError = () => setError(null);
+
+  const createTask = async (taskData) => {
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    if (!taskData.title || taskData.title.trim() === "") {
+      setError("please provide title for task");
+      setLoading(false);
+      return false;
+    }
+
     try {
-      setLoading(true);
-      setError(null); // Clear previous errors
-      const response = await apiClient.get("/tasks");
-      
-      if (response.data.success) {
-        setTasks(response.data.data);
-      }
+      const formattedData = {
+        title: taskData.title,
+        description: taskData.description,
+        priority: taskData.priority.toLowerCase(),
+        status: taskData.status.toLowerCase(),
+        due_date: taskData.dueDate,
+        is_important: taskData.important,
+      };
+
+      await apiClient.post("/tasks", formattedData);
+      setSuccess(true);
+
+      setTimeout(() => {
+        setSuccess(false);
+      }, 1500);
     } catch (err) {
-      console.error("Fetch tasks error:", err);
-      setError("Failed to fetch tasks.");
+      setError(
+        err.response?.data?.message || "An error occurred during create task",
+      );
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
-
-  const addTask = async (title) => {
-    try {
-      setError(null);
-      const response = await apiClient.post("/tasks", { title });
-      
-      if (response.data.success) {
-        // Professional update: Use previous state to prevent stale closures
-        setTasks((prevTasks) => [response.data.data, ...prevTasks]);
-      }
-    } catch (err) {
-      console.error("Add task error:", err);
-      setError("Failed to add task.");
-    }
   };
 
-  const toggleTask = async (id, currentStatus) => {
-    try {
-      setError(null);
-      const response = await apiClient.put(`/tasks/${id}`, {
-        completed: !currentStatus,
-      });
-      
-      if (response.data.success) {
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === id ? { ...task, completed: !currentStatus } : task
-          )
-        );
-      }
-    } catch (err) {
-      console.error("Toggle task error:", err);
-      setError("Failed to update task.");
-    }
-  };
-
-  const deleteTask = async (id) => {
-    try {
-      setError(null);
-      const response = await apiClient.delete(`/tasks/${id}`);
-      
-      if (response.data.success) {
-        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-      }
-    } catch (err) {
-      console.error("Delete task error:", err);
-      setError("Failed to delete task.");
-    }
-  };
-
-  return { tasks, loading, error, addTask, toggleTask, deleteTask };
+  return { createTask, loading, error, success, clearError };
 };
