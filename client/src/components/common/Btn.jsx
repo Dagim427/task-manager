@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { C } from "../../utils/color";
 
-function Btn({ children, onClick, variant = "primary", size = "md", full }) {
+function Btn({ 
+  children, 
+  onClick, 
+  variant = "primary", 
+  size = "md", 
+  full, 
+  type = "button", 
+  disabled = false,
+  ...props 
+}) {
   const [h, setH] = useState(false);
 
   const base = {
@@ -12,7 +21,8 @@ function Btn({ children, onClick, variant = "primary", size = "md", full }) {
     gap: 6,
     fontFamily: "inherit",
     fontWeight: 600,
-    cursor: "pointer",
+    cursor: disabled ? "not-allowed" : "pointer",
+    opacity: disabled ? 0.6 : 1,
     transition: "all 0.15s",
     width: full ? "100%" : "auto",
     borderRadius: 8,
@@ -22,7 +32,7 @@ function Btn({ children, onClick, variant = "primary", size = "md", full }) {
 
   const styles = {
     primary: {
-      backgroundColor: h ? C.primaryDark : C.primary,
+      backgroundColor: h && !disabled ? C.primaryDark : C.primary,
       color: "#fff",
       border: "none",
     },
@@ -32,23 +42,26 @@ function Btn({ children, onClick, variant = "primary", size = "md", full }) {
       border: `1.5px solid ${C.primary}`,
     },
     ghost: {
-      backgroundColor: h ? C.bg : "transparent",
+      backgroundColor: h && !disabled ? C.bg : "transparent",
       color: C.mid,
       border: `1.5px solid ${C.border}`,
     },
     danger: {
-      backgroundColor: h ? "#DC2626" : C.danger,
+      backgroundColor: h && !disabled ? "#DC2626" : C.danger,
       color: "#fff",
       border: "none",
     },
   };
-  
+
   return (
     <button
+      type={type}
+      disabled={disabled}
       onClick={onClick}
       onMouseEnter={() => setH(true)}
       onMouseLeave={() => setH(false)}
       style={{ ...base, ...styles[variant] }}
+      {...props}
     >
       {children}
     </button>

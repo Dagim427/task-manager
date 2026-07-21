@@ -1,5 +1,44 @@
 @import "tailwindcss";
 
+/* Sidebar Hover Effects & Animations */
+
+/* Nav Links Hover */
+.sidebar-nav-link {
+  transition: all 0.2s ease-in-out !important;
+}
+
+.sidebar-nav-link:hover {
+  background-color: #f3f4f6 !important; /* Soft gray hover */
+  color: #4f46e5 !important; /* Accent color on hover */
+  transform: translateX(4px); /* Subtle slide-right effect */
+}
+
+/* Active Nav Link Hover Override */
+.sidebar-nav-link.active:hover {
+  background-color: #eef2ff !important;
+  transform: translateX(2px);
+}
+
+/* Logout Button Hover */
+.sidebar-logout-btn {
+  transition: all 0.2s ease-in-out !important;
+}
+
+.sidebar-logout-btn:hover {
+  background-color: #fee2e2 !important; /* Soft red tint */
+  color: #dc2626 !important;
+}
+
+/* Close Icon Hover (Mobile) */
+.mobile-close-btn {
+  transition: background-color 0.2s ease !important;
+  border-radius: 6px;
+}
+
+.mobile-close-btn:hover {
+  background-color: #f3f4f6;
+}
+
 .alert {
   padding: 10px;
   border-radius: 8px;
@@ -36,8 +75,58 @@
   animation: spin 0.8s linear infinite;
 }
 
+/* Mobile Breakpoint (<= 768px) */
 @media (max-width: 768px) {
   .hidden-mobile {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+
+  .sidebar-drawer {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease-in-out;
+  }
+
+  .sidebar-drawer.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+  }
+
+  /* Responsive Padding for Dashboard & Forms */
+  .page-container {
+    padding: 16px !important;
+  }
+
+  .search-container {
+    max-width: 180px !important;
+  }
+}
+
+/* Desktop Breakpoint (> 768px) */
+@media (min-width: 769px) {
+  .mobile-menu-btn {
+    display: none !important;
+  }
+
+  .mobile-close-btn {
+    display: none !important;
+  }
+
+  .sidebar-overlay {
     display: none !important;
   }
 }

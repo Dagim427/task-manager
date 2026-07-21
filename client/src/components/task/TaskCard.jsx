@@ -4,8 +4,10 @@ import Badge from "../common/Badge";
 
 function TaskCard({ task, onEdit, onDelete, onToggleDone, onToggleImportant }) {
   const [hover, setHover] = useState(false);
+
   const done = task.status === "Done";
-  const overdue = !done && task.dueDate < "2026-07-21";
+  const today = new Date().toISOString().split("T")[0];
+  const overdue = !done && task.dueDate && task.dueDate < today;
 
   return (
     <div
