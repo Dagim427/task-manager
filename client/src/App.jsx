@@ -12,6 +12,8 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Layout from "./components/layout/Layout.jsx";
 import CreateTask from "./pages/CreateTask.jsx";
 import EditTask from "./pages/EditTask.jsx";
+import { Profile } from "./pages/Profile.jsx";
+import { Settings } from "./pages/Settings.jsx";
 
 function App() {
   return (
@@ -28,15 +30,13 @@ function App() {
             <Route path="/my-tasks" element={<Dashboard />} />
             <Route path="/completed" element={<Dashboard />} />
             <Route path="/important" element={<Dashboard />} />
-            {/* <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} /> */}
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
 
             {/* Form Routes */}
-          <Route path="/create-task" element={<CreateTask />} />
-          <Route path="/edit-task/:id" element={<EditTask />} />
+            <Route path="/create-task" element={<CreateTask />} />
+            <Route path="/edit-task/:id" element={<EditTask />} />
           </Route>
-
-
 
           {/* Root Redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />
