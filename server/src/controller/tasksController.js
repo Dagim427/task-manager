@@ -20,7 +20,7 @@ export const getTasks = async (req, res) => {
     console.error(`Error from get Task: ${error.message}`);
     res.status(500).json({
       success: false,
-      error: "Server Error: unable to fetch get tasks",
+      message: "Server Error: unable to fetch get tasks",
     });
   }
 };
@@ -111,7 +111,7 @@ export const updateTask = async (req, res) => {
     console.error(`Error in updateTask: ${error.message}`);
     res
       .status(500)
-      .json({ success: false, error: "Server Error: Unable to update task" });
+      .json({ success: false, message: "Server Error: Unable to update task" });
   }
 };
 
@@ -138,6 +138,6 @@ export const deleteTask = async (req, res) => {
     console.error(`Error in deleteTask: ${error.message}`);
     res
       .status(500)
-      .json({ success: false, error: "Server Error: Unable to delete task" });
+      .json({ success: false, message: "Server Error: Unable to delete task" });
   }
 };

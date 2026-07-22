@@ -1,5 +1,5 @@
 // src/pages/Dashboard.jsx
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { C } from "../utils/color.js";
 import {
@@ -10,22 +10,39 @@ import {
 import TaskCard from "../components/task/TaskCard.jsx";
 import Btn from "../components/common/Btn.jsx";
 import Select from "../components/common/Select.jsx";
+import { getTasks } from "../services/taskServices.js";
 
-export default function Dashboard({
-  tasks = [],
-  onDelete,
-  onToggleDone,
-  onToggleImportant,
-}) {
+export default function Dashboard() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Local state for dropdown filters
+  // State management
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
 
   // Synchronized search query from top Header input
   const searchQuery = searchParams.get("q") || "";
+
+  // Fetch tasks on initial component mount
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        setLoading(true);
+        const response = await getTasks();
+        if (response.success) {
+          setTasks(response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch tasks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   // Dynamic status metrics
   const stats = useMemo(() => {
@@ -61,6 +78,36 @@ export default function Dashboard({
       setSearchParams(searchParams);
     }
   };
+
+  const handleDelete = async (taskId) => {
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+  };
+
+  const handleToggleDone = async (taskId) => {
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId
+          ? { ...t, status: t.status === "Done" ? "To Do" : "Done" }
+          : t
+      )
+    );
+  };
+
+  const handleToggleImportant = async (taskId) => {
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId ? { ...t, important: !t.important } : t
+      )
+    );
+  };
+
+  if (loading) {
+    return (
+      <div style={{ padding: "64px", textAlign: "center", color: C.mid }}>
+        Loading tasks...
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: "32px", maxWidth: 1200, margin: "0 auto" }}>
@@ -258,9 +305,9 @@ export default function Dashboard({
               key={task.id}
               task={task}
               onEdit={() => navigate(`/edit/${task.id}`)}
-              onDelete={() => onDelete?.(task.id)}
-              onToggleDone={() => onToggleDone?.(task.id)}
-              onToggleImportant={() => onToggleImportant?.(task.id)}
+              onDelete={() => handleDelete(task.id)}
+              onToggleDone={() => handleToggleDone(task.id)}
+              onToggleImportant={() => handleToggleImportant(task.id)}
             />
           ))}
         </div>
