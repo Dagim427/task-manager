@@ -10,39 +10,24 @@ import {
 import TaskCard from "../components/task/TaskCard.jsx";
 import Btn from "../components/common/Btn.jsx";
 import Select from "../components/common/Select.jsx";
-import { getTasks } from "../services/taskServices.js";
+import { useTask } from "../hooks/useTasks.js";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // State management
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Consume tasks state and getTasks function from hook
+  const { tasks, setTasks, getTasks, loading, error } = useTask();
+
   const [statusFilter, setStatusFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
 
-  // Synchronized search query from top Header input
   const searchQuery = searchParams.get("q") || "";
 
-  // Fetch tasks on initial component mount
+  // Fetch tasks on initial render
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        setLoading(true);
-        const response = await getTasks();
-        if (response.success) {
-          setTasks(response.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch tasks:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTasks();
-  }, []);
+    getTasks();
+  }, [getTasks]);
 
   // Dynamic status metrics
   const stats = useMemo(() => {
@@ -105,6 +90,14 @@ export default function Dashboard() {
     return (
       <div style={{ padding: "64px", textAlign: "center", color: C.mid }}>
         Loading tasks...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: "64px", textAlign: "center", color: C.danger }}>
+        {error}
       </div>
     );
   }
