@@ -10,7 +10,7 @@ import {
 import TaskCard from "../components/task/TaskCard.jsx";
 import Btn from "../components/common/Btn.jsx";
 import Select from "../components/common/Select.jsx";
-import { useTask } from "../hooks/useTasks.js";
+import { useTask } from "../hooks/useTask.js";
 
 export default function Dashboard() {
   const navigate = useNavigate();

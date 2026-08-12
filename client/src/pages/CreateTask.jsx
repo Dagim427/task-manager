@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import TaskForm from "../components/task/TaskForm.jsx";
-import { useTask } from "../hooks/useTasks.js";
+import { useTask } from "../hooks/useTask.js";
 
 export default function CreateTask() {
   const navigate = useNavigate();
