@@ -4,6 +4,10 @@ import helmet from "helmet";
 import compression from "compression";
 import morgan from "morgan";
 
+import { env } from "./config/env.js";
+import { errorHandler } from "./middleware/error.middleware.js";
+import authRoutes from "./routes/auth.routes.js";
+
 const app = express();
 
 app.disable("x-powered-by");
@@ -12,14 +16,27 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: env.clientUrl,
     credentials: true,
   }),
 );
 
-app.use(compression())
+app.use(
+  express.json({
+    limit: "1mb",
+  }),
+);
 
-if (process.env.NODE_ENV !== "test") {
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: "1mb",
+  }),
+);
+
+app.use(compression());
+
+if (env.nodeEnv !== "test") {
   app.use(morgan("combined"));
 }
 
@@ -31,5 +48,8 @@ app.get("/health", (_req, res) => {
   });
 });
 
-export default app;
+app.use("/api/auth", authRoutes);
 
+app.use(errorHandler);
+
+export default app;

@@ -1,45 +1,27 @@
 import mysql from "mysql2/promise";
 
-let pool;
+import { env } from "./env.js";
 
-export const getPool = () => {
-  if (!pool) {
-    const requiredDatabaseVariables = [
-      "DB_HOST",
-      "DB_PORT",
-      "DB_NAME",
-      "DB_USER",
-      "DB_PASSWORD",
-    ];
+const pool = mysql.createPool({
+  host: env.database.host,
+  port: env.database.port,
+  database: env.database.name,
+  user: env.database.user,
+  password: env.database.password,
 
-    for (const variable of requiredDatabaseVariables) {
-      if (!process.env[variable]) {
-        throw new Error(`Missing required environment variable: ${variable}`);
-      }
-    }
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 
-    pool = mysql.createPool({
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      database: process.env.DB_NAME,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
-      enableKeepAlive: true,
-      keepAliveInitialDelay: 0,
-    });
-  }
-  return pool;
-};
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
+});
 
 export const testDatabaseConnection = async () => {
   let connection;
 
   try {
-    const dbPool = getPool();
-    connection = await dbPool.getConnection();
+    connection = await pool.getConnection();
     await connection.ping();
 
     console.log("✅ Database connection established.");
@@ -51,4 +33,4 @@ export const testDatabaseConnection = async () => {
   }
 };
 
-export default getPool;
+export default pool;
