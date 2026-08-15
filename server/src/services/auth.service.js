@@ -1,8 +1,14 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-import { createUser, findUserByEmail } from "../models/user.model.js";
+import {
+  createUser,
+  findUserByEmail,
+  findUserById,
+} from "../models/user.model.js";
 
 import { ApiError } from "../utils/ApiError.js";
+import { env } from "../config/env.js";
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -51,4 +57,54 @@ export const registerUser = async ({ name, email, password }) => {
 
     throw error;
   }
+};
+
+export const loginUser = async ({ email, password }) => {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const user = await findUserByEmail(normalizedEmail);
+
+  if (!user) {
+    throw new ApiError(
+      401,
+      "Invalid email or password.",
+      "INVALID_CREDENTIALS",
+    );
+  }
+
+  const passwordMatches = await bcrypt.compare(password, user.password_hash);
+
+  if (!passwordMatches) {
+    throw new ApiError(
+      401,
+      "Invalid email or password.",
+      "INVALID_CREDENTIALS",
+    );
+  }
+
+  const accessToken = jwt.sign(
+    {
+      sub: String(user.id),
+      email: user.email,
+    },
+    env.jwt.secret,
+    {
+      expiresIn: env.jwt.expiresIn,
+    },
+  );
+
+  return {
+    accessToken,
+    user: sanitizeUser(user),
+  };
+};
+
+export const getUserById = async (userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    return null;
+  }
+
+  return sanitizeUser(user);
 };
