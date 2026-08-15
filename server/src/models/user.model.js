@@ -1,10 +1,9 @@
 import pool from "../config/database.js";
 
-const USER_COLUMNS = `
+const SAFE_USER_COLUMNS = `
   id,
   name,
   email,
-  password_hash,
   created_at,
   updated_at
 `;
@@ -12,7 +11,7 @@ const USER_COLUMNS = `
 export const findUserByEmail = async (email) => {
   const [rows] = await pool.execute(
     `
-      SELECT ${USER_COLUMNS}
+      SELECT ${SAFE_USER_COLUMNS}, password_hash
       FROM users
       WHERE email = ?
       LIMIT 1
@@ -26,7 +25,7 @@ export const findUserByEmail = async (email) => {
 export const findUserById = async (id) => {
   const [rows] = await pool.execute(
     `
-      SELECT ${USER_COLUMNS}
+      SELECT ${SAFE_USER_COLUMNS}
       FROM users
       WHERE id = ?
       LIMIT 1
