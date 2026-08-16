@@ -3,11 +3,11 @@ import mysql from "mysql2/promise";
 import { env } from "./env.js";
 
 const pool = mysql.createPool({
-  host: env.database.host,
-  port: env.database.port,
-  database: env.database.name,
-  user: env.database.user,
-  password: env.database.password,
+  host: env.DATABASE_HOST,
+  port: env.DATABASE_PORT,
+  database: env.DATABASE_NAME,
+  user: env.DATABASE_USER,
+  password: env.DATABASE_PASSWORD,
 
   waitForConnections: true,
   connectionLimit: 10,
@@ -30,6 +30,16 @@ export const testDatabaseConnection = async () => {
     throw error;
   } finally {
     connection?.release();
+  }
+};
+
+export const checkDatabaseConnection = async () => {
+  const connection = await pool.getConnection();
+
+  try {
+    await connection.ping();
+  } finally {
+    connection.release();
   }
 };
 

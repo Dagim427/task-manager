@@ -125,7 +125,7 @@ describe("Authentication", () => {
           sub: "1",
           email: testUser.email,
         },
-        env.jwt.secret,
+        env.JWT_SECRET,
         {
           expiresIn: -1,
         },

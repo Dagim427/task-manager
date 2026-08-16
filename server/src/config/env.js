@@ -1,53 +1,70 @@
-import dotenv from "dotenv";
+import "dotenv/config";
+import { z } from "zod";
 
-dotenv.config({
-  path: process.env.NODE_ENV === "test" ? ".env.test" : ".env",
+const envSchema = z.object({
+  NODE_ENV: z
+    .enum(["development", "test", "production"])
+    .default("development"),
+
+  PORT: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(65535)
+    .default(5000),
+
+  DATABASE_HOST: z.string().min(1),
+
+  DATABASE_PORT: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(65535)
+    .default(3306),
+
+  DATABASE_NAME: z.string().min(1),
+
+  DATABASE_USER: z.string().min(1),
+
+  DATABASE_PASSWORD: z.string(),
+
+  JWT_SECRET: z
+    .string()
+    .min(32),
+
+  JWT_EXPIRES_IN: z
+    .string()
+    .min(1)
+    .default("15m"),
+
+  CORS_ORIGINS: z.string().default(
+    "http://localhost:5173",
+  ),
+
+  LOG_LEVEL: z
+    .enum([
+      "fatal",
+      "error",
+      "warn",
+      "info",
+      "debug",
+      "trace",
+    ])
+    .default("info"),
 });
 
-const requiredVariables = [
-  "DB_HOST",
-  "DB_PORT",
-  "DB_NAME",
-  "DB_USER",
-  "DB_PASSWORD",
-  "JWT_SECRET",
-  "JWT_EXPIRES_IN",
-];
+const result = envSchema.safeParse(process.env);
 
-for (const variable of requiredVariables) {
-  if (!process.env[variable]) {
-    throw new Error(`Missing required environment variable: ${variable}`);
-  }
+if (!result.success) {
+  console.error(
+    "Invalid environment configuration:",
+  );
+
+  console.error(
+    result.error.flatten().fieldErrors,
+  );
+
+  process.exit(1);
 }
 
-const port = Number(process.env.PORT || 5000);
-const dbPort = Number(process.env.DB_PORT);
-
-if (!Number.isInteger(port) || port <= 0) {
-  throw new Error("PORT must be a valid positive integer.");
-}
-
-if (!Number.isInteger(dbPort) || dbPort <= 0) {
-  throw new Error("DB_PORT must be a valid positive integer.");
-}
-
-export const env = Object.freeze({
-  nodeEnv: process.env.NODE_ENV || "development",
-
-  port,
-
-  clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
-
-  database: Object.freeze({
-    host: process.env.DB_HOST,
-    port: dbPort,
-    name: process.env.DB_NAME,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-  }),
-
-  jwt: Object.freeze({
-    secret: process.env.JWT_SECRET,
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  }),
-});
+export const env = result.data;

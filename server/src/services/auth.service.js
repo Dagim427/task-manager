@@ -87,9 +87,9 @@ export const loginUser = async ({ email, password }) => {
       sub: String(user.id),
       email: user.email,
     },
-    env.jwt.secret,
+    env.JWT_SECRET,
     {
-      expiresIn: env.jwt.expiresIn,
+      expiresIn: env.JWT_EXPIRES_IN,
     },
   );
 

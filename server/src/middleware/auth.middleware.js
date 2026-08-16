@@ -29,7 +29,7 @@ export const authenticate = (req, _res, next) => {
       );
     }
 
-    const payload = jwt.verify(token, env.jwt.secret);
+    const payload = jwt.verify(token, env.JWT_SECRET);
 
     if (typeof payload !== "object" || !payload.sub || !payload.email) {
       throw new ApiError(401, "Invalid authentication token.", "INVALID_TOKEN");

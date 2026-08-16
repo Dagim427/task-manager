@@ -1,11 +1,15 @@
 import express from "express";
-import cors from "cors";
-import helmet from "helmet";
 import compression from "compression";
 import morgan from "morgan";
+import helmet from "helmet";
+import cors from "cors";
 
+import { corsOptions } from "./config/cors.js";
+import { globalRateLimiter } from "./config/rate-limit.js";
+import { requestLogger } from "./middleware/request-logger.middleware.js";
 import { env } from "./config/env.js";
 import { errorHandler } from "./middleware/error.middleware.js";
+import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import taskRoutes from "./routes/task.routes.js";
 
@@ -13,14 +17,14 @@ const app = express();
 
 app.disable("x-powered-by");
 
+
 app.use(helmet());
 
-app.use(
-  cors({
-    origin: env.clientUrl,
-    credentials: true,
-  }),
-);
+app.use(cors(corsOptions));
+
+app.use(globalRateLimiter);
+
+app.use(requestLogger);
 
 app.use(
   express.json({
@@ -49,6 +53,7 @@ app.get("/health", (_req, res) => {
   });
 });
 
+app.use("/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
