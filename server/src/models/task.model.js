@@ -33,15 +33,17 @@ export const createTask = async ({
   return findTaskByIdForUser(result.insertId, userId);
 };
 
-export const findTasksByUserId = async (userId) => {
+export const findTasksByUserId = async ({ userId, limit, offset }) => {
   const [rows] = await pool.execute(
     `
       SELECT ${TASK_COLUMNS}
       FROM tasks
       WHERE user_id = ?
       ORDER BY created_at DESC, id DESC
+      LIMIT ?
+      OFFSET ?
     `,
-    [userId],
+    [userId, limit, offset],
   );
 
   return rows;
@@ -66,27 +68,24 @@ export const updateTaskForUser = async ({
   taskId,
   userId,
   title,
-  description,
-  status,
-  dueDate,
+  description = null,
+  status = "todo",
+  dueDate = null,
 }) => {
-  const [result] = await pool.execute(
-    `
-      UPDATE tasks
-      SET
-        title = ?,
-        description = ?,
-        status = ?,
-        due_date = ?
-      WHERE id = ?
-        AND user_id = ?
-    `,
-    [title, description, status, dueDate, taskId, userId],
-  );
-
-  if (result.affectedRows === 0) {
-    return null;
-  }
+  const query = `
+    UPDATE tasks 
+    SET title = ?, description = ?, status = ?, due_date = ? 
+    WHERE id = ? AND user_id = ?
+  `;
+  
+  await pool.execute(query, [
+    title, 
+    description !== undefined ? description : null, 
+    status !== undefined ? status : "todo", 
+    dueDate !== undefined ? dueDate : null, 
+    taskId, 
+    userId
+  ]);
 
   return findTaskByIdForUser(taskId, userId);
 };
@@ -102,4 +101,17 @@ export const deleteTaskForUser = async (taskId, userId) => {
   );
 
   return result.affectedRows > 0;
+};
+
+export const countTasksByUserId = async (userId) => {
+  const [rows] = await pool.execute(
+    `
+      SELECT COUNT(*) AS total
+      FROM tasks
+      WHERE user_id = ?
+    `,
+    [userId],
+  );
+
+  return Number(rows[0].total);
 };

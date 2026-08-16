@@ -1,4 +1,4 @@
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 
 export const createTaskValidator = [
   body("title")
@@ -70,4 +70,20 @@ export const updateTaskValidator = [
     .optional({ nullable: true })
     .isISO8601()
     .withMessage("Due date must be a valid ISO 8601 date."),
+];
+
+export const listTasksValidator = [
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer.")
+    .toInt(),
+
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage(
+      "Limit must be between 1 and 100.",
+    )
+    .toInt(),
 ];

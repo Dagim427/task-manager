@@ -29,14 +29,19 @@ export const createTask = async (req, res, next) => {
 
 export const getTasks = async (req, res, next) => {
   try {
-    const tasks = await getTasksService(req.user.id);
+    const page = req.query.page ?? 1;
+    const limit = req.query.limit ?? 20;
+
+    const result = await getTasksService({
+      userId: req.user.id,
+      page,
+      limit,
+    });
 
     return res.status(200).json({
       success: true,
       message: "Tasks retrieved successfully.",
-      data: {
-        tasks,
-      },
+      data: result,
     });
   } catch (error) {
     return next(error);
@@ -81,6 +86,7 @@ export const updateTask = async (req, res, next) => {
       },
     });
   } catch (error) {
+    console.error("DEBUG ERROR:", error);
     return next(error);
   }
 };

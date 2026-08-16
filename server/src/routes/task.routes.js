@@ -12,6 +12,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 
 import {
   createTaskValidator,
+  listTasksValidator,
   taskIdValidator,
   updateTaskValidator,
 } from "../validators/task.validator.js";
@@ -31,6 +32,8 @@ router.post(
 
 router.get(
   "/",
+  listTasksValidator,
+  validate,
   getTasks,
 );
 

@@ -1,4 +1,5 @@
 import {
+  countTasksByUserId,
   createTask as createTaskModel,
   deleteTaskForUser,
   findTaskByIdForUser,
@@ -13,13 +14,25 @@ const normalizeTaskInput = ({
   description = null,
   status = "todo",
   dueDate = null,
-}) => ({
-  title: title.trim(),
-  description:
-    typeof description === "string" ? description.trim() || null : null,
-  status,
-  dueDate: dueDate || null,
-});
+}) => {
+  let formattedDueDate = null;
+
+  if (dueDate) {
+    const dateObj = new Date(dueDate);
+    if (!isNaN(dateObj.getTime())) {
+      // Format to YYYY-MM-DD HH:MM:SS for MySQL DATETIME
+      formattedDueDate = dateObj.toISOString().slice(0, 19).replace("T", " ");
+    }
+  }
+
+  return {
+    title: title.trim(),
+    description:
+      typeof description === "string" ? description.trim() || null : null,
+    status,
+    dueDate: formattedDueDate,
+  };
+};
 
 export const createTask = async ({ userId, title, description, dueDate }) => {
   const taskData = normalizeTaskInput({
@@ -34,8 +47,28 @@ export const createTask = async ({ userId, title, description, dueDate }) => {
   });
 };
 
-export const getTasks = async (userId) => {
-  return findTasksByUserId(userId);
+export const getTasks = async ({ userId, page = 1, limit = 20 }) => {
+  const offset = (page - 1) * limit;
+
+  const [tasks, total] = await Promise.all([
+    findTasksByUserId({
+      userId,
+      limit,
+      offset,
+    }),
+
+    countTasksByUserId(userId),
+  ]);
+
+  return {
+    tasks,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 export const getTask = async ({ taskId, userId }) => {
@@ -69,11 +102,17 @@ export const updateTask = async ({
     dueDate,
   });
 
-  return updateTaskForUser({
+  const updatedTask = await updateTaskForUser({
     taskId,
     userId,
     ...taskData,
   });
+
+  if (!updatedTask) {
+    throw new ApiError(404, "Task not found.", "TASK_NOT_FOUND");
+  }
+
+  return updatedTask;
 };
 
 export const deleteTask = async ({ taskId, userId }) => {
