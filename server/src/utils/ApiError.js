@@ -2,7 +2,7 @@ export class ApiError extends Error {
   constructor(
     statusCode,
     message,
-    code = "INTERNAL_SERVER_ERROR",
+    code,
     details = null,
   ) {
     super(message);

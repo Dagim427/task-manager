@@ -1,26 +1,30 @@
-export const errorHandler = (error, req, res, _next) => {
-  const statusCode = error.statusCode || 500;
+import { ApiError } from "../utils/ApiError.js";
 
-  const response = {
-    success: false,
-    message:
-      statusCode === 500 ? "An unexpected error occurred." : error.message,
-    code: error.code || "INTERNAL_SERVER_ERROR",
-  };
-
-  if (error.details) {
-    response.details = error.details;
+export const errorHandler = (error, req, res, next) => {
+  if (res.headersSent) {
+    return next(error);
   }
 
-  if (process.env.NODE_ENV !== "test") {
-    console.error({
-      method: req.method,
-      path: req.originalUrl,
-      statusCode,
-      error: error.message,
-      stack: error.stack,
+  // Skip console.error during tests for standard 4xx operational errors
+  const isTestEnv = process.env.NODE_ENV === "test";
+  const isServerInternalError = !error.statusCode || error.statusCode >= 500;
+
+  if (!isTestEnv || isServerInternalError) {
+    console.error(error);
+  }
+
+  if (error instanceof ApiError) {
+    return res.status(error.statusCode).json({
+      success: false,
+      message: error.message,
+      code: error.code,
+      ...(error.details ? { details: error.details } : {}),
     });
   }
 
-  return res.status(statusCode).json(response);
+  return res.status(500).json({
+    success: false,
+    message: "Internal server error.",
+    code: "INTERNAL_SERVER_ERROR",
+  });
 };
