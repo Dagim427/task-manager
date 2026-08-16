@@ -122,5 +122,9 @@ export const deleteTask = async ({ taskId, userId }) => {
     throw new ApiError(404, "Task not found.", "TASK_NOT_FOUND");
   }
 
-  await deleteTaskForUser(taskId, userId);
+  const deleted = await deleteTaskForUser(taskId, userId);
+
+  if (!deleted) {
+    throw new ApiError(404, "Task not found.", "TASK_NOT_FOUND");
+  }
 };

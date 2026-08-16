@@ -86,7 +86,6 @@ export const updateTask = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error("DEBUG ERROR:", error);
     return next(error);
   }
 };
