@@ -68,20 +68,24 @@ export const updateTaskForUser = async ({
   taskId,
   userId,
   title,
-  description = null,
-  status = "todo",
-  dueDate = null,
+  description,
+  status,
+  dueDate,
 }) => {
   const query = `
     UPDATE tasks 
-    SET title = ?, description = ?, status = ?, due_date = ? 
+    SET 
+      title = COALESCE(?, title), 
+      description = COALESCE(?, description), 
+      status = COALESCE(?, status), 
+      due_date = COALESCE(?, due_date) 
     WHERE id = ? AND user_id = ?
   `;
   
   await pool.execute(query, [
-    title, 
+    title !== undefined ? title : null, 
     description !== undefined ? description : null, 
-    status !== undefined ? status : "todo", 
+    status !== undefined ? status : null, 
     dueDate !== undefined ? dueDate : null, 
     taskId, 
     userId

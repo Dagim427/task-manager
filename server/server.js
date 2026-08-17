@@ -1,38 +1,92 @@
 import app from "./src/app.js";
 import { env } from "./src/config/env.js";
 import { logger } from "./src/config/logger.js";
-import { testDatabaseConnection } from "./src/config/database.js";
+import pool, { testDatabaseConnection } from "./src/config/database.js";
 
 const startServer = async () => {
   try {
     await testDatabaseConnection();
     logger.info("Database connection established successfully.");
 
-    const server = app.listen(env.PORT || env.port, () => {
+    const server = app.listen(env.PORT, () => {
       logger.info(
         {
-          port: env.PORT || env.port,
-          environment: env.NODE_ENV || env.nodeEnv,
+          port: env.PORT,
+          environment: env.NODE_ENV,
         },
         "API server started",
       );
     });
 
-    const shutdown = (signal) => {
-      logger.info(`${signal} received. Shutting down gracefully...`);
+    let isShuttingDown = false;
 
-      server.close(() => {
-        logger.info("HTTP server closed.");
-        process.exit(0);
+    const shutdown = async (signal) => {
+      if (isShuttingDown) {
+        return;
+      }
+
+      isShuttingDown = true;
+
+      logger.info({ signal }, "Shutdown signal received");
+
+      server.close(async (serverError) => {
+        if (serverError) {
+          logger.error(
+            {
+              err: serverError,
+            },
+            "Failed to close HTTP server",
+          );
+
+          process.exitCode = 1;
+        }
+
+        try {
+          await pool.end();
+
+          logger.info("Database connection pool closed");
+
+          process.exit();
+        } catch (error) {
+          logger.error(
+            {
+              err: error,
+            },
+            "Failed to close database pool",
+          );
+
+          process.exit(1);
+        }
       });
     };
 
-    process.on("SIGINT", () => shutdown("SIGINT"));
-    process.on("SIGTERM", () => shutdown("SIGTERM"));
+    // Process-level graceful shutdown and error handlers
+    process.on("SIGTERM", () => {
+      void shutdown("SIGTERM");
+    });
+
+    process.on("SIGINT", () => {
+      void shutdown("SIGINT");
+    });
+
+    process.on("uncaughtException", (error) => {
+      logger.fatal({ err: error }, "Uncaught exception");
+
+      void shutdown("uncaughtException");
+    });
+
+    process.on("unhandledRejection", (reason) => {
+      logger.fatal({ reason }, "Unhandled promise rejection");
+
+      void shutdown("unhandledRejection");
+    });
   } catch (error) {
-    logger.error({ err: error }, "Failed to start server.");
+    logger.fatal(
+      { err: error.message },
+      "Database connection failed. Aborting server startup.",
+    );
     process.exit(1);
   }
 };
 
-startServer();
+void startServer();

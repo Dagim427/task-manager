@@ -10,7 +10,7 @@ const pool = mysql.createPool({
   password: env.DATABASE_PASSWORD,
 
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: env.NODE_ENV === "production" ? 20 : 10,
   queueLimit: 0,
 
   enableKeepAlive: true,
