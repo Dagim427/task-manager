@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 
 import ProtectedRoute from "./ProtectedRoute";
+import LoginPage from "../pages/auth/LoginPage";
 
 function AppRoutes() {
   return (
@@ -23,7 +24,7 @@ function AppRoutes() {
 
         <Route
           path="/login"
-          element={<div>Login</div>}
+          element={<LoginPage />}
         />
 
         <Route
