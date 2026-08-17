@@ -1,144 +1,130 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import apiClient from "../api/axios";
-import { storage } from "../utils/storage";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-// 1. Create the Context
+import {
+  getCurrentUser,
+  login as loginRequest,
+  register as registerRequest,
+} from "../services/auth.service";
+
 const AuthContext = createContext(null);
 
-// 2. Create the Provider Component
-export const AuthProvider = ({ children }) => {
+const TOKEN_KEY = "task_management_access_token";
+
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Starts true to check session on load
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const navigate = useNavigate();
+  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Helper to clear error and success states manually
-  const clearMessages = () => {
-    setError("");
-    setSuccess("");
-  };
+  const isAuthenticated = Boolean(token && user);
 
-  // --- LOGOUT USER ---
-  const logout = useCallback(() => {
-    storage.clearAuth();
-    setUser(null);
-    clearMessages();
-    navigate("/login");
-  }, [navigate]);
-
-  // --- CHECK SESSION ON INITIAL MOUNT ---
   useEffect(() => {
-    const fetchCurrentUser = async () => {
-      const token = storage.getToken();
+    let isMounted = true;
+
+    const restoreSession = async () => {
       if (!token) {
-        setLoading(false); // No token means no user, stop loading
+        if (isMounted) {
+          setIsLoading(false);
+        }
+
         return;
       }
 
       try {
-        // apiClient automatically attaches the token via the interceptor
-        const response = await apiClient.get("/auth/me");
-        if (response.data.success) {
-          setUser(response.data.user);
+        const response = await getCurrentUser();
+
+        if (isMounted) {
+          setUser(response.user);
         }
-      } catch (err) {
-        console.error("Session invalid:", err);
-        // If the token is expired or invalid, log them out automatically
-        if (err.response?.status === 401) {
-          logout();
+      } catch {
+        localStorage.removeItem(TOKEN_KEY);
+
+        if (isMounted) {
+          setToken(null);
+          setUser(null);
         }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
-    fetchCurrentUser();
-  }, [logout]);
+    void restoreSession();
 
-  // --- REGISTER USER ---
-  const registerUser = async (formData) => {
-    clearMessages();
-    setLoading(true);
+    return () => {
+      isMounted = false;
+    };
+  }, [token]);
 
-    if (!formData.name || !formData.email || !formData.password) {
-      setError("Please fill in all fields.");
-      setLoading(false);
-      return false; 
-    }
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      localStorage.removeItem(TOKEN_KEY);
+      setToken(null);
+      setUser(null);
+    };
 
-    try {
-      const response = await apiClient.post("/auth/register", formData);
-      if (response.data.success) {
-        setSuccess("Registration successful! You can now log in.");
-        return true;
-      }
-      return false;
-    } catch (err) {
-      setError(err.response?.data?.error || "An error occurred during registration");
-      return false;
-    } finally {
-      setLoading(false);
-    }
+    window.addEventListener("auth:unauthorized", handleUnauthorized);
+
+    return () => {
+      window.removeEventListener("auth:unauthorized", handleUnauthorized);
+    };
+  }, []);
+
+  const login = async (credentials) => {
+    const response = await loginRequest(credentials);
+
+    const accessToken = response.token;
+
+    localStorage.setItem(TOKEN_KEY, accessToken);
+
+    setToken(accessToken);
+    setUser(response.user);
+
+    return response;
   };
 
-  // --- LOGIN USER ---
-  const loginUser = async (formData) => {
-    clearMessages();
-    setLoading(true);
+  const register = async (data) => {
+    const response = await registerRequest(data);
 
-    if (!formData.email || !formData.password) {
-      setError("Please fill in all fields.");
-      setLoading(false);
-      return false; 
-    }
+    const accessToken = response.token;
 
-    try {
-      const response = await apiClient.post("/auth/login", formData);
-      if (response.data.success) {
-        // Use the centralized storage utility
-        storage.setToken(response.data.token);
-        storage.setUser(response.data.user);
-        
-        setUser(response.data.user); // Update global state instantly
-        setSuccess("Logged in successfully");
-        return true;
-      }
-      return false;
-    } catch (err) {
-      setError(err.response?.data?.error || "An error occurred during login");
-      return false;
-    } finally {
-      setLoading(false);
-    }
+    localStorage.setItem(TOKEN_KEY, accessToken);
+
+    setToken(accessToken);
+    setUser(response.user);
+
+    return response;
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        error,
-        success,
-        registerUser,
-        loginUser,
-        logout,
-        clearMessages,
-        setError,
-        setSuccess,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const logout = () => {
+    localStorage.removeItem(TOKEN_KEY);
+
+    setToken(null);
+    setUser(null);
+  };
+
+  const value = useMemo(
+    () => ({
+      user,
+      token,
+      isAuthenticated,
+      isLoading,
+      login,
+      register,
+      logout,
+    }),
+    [user, token, isAuthenticated, isLoading],
   );
-};
 
-// 3. Create a custom hook for easy consumption across the app
-export const useAuth = () => {
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
   const context = useContext(AuthContext);
+
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error("useAuth must be used inside AuthProvider.");
   }
+
   return context;
-};
+}
