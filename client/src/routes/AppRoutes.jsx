@@ -7,6 +7,9 @@ import {
 
 import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "../pages/auth/LoginPage";
+import RegisterPage from "../pages/auth/RegisterPage";
+import DashboardPage from "../pages/dashboard/DashboardPage";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 function AppRoutes() {
   return (
@@ -29,14 +32,16 @@ function AppRoutes() {
 
         <Route
           path="/register"
-          element={<div>Register</div>}
+          element={<RegisterPage />}
         />
 
-        <Route element={<ProtectedRoute />}>
-          <Route
-            path="/dashboard"
-            element={<div>Dashboard</div>}
-          />
+      <Route element={<ProtectedRoute />}>
+          <Route element={<DashboardLayout />}>
+            <Route
+              path="/dashboard"
+              element={<DashboardPage />}
+            />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

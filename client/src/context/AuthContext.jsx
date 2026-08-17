@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
         const response = await getCurrentUser();
 
         if (isMounted) {
-          setUser(response.user);
+          setUser(response.data?.user ?? response.user);
         }
       } catch {
         localStorage.removeItem(TOKEN_KEY);
@@ -73,12 +73,12 @@ export function AuthProvider({ children }) {
   const login = async (credentials) => {
     const response = await loginRequest(credentials);
 
-    const accessToken = response.token;
+    const accessToken = response.data.accessToken;
 
     localStorage.setItem(TOKEN_KEY, accessToken);
 
     setToken(accessToken);
-    setUser(response.user);
+    setUser(response.data.user);
 
     return response;
   };
@@ -86,12 +86,12 @@ export function AuthProvider({ children }) {
   const register = async (data) => {
     const response = await registerRequest(data);
 
-    const accessToken = response.token;
+    const accessToken = response.data.accessToken;
 
     localStorage.setItem(TOKEN_KEY, accessToken);
 
     setToken(accessToken);
-    setUser(response.user);
+    setUser(response.data.user);
 
     return response;
   };

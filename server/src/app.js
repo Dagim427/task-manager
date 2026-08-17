@@ -41,7 +41,7 @@ app.use(
 
 app.use(compression());
 
-if (env.nodeEnv !== "test") {
+if (env.NODE_ENV !== "test") {
   app.use(morgan("combined"));
 }
 
