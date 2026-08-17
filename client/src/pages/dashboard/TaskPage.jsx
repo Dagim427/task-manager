@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { getTasks } from "../../services/task.service";
+import Modal from "../../components/common/modal";
+import TaskForm from "../../components/task/TaskForm";
+import { createTask, getTasks } from "../../services/task.service";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All statuses" },
@@ -24,15 +26,18 @@ const PRIORITY_OPTIONS = [
 
 function TasksPage() {
   const [tasks, setTasks] = useState([]);
-  const [isLoading, setIsLoading] =
-    useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   const [search, setSearch] = useState("");
-  const [status, setStatus] =
-    useState("all");
-  const [priority, setPriority] =
-    useState("all");
+  const [status, setStatus] = useState("all");
+  const [priority, setPriority] = useState("all");
+
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  const [isCreating, setIsCreating] = useState(false);
+
+  const [createError, setCreateError] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -45,14 +50,12 @@ function TasksPage() {
         const response = await getTasks();
 
         if (isMounted) {
-          setTasks(response.tasks ?? []);
+          setTasks(response.data?.tasks ?? response.tasks ?? []);
         }
       } catch (requestError) {
         if (isMounted) {
           setError(
-            requestError.response?.data
-              ?.message ??
-              "Unable to load tasks.",
+            requestError.response?.data?.message ?? "Unable to load tasks.",
           );
         }
       } finally {
@@ -69,40 +72,45 @@ function TasksPage() {
     };
   }, []);
 
+  const handleCreateTask = async (taskData) => {
+    setIsCreating(true);
+    setCreateError("");
+
+    try {
+      const response = await createTask(taskData);
+
+      const newTask = response.data?.task ?? response.task;
+
+      setTasks((current) => [newTask, ...current]);
+
+      setIsCreateOpen(false);
+    } catch (requestError) {
+      setCreateError(
+        requestError.response?.data?.message ?? "Unable to create task.",
+      );
+
+      throw requestError;
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   const filteredTasks = useMemo(() => {
-    const normalizedSearch =
-      search.trim().toLowerCase();
+    const normalizedSearch = search.trim().toLowerCase();
 
     return tasks.filter((task) => {
       const matchesSearch =
         !normalizedSearch ||
-        task.title
-          ?.toLowerCase()
-          .includes(normalizedSearch) ||
-        task.description
-          ?.toLowerCase()
-          .includes(normalizedSearch);
+        task.title?.toLowerCase().includes(normalizedSearch) ||
+        task.description?.toLowerCase().includes(normalizedSearch);
 
-      const matchesStatus =
-        status === "all" ||
-        task.status === status;
+      const matchesStatus = status === "all" || task.status === status;
 
-      const matchesPriority =
-        priority === "all" ||
-        task.priority === priority;
+      const matchesPriority = priority === "all" || task.priority === priority;
 
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesPriority
-      );
+      return matchesSearch && matchesStatus && matchesPriority;
     });
-  }, [
-    tasks,
-    search,
-    status,
-    priority,
-  ]);
+  }, [tasks, search, status, priority]);
 
   return (
     <section>
@@ -110,34 +118,30 @@ function TasksPage() {
         <div>
           <h2>Tasks</h2>
 
-          <p>
-            Manage and organize your tasks.
-          </p>
+          <p>Manage and organize your tasks.</p>
         </div>
 
         <button
           type="button"
           className="primary-button"
+          onClick={() => {
+            setCreateError("");
+            setIsCreateOpen(true);
+          }}
         >
           + New Task
         </button>
       </div>
 
       {error && (
-        <div
-          className="form-error"
-          role="alert"
-        >
+        <div className="form-error" role="alert">
           {error}
         </div>
       )}
 
       <div className="task-toolbar">
         <div className="search-field">
-          <label
-            htmlFor="task-search"
-            className="sr-only"
-          >
+          <label htmlFor="task-search" className="sr-only">
             Search tasks
           </label>
 
@@ -146,29 +150,20 @@ function TasksPage() {
             type="search"
             placeholder="Search tasks..."
             value={search}
-            onChange={(event) =>
-              setSearch(event.target.value)
-            }
+            onChange={(event) => setSearch(event.target.value)}
           />
         </div>
 
         <div className="filter-field">
-          <label htmlFor="status-filter">
-            Status
-          </label>
+          <label htmlFor="status-filter">Status</label>
 
           <select
             id="status-filter"
             value={status}
-            onChange={(event) =>
-              setStatus(event.target.value)
-            }
+            onChange={(event) => setStatus(event.target.value)}
           >
             {STATUS_OPTIONS.map((option) => (
-              <option
-                key={option.value}
-                value={option.value}
-              >
+              <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
@@ -176,29 +171,18 @@ function TasksPage() {
         </div>
 
         <div className="filter-field">
-          <label htmlFor="priority-filter">
-            Priority
-          </label>
+          <label htmlFor="priority-filter">Priority</label>
 
           <select
             id="priority-filter"
             value={priority}
-            onChange={(event) =>
-              setPriority(
-                event.target.value,
-              )
-            }
+            onChange={(event) => setPriority(event.target.value)}
           >
-            {PRIORITY_OPTIONS.map(
-              (option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                >
-                  {option.label}
-                </option>
-              ),
-            )}
+            {PRIORITY_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -212,10 +196,7 @@ function TasksPage() {
           <div className="empty-state">
             <h4>No tasks found</h4>
 
-            <p>
-              Try changing your filters or
-              create a new task.
-            </p>
+            <p>Try changing your filters or create a new task.</p>
           </div>
         ) : (
           <div className="task-table-wrapper">
@@ -227,76 +208,79 @@ function TasksPage() {
                   <th scope="col">Priority</th>
                   <th scope="col">Due date</th>
                   <th scope="col">
-                    <span className="sr-only">
-                      Actions
-                    </span>
+                    <span className="sr-only">Actions</span>
                   </th>
                 </tr>
               </thead>
 
               <tbody>
-                {filteredTasks.map(
-                  (task) => (
-                    <tr key={task.id}>
-                      <td>
-                        <div className="task-title-cell">
-                          <strong>
-                            {task.title}
-                          </strong>
+                {filteredTasks.map((task) => (
+                  <tr key={task.id}>
+                    <td>
+                      <div className="task-title-cell">
+                        <strong>{task.title}</strong>
 
-                          {task.description && (
-                            <span>
-                              {
-                                task.description
-                              }
-                            </span>
-                          )}
-                        </div>
-                      </td>
+                        {task.description && <span>{task.description}</span>}
+                      </div>
+                    </td>
 
-                      <td>
-                        <span
-                          className={`task-status task-status-${task.status}`}
-                        >
-                          {formatStatus(
-                            task.status,
-                          )}
-                        </span>
-                      </td>
+                    <td>
+                      <span
+                        className={`task-status task-status-${task.status}`}
+                      >
+                        {formatStatus(task.status)}
+                      </span>
+                    </td>
 
-                      <td>
-                        <span
-                          className={`priority priority-${task.priority}`}
-                        >
-                          {formatPriority(
-                            task.priority,
-                          )}
-                        </span>
-                      </td>
+                    <td>
+                      <span className={`priority priority-${task.priority}`}>
+                        {formatPriority(task.priority)}
+                      </span>
+                    </td>
 
-                      <td>
-                        {formatDate(
-                          task.dueDate,
-                        )}
-                      </td>
+                    <td>{formatDate(task.dueDate)}</td>
 
-                      <td>
-                        <button
-                          type="button"
-                          className="icon-button"
-                          aria-label={`Actions for ${task.title}`}
-                        >
-                          ⋯
-                        </button>
-                      </td>
-                    </tr>
-                  ),
-                )}
+                    <td>
+                      <button
+                        type="button"
+                        className="icon-button"
+                        aria-label={`Actions for ${task.title}`}
+                      >
+                        ⋯
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         )}
       </div>
+
+      {isCreateOpen && (
+        <Modal
+          title="Create task"
+          onClose={() => {
+            if (!isCreating) {
+              setIsCreateOpen(false);
+            }
+          }}
+        >
+          {createError && (
+            <div className="form-error" role="alert">
+              {createError}
+            </div>
+          )}
+
+          <TaskForm
+            onSubmit={handleCreateTask}
+            onCancel={() => {
+              setIsCreateOpen(false);
+            }}
+            isSubmitting={isCreating}
+          />
+        </Modal>
+      )}
     </section>
   );
 }
@@ -332,14 +316,11 @@ function formatDate(value) {
     return "—";
   }
 
-  return new Intl.DateTimeFormat(
-    undefined,
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    },
-  ).format(date);
+  return new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
 }
 
 export default TasksPage;

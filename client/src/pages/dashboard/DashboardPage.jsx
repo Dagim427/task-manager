@@ -19,7 +19,7 @@ function DashboardPage() {
         const response = await getTasks();
 
         if (isMounted) {
-          setTasks(response.tasks ?? []);
+          setTasks(response.data?.tasks ?? response.tasks ?? []);
         }
       } catch (requestError) {
         if (isMounted) {
