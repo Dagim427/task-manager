@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import Modal from "../../components/common/modal";
 import TaskForm from "../../components/task/TaskForm";
-import { createTask, getTasks } from "../../services/task.service";
+import { createTask, getTasks, updateTask } from "../../services/task.service";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All statuses" },
@@ -34,10 +34,12 @@ function TasksPage() {
   const [priority, setPriority] = useState("all");
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-
   const [isCreating, setIsCreating] = useState(false);
-
   const [createError, setCreateError] = useState("");
+
+  const [editingTask, setEditingTask] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editError, setEditError] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -50,7 +52,8 @@ function TasksPage() {
         const response = await getTasks();
 
         if (isMounted) {
-          setTasks(response.data?.tasks ?? response.tasks ?? []);
+          const rawTasks = response.data?.tasks ?? response.tasks ?? [];
+          setTasks(rawTasks.filter(Boolean));
         }
       } catch (requestError) {
         if (isMounted) {
@@ -95,10 +98,43 @@ function TasksPage() {
     }
   };
 
+  const handleUpdateTask = async (taskData) => {
+    if (!editingTask) {
+      return;
+    }
+
+    setIsEditing(true);
+    setEditError("");
+
+    try {
+      const response = await updateTask(editingTask.id, taskData);
+
+      const updatedTask = response.data?.task ?? response.task ?? response;
+
+      setTasks((current) =>
+        current.map((task) =>
+          task.id === editingTask.id ? updatedTask : task,
+        ),
+      );
+
+      setEditingTask(null);
+    } catch (requestError) {
+      setEditError(
+        requestError.response?.data?.message ?? "Unable to update task.",
+      );
+
+      throw requestError;
+    } finally {
+      setIsEditing(false);
+    }
+  };
+
   const filteredTasks = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
     return tasks.filter((task) => {
+      if (!task) return false;
+
       const matchesSearch =
         !normalizedSearch ||
         task.title?.toLowerCase().includes(normalizedSearch) ||
@@ -244,9 +280,13 @@ function TasksPage() {
                       <button
                         type="button"
                         className="icon-button"
-                        aria-label={`Actions for ${task.title}`}
+                        onClick={() => {
+                          setEditError("");
+                          setEditingTask(task);
+                        }}
+                        aria-label={`Edit ${task.title}`}
                       >
-                        ⋯
+                        Edit
                       </button>
                     </td>
                   </tr>
@@ -278,6 +318,32 @@ function TasksPage() {
               setIsCreateOpen(false);
             }}
             isSubmitting={isCreating}
+          />
+        </Modal>
+      )}
+
+      {editingTask && (
+        <Modal
+          title="Edit task"
+          onClose={() => {
+            if (!isEditing) {
+              setEditingTask(null);
+            }
+          }}
+        >
+          {editError && (
+            <div className="form-error" role="alert">
+              {editError}
+            </div>
+          )}
+
+          <TaskForm
+            task={editingTask}
+            onSubmit={handleUpdateTask}
+            onCancel={() => {
+              setEditingTask(null);
+            }}
+            isSubmitting={isEditing}
           />
         </Modal>
       )}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const INITIAL_FORM = {
   title: "",
@@ -9,6 +9,7 @@ const INITIAL_FORM = {
 };
 
 function TaskForm({
+  task = null,
   onSubmit,
   onCancel,
   isSubmitting,
@@ -18,6 +19,27 @@ function TaskForm({
 
   const [errors, setErrors] =
     useState({});
+
+  const isEditMode = Boolean(task);
+
+  useEffect(() => {
+    if (!task) {
+      setForm(INITIAL_FORM);
+      return;
+    }
+
+    setForm({
+      title: task.title ?? "",
+      description: task.description ?? "",
+      status: task.status ?? "todo",
+      priority: task.priority ?? "medium",
+      dueDate: task.dueDate
+        ? task.dueDate.slice(0, 10)
+        : "",
+    });
+
+    setErrors({});
+  }, [task]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -39,7 +61,9 @@ function TaskForm({
     if (!form.title.trim()) {
       nextErrors.title =
         "Title is required.";
-    } else if (form.title.trim().length > 200) {
+    } else if (
+      form.title.trim().length > 200
+    ) {
       nextErrors.title =
         "Title must not exceed 200 characters.";
     }
@@ -72,8 +96,10 @@ function TaskForm({
       dueDate: form.dueDate || null,
     });
 
-    setForm(INITIAL_FORM);
-    setErrors({});
+    if (!isEditMode) {
+      setForm(INITIAL_FORM);
+      setErrors({});
+    }
   };
 
   return (
@@ -84,10 +110,16 @@ function TaskForm({
     >
       <div className="modal-header">
         <div>
-          <h3>Create task</h3>
+          <h3>
+            {isEditMode
+              ? "Edit task"
+              : "Create task"}
+          </h3>
 
           <p>
-            Add a new task to your workspace.
+            {isEditMode
+              ? "Update your task details."
+              : "Add a new task to your workspace."}
           </p>
         </div>
 
@@ -235,8 +267,12 @@ function TaskForm({
           disabled={isSubmitting}
         >
           {isSubmitting
-            ? "Creating..."
-            : "Create task"}
+            ? isEditMode
+              ? "Saving..."
+              : "Creating..."
+            : isEditMode
+              ? "Save changes"
+              : "Create task"}
         </button>
       </div>
     </form>
