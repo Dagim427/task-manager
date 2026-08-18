@@ -667,3 +667,55 @@ button[type="submit"]:disabled {
   cursor: not-allowed;
   opacity: 0.6;
 }
+
+/* loading, error and empty styling */
+
+.loading-state {
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #667085;
+}
+
+.loading-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d0d5dd;
+  border-top-color: #344054;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-state,
+.empty-state {
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  text-align: center;
+}
+
+.error-state-content,
+.empty-state-content {
+  max-width: 420px;
+}
+
+.error-state h3,
+.empty-state h3 {
+  margin: 0 0 8px;
+}
+
+.error-state p,
+.empty-state p {
+  margin: 0 0 20px;
+  color: #667085;
+  line-height: 1.5;
+}

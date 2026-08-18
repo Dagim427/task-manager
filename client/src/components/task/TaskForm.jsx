@@ -1,11 +1,28 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-const INITIAL_FORM = {
-  title: "",
-  description: "",
-  status: "todo",
-  priority: "medium",
-  dueDate: "",
+const getTodayDate = () => new Date().toISOString().split("T")[0];
+
+const getInitialForm = (task) => {
+  if (!task) {
+    return {
+      title: "",
+      description: "",
+      status: "todo",
+      priority: "medium",
+      dueDate: getTodayDate(),
+    };
+  }
+
+  const rawDueDate = task.dueDate ?? task.due_date;
+  const rawPriority = task.priority ?? task.priority_level ?? "medium";
+
+  return {
+    title: task.title ?? "",
+    description: task.description ?? "",
+    status: task.status ?? "todo",
+    priority: String(rawPriority).toLowerCase(),
+    dueDate: rawDueDate ? String(rawDueDate).slice(0, 10) : "",
+  };
 };
 
 function TaskForm({
@@ -14,36 +31,12 @@ function TaskForm({
   onCancel,
   isSubmitting,
 }) {
-  const [form, setForm] =
-    useState(INITIAL_FORM);
-
-  const [errors, setErrors] =
-    useState({});
+  // Use a state initializer function so it computes the correct initial state
+  // once per mount/task change, avoiding useEffect entirely.
+  const [form, setForm] = useState(() => getInitialForm(task));
+  const [errors, setErrors] = useState({});
 
   const isEditMode = Boolean(task);
-
-  useEffect(() => {
-    if (!task) {
-      setForm(INITIAL_FORM);
-      return;
-    }
-
-    // Support both camelCase and snake_case for due date and priority from backend
-    const rawDueDate = task.dueDate ?? task.due_date;
-    const rawPriority = task.priority ?? task.priority_level ?? "medium";
-
-    setForm({
-      title: task.title ?? "",
-      description: task.description ?? "",
-      status: task.status ?? "todo",
-      priority: String(rawPriority).toLowerCase(),
-      dueDate: rawDueDate
-        ? String(rawDueDate).slice(0, 10)
-        : "",
-    });
-
-    setErrors({});
-  }, [task]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -63,25 +56,18 @@ function TaskForm({
     const nextErrors = {};
 
     if (!form.title.trim()) {
-      nextErrors.title =
-        "Title is required.";
-    } else if (
-      form.title.trim().length > 200
-    ) {
-      nextErrors.title =
-        "Title must not exceed 200 characters.";
+      nextErrors.title = "Title is required.";
+    } else if (form.title.trim().length > 200) {
+      nextErrors.title = "Title must not exceed 200 characters.";
     }
 
     if (form.description.length > 2000) {
-      nextErrors.description =
-        "Description must not exceed 2000 characters.";
+      nextErrors.description = "Description must not exceed 2000 characters.";
     }
 
     setErrors(nextErrors);
 
-    return (
-      Object.keys(nextErrors).length === 0
-    );
+    return Object.keys(nextErrors).length === 0;
   };
 
   const handleSubmit = async (event) => {
@@ -93,33 +79,23 @@ function TaskForm({
 
     await onSubmit({
       title: form.title.trim(),
-      description:
-        form.description.trim() || null,
+      description: form.description.trim() || null,
       status: form.status,
       priority: form.priority,
       dueDate: form.dueDate || null,
     });
 
     if (!isEditMode) {
-      setForm(INITIAL_FORM);
+      setForm(getInitialForm(null));
       setErrors({});
     }
   };
 
   return (
-    <form
-      className="task-form"
-      onSubmit={handleSubmit}
-      noValidate
-    >
+    <form className="task-form" onSubmit={handleSubmit} noValidate>
       <div className="modal-header">
         <div>
-          <h3>
-            {isEditMode
-              ? "Edit task"
-              : "Create task"}
-          </h3>
-
+          <h3>{isEditMode ? "Edit task" : "Create task"}</h3>
           <p>
             {isEditMode
               ? "Update your task details."
@@ -139,9 +115,7 @@ function TaskForm({
       </div>
 
       <div className="form-field">
-        <label htmlFor="task-title">
-          Title
-        </label>
+        <label htmlFor="task-title">Title</label>
 
         <input
           id="task-title"
@@ -154,17 +128,11 @@ function TaskForm({
           aria-invalid={Boolean(errors.title)}
         />
 
-        {errors.title && (
-          <p className="field-error">
-            {errors.title}
-          </p>
-        )}
+        {errors.title && <p className="field-error">{errors.title}</p>}
       </div>
 
       <div className="form-field">
-        <label htmlFor="task-description">
-          Description
-        </label>
+        <label htmlFor="task-description">Description</label>
 
         <textarea
           id="task-description"
@@ -174,23 +142,17 @@ function TaskForm({
           value={form.description}
           onChange={handleChange}
           disabled={isSubmitting}
-          aria-invalid={Boolean(
-            errors.description,
-          )}
+          aria-invalid={Boolean(errors.description)}
         />
 
         {errors.description && (
-          <p className="field-error">
-            {errors.description}
-          </p>
+          <p className="field-error">{errors.description}</p>
         )}
       </div>
 
       <div className="task-form-row">
         <div className="form-field">
-          <label htmlFor="task-status">
-            Status
-          </label>
+          <label htmlFor="task-status">Status</label>
 
           <select
             id="task-status"
@@ -199,24 +161,14 @@ function TaskForm({
             onChange={handleChange}
             disabled={isSubmitting}
           >
-            <option value="todo">
-              To do
-            </option>
-
-            <option value="in_progress">
-              In progress
-            </option>
-
-            <option value="completed">
-              Completed
-            </option>
+            <option value="todo">To do</option>
+            <option value="in_progress">In progress</option>
+            <option value="completed">Completed</option>
           </select>
         </div>
 
         <div className="form-field">
-          <label htmlFor="task-priority">
-            Priority
-          </label>
+          <label htmlFor="task-priority">Priority</label>
 
           <select
             id="task-priority"
@@ -225,25 +177,15 @@ function TaskForm({
             onChange={handleChange}
             disabled={isSubmitting}
           >
-            <option value="low">
-              Low
-            </option>
-
-            <option value="medium">
-              Medium
-            </option>
-
-            <option value="high">
-              High
-            </option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
           </select>
         </div>
       </div>
 
       <div className="form-field">
-        <label htmlFor="task-due-date">
-          Due date
-        </label>
+        <label htmlFor="task-due-date">Due date</label>
 
         <input
           id="task-due-date"
@@ -265,11 +207,7 @@ function TaskForm({
           Cancel
         </button>
 
-        <button
-          type="submit"
-          className="primary-button"
-          disabled={isSubmitting}
-        >
+        <button type="submit" className="primary-button" disabled={isSubmitting}>
           {isSubmitting
             ? isEditMode
               ? "Saving..."

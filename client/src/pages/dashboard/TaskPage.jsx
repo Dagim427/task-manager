@@ -2,6 +2,9 @@ import { useMemo, useState } from "react";
 
 import Modal from "../../components/common/modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
+import LoadingState from "../../components/common/LoadingState";
+import ErrorState from "../../components/common/ErrorState";
+import EmptyState from "../../components/common/EmptyState";
 import TaskForm from "../../components/task/TaskForm";
 import TaskStatusSelect from "../../components/task/TaskStatusSelect";
 import useTasks from "../../hooks/useTasks";
@@ -35,13 +38,14 @@ function TasksPage() {
     isDeleting,
     error,
     setError,
+    loadTasks,
     createTask,
     updateTask,
     removeTask,
   } = useTasks();
 
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [priority, setPriority] = useState("all");
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -131,21 +135,25 @@ function TasksPage() {
     return tasks.filter((task) => {
       if (!task) return false;
 
-      const rawPriority = task.priority ?? task.priority_level ?? task.priorityLevel;
-      const taskPriority = rawPriority ? String(rawPriority).trim().toLowerCase() : "";
+      const rawPriority =
+        task.priority ?? task.priority_level ?? task.priorityLevel;
+      const taskPriority = rawPriority
+        ? String(rawPriority).trim().toLowerCase()
+        : "";
 
       const matchesSearch =
         !normalizedSearch ||
         task.title?.toLowerCase().includes(normalizedSearch) ||
         task.description?.toLowerCase().includes(normalizedSearch);
 
-      const matchesStatus = status === "all" || task.status === status;
+      const matchesStatus =
+        statusFilter === "all" || task.status === statusFilter;
 
       const matchesPriority = priority === "all" || taskPriority === priority;
 
       return matchesSearch && matchesStatus && matchesPriority;
     });
-  }, [tasks, search, status, priority]);
+  }, [tasks, search, statusFilter, priority]);
 
   return (
     <section>
@@ -168,12 +176,6 @@ function TasksPage() {
         </button>
       </div>
 
-      {error && (
-        <div className="form-error" role="alert">
-          {error}
-        </div>
-      )}
-
       <div className="task-toolbar">
         <div className="search-field">
           <label htmlFor="task-search" className="sr-only">
@@ -194,8 +196,8 @@ function TasksPage() {
 
           <select
             id="status-filter"
-            value={status}
-            onChange={(event) => setStatus(event.target.value)}
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
           >
             {STATUS_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -224,15 +226,37 @@ function TasksPage() {
 
       <div className="task-table-container">
         {isLoading ? (
-          <div className="empty-state">
-            <p>Loading tasks...</p>
-          </div>
+          <LoadingState message="Loading tasks..." />
+        ) : error ? (
+          <ErrorState message={error} onRetry={loadTasks} />
         ) : filteredTasks.length === 0 ? (
-          <div className="empty-state">
-            <h4>No tasks found</h4>
-
-            <p>Try changing your filters or create a new task.</p>
-          </div>
+          <EmptyState
+            title={
+              search || statusFilter !== "all"
+                ? "No matching tasks"
+                : "No tasks yet"
+            }
+            message={
+              search || statusFilter !== "all"
+                ? "Try changing your search or filters."
+                : "Create your first task to get started."
+            }
+            action={
+              !search &&
+              statusFilter === "all" && (
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={() => {
+                    setCreateError("");
+                    setIsCreateOpen(true);
+                  }}
+                >
+                  + New Task
+                </button>
+              )
+            }
+          />
         ) : (
           <div className="task-table-wrapper">
             <table className="task-table">
@@ -250,8 +274,11 @@ function TasksPage() {
 
               <tbody>
                 {filteredTasks.map((task) => {
-                  const rawPriority = task.priority ?? task.priority_level ?? task.priorityLevel;
-                  const normalizedPriority = rawPriority ? String(rawPriority).trim().toLowerCase() : "medium";
+                  const rawPriority =
+                    task.priority ?? task.priority_level ?? task.priorityLevel;
+                  const normalizedPriority = rawPriority
+                    ? String(rawPriority).trim().toLowerCase()
+                    : "medium";
                   const dueDateValue = task.dueDate ?? task.due_date;
 
                   return (
@@ -272,7 +299,9 @@ function TasksPage() {
                       </td>
 
                       <td>
-                        <span className={`priority priority-${normalizedPriority}`}>
+                        <span
+                          className={`priority priority-${normalizedPriority}`}
+                        >
                           {formatPriority(rawPriority)}
                         </span>
                       </td>
@@ -363,6 +392,7 @@ function TasksPage() {
           />
         </Modal>
       )}
+
       {deletingTask && (
         <ConfirmDialog
           title="Delete task?"
@@ -382,16 +412,6 @@ function TasksPage() {
       )}
     </section>
   );
-}
-
-function formatStatus(status) {
-  const labels = {
-    todo: "To do",
-    in_progress: "In progress",
-    completed: "Completed",
-  };
-
-  return labels[status] ?? status;
 }
 
 function formatPriority(priority) {
