@@ -1,14 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import Modal from "../../components/common/modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import TaskForm from "../../components/task/TaskForm";
-import {
-  createTask,
-  getTasks,
-  updateTask,
-  deleteTask,
-} from "../../services/task.service";
+import TaskStatusSelect from "../../components/task/TaskStatusSelect";
+import useTasks from "../../hooks/useTasks";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All statuses" },
@@ -31,70 +27,55 @@ const PRIORITY_OPTIONS = [
 ];
 
 function TasksPage() {
-  const [tasks, setTasks] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const {
+    tasks,
+    isLoading,
+    isCreating,
+    isUpdating,
+    isDeleting,
+    error,
+    setError,
+    createTask,
+    updateTask,
+    removeTask,
+  } = useTasks();
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [priority, setPriority] = useState("all");
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState("");
 
   const [editingTask, setEditingTask] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [editError, setEditError] = useState("");
 
   const [deletingTask, setDeletingTask] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
 
-  useEffect(() => {
-    let isMounted = true;
+  const handleStatusChange = async (task, nextStatus) => {
+    try {
+      await updateTask(task.id, {
+        title: task.title,
+        description: task.description ?? null,
+        status: nextStatus,
+        priority: task.priority ?? task.priority_level ?? "medium",
+        dueDate: task.dueDate ?? task.due_date ?? null,
+      });
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ?? "Unable to update task status.",
+      );
 
-    const loadTasks = async () => {
-      setIsLoading(true);
-      setError("");
-
-      try {
-        const response = await getTasks();
-
-        if (isMounted) {
-          const rawTasks = response.data?.tasks ?? response.tasks ?? [];
-          setTasks(rawTasks.filter(Boolean));
-        }
-      } catch (requestError) {
-        if (isMounted) {
-          setError(
-            requestError.response?.data?.message ?? "Unable to load tasks.",
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void loadTasks();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+      throw requestError;
+    }
+  };
 
   const handleCreateTask = async (taskData) => {
-    setIsCreating(true);
     setCreateError("");
 
     try {
-      const response = await createTask(taskData);
-
-      const newTask = response.data?.task ?? response.task;
-
-      setTasks((current) => [newTask, ...current]);
+      await createTask(taskData);
 
       setIsCreateOpen(false);
     } catch (requestError) {
@@ -103,32 +84,24 @@ function TasksPage() {
       );
 
       throw requestError;
-    } finally {
-      setIsCreating(false);
     }
   };
+
   const handleDeleteTask = async () => {
     if (!deletingTask) {
       return;
     }
 
-    setIsDeleting(true);
     setDeleteError("");
 
     try {
-      await deleteTask(deletingTask.id);
-
-      setTasks((current) =>
-        current.filter((task) => task.id !== deletingTask.id),
-      );
+      await removeTask(deletingTask.id);
 
       setDeletingTask(null);
     } catch (requestError) {
       setDeleteError(
         requestError.response?.data?.message ?? "Unable to delete task.",
       );
-    } finally {
-      setIsDeleting(false);
     }
   };
 
@@ -137,19 +110,10 @@ function TasksPage() {
       return;
     }
 
-    setIsEditing(true);
     setEditError("");
 
     try {
-      const response = await updateTask(editingTask.id, taskData);
-
-      const updatedTask = response.data?.task ?? response.task ?? response;
-
-      setTasks((current) =>
-        current.map((task) =>
-          task.id === editingTask.id ? updatedTask : task,
-        ),
-      );
+      await updateTask(editingTask.id, taskData);
 
       setEditingTask(null);
     } catch (requestError) {
@@ -158,8 +122,6 @@ function TasksPage() {
       );
 
       throw requestError;
-    } finally {
-      setIsEditing(false);
     }
   };
 
@@ -169,6 +131,9 @@ function TasksPage() {
     return tasks.filter((task) => {
       if (!task) return false;
 
+      const rawPriority = task.priority ?? task.priority_level ?? task.priorityLevel;
+      const taskPriority = rawPriority ? String(rawPriority).trim().toLowerCase() : "";
+
       const matchesSearch =
         !normalizedSearch ||
         task.title?.toLowerCase().includes(normalizedSearch) ||
@@ -176,7 +141,7 @@ function TasksPage() {
 
       const matchesStatus = status === "all" || task.status === status;
 
-      const matchesPriority = priority === "all" || task.priority === priority;
+      const matchesPriority = priority === "all" || taskPriority === priority;
 
       return matchesSearch && matchesStatus && matchesPriority;
     });
@@ -284,59 +249,64 @@ function TasksPage() {
               </thead>
 
               <tbody>
-                {filteredTasks.map((task) => (
-                  <tr key={task.id}>
-                    <td>
-                      <div className="task-title-cell">
-                        <strong>{task.title}</strong>
+                {filteredTasks.map((task) => {
+                  const rawPriority = task.priority ?? task.priority_level ?? task.priorityLevel;
+                  const normalizedPriority = rawPriority ? String(rawPriority).trim().toLowerCase() : "medium";
+                  const dueDateValue = task.dueDate ?? task.due_date;
 
-                        {task.description && <span>{task.description}</span>}
-                      </div>
-                    </td>
+                  return (
+                    <tr key={task.id}>
+                      <td>
+                        <div className="task-title-cell">
+                          <strong>{task.title}</strong>
 
-                    <td>
-                      <span
-                        className={`task-status task-status-${task.status}`}
-                      >
-                        {formatStatus(task.status)}
-                      </span>
-                    </td>
+                          {task.description && <span>{task.description}</span>}
+                        </div>
+                      </td>
 
-                    <td>
-                      <span className={`priority priority-${task.priority}`}>
-                        {formatPriority(task.priority)}
-                      </span>
-                    </td>
+                      <td>
+                        <TaskStatusSelect
+                          task={task}
+                          onChange={handleStatusChange}
+                        />
+                      </td>
 
-                    <td>{formatDate(task.dueDate)}</td>
+                      <td>
+                        <span className={`priority priority-${normalizedPriority}`}>
+                          {formatPriority(rawPriority)}
+                        </span>
+                      </td>
 
-                    <td>
-                      <div className="task-actions">
-                        <button
-                          type="button"
-                          className="text-button"
-                          onClick={() => {
-                            setEditError("");
-                            setEditingTask(task);
-                          }}
-                        >
-                          Edit
-                        </button>
+                      <td>{formatDate(dueDateValue)}</td>
 
-                        <button
-                          type="button"
-                          className="text-button danger-text"
-                          onClick={() => {
-                            setDeleteError("");
-                            setDeletingTask(task);
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      <td>
+                        <div className="task-actions">
+                          <button
+                            type="button"
+                            className="text-button"
+                            onClick={() => {
+                              setEditError("");
+                              setEditingTask(task);
+                            }}
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            type="button"
+                            className="text-button danger-text"
+                            onClick={() => {
+                              setDeleteError("");
+                              setDeletingTask(task);
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -372,7 +342,7 @@ function TasksPage() {
         <Modal
           title="Edit task"
           onClose={() => {
-            if (!isEditing) {
+            if (!isUpdating) {
               setEditingTask(null);
             }
           }}
@@ -389,7 +359,7 @@ function TasksPage() {
             onCancel={() => {
               setEditingTask(null);
             }}
-            isSubmitting={isEditing}
+            isSubmitting={isUpdating}
           />
         </Modal>
       )}
@@ -425,13 +395,17 @@ function formatStatus(status) {
 }
 
 function formatPriority(priority) {
+  if (!priority) return "—";
+
+  const normalized = String(priority).trim().toLowerCase();
+
   const labels = {
     low: "Low",
     medium: "Medium",
     high: "High",
   };
 
-  return labels[priority] ?? priority;
+  return labels[normalized] ?? priority;
 }
 
 function formatDate(value) {

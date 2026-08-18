@@ -28,13 +28,17 @@ function TaskForm({
       return;
     }
 
+    // Support both camelCase and snake_case for due date and priority from backend
+    const rawDueDate = task.dueDate ?? task.due_date;
+    const rawPriority = task.priority ?? task.priority_level ?? "medium";
+
     setForm({
       title: task.title ?? "",
       description: task.description ?? "",
       status: task.status ?? "todo",
-      priority: task.priority ?? "medium",
-      dueDate: task.dueDate
-        ? task.dueDate.slice(0, 10)
+      priority: String(rawPriority).toLowerCase(),
+      dueDate: rawDueDate
+        ? String(rawDueDate).slice(0, 10)
         : "",
     });
 
