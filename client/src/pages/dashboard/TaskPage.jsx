@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 
 import Modal from "../../components/common/modal";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
 import TaskForm from "../../components/task/TaskForm";
-import { createTask, getTasks, updateTask } from "../../services/task.service";
+import {
+  createTask,
+  getTasks,
+  updateTask,
+  deleteTask,
+} from "../../services/task.service";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All statuses" },
@@ -40,6 +46,10 @@ function TasksPage() {
   const [editingTask, setEditingTask] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editError, setEditError] = useState("");
+
+  const [deletingTask, setDeletingTask] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -95,6 +105,30 @@ function TasksPage() {
       throw requestError;
     } finally {
       setIsCreating(false);
+    }
+  };
+  const handleDeleteTask = async () => {
+    if (!deletingTask) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError("");
+
+    try {
+      await deleteTask(deletingTask.id);
+
+      setTasks((current) =>
+        current.filter((task) => task.id !== deletingTask.id),
+      );
+
+      setDeletingTask(null);
+    } catch (requestError) {
+      setDeleteError(
+        requestError.response?.data?.message ?? "Unable to delete task.",
+      );
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -277,17 +311,29 @@ function TasksPage() {
                     <td>{formatDate(task.dueDate)}</td>
 
                     <td>
-                      <button
-                        type="button"
-                        className="icon-button"
-                        onClick={() => {
-                          setEditError("");
-                          setEditingTask(task);
-                        }}
-                        aria-label={`Edit ${task.title}`}
-                      >
-                        Edit
-                      </button>
+                      <div className="task-actions">
+                        <button
+                          type="button"
+                          className="text-button"
+                          onClick={() => {
+                            setEditError("");
+                            setEditingTask(task);
+                          }}
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          className="text-button danger-text"
+                          onClick={() => {
+                            setDeleteError("");
+                            setDeletingTask(task);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -346,6 +392,23 @@ function TasksPage() {
             isSubmitting={isEditing}
           />
         </Modal>
+      )}
+      {deletingTask && (
+        <ConfirmDialog
+          title="Delete task?"
+          message={`Are you sure you want to delete "${deletingTask.title}"? This action cannot be undone.`}
+          confirmLabel="Delete task"
+          cancelLabel="Cancel"
+          onConfirm={handleDeleteTask}
+          onCancel={() => {
+            if (!isDeleting) {
+              setDeletingTask(null);
+              setDeleteError("");
+            }
+          }}
+          isConfirming={isDeleting}
+          error={deleteError}
+        />
       )}
     </section>
   );
