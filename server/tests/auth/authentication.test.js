@@ -5,7 +5,7 @@ import app from "../../src/app.js";
 import pool from "../../src/config/database.js";
 import { env } from "../../src/config/env.js";
 
-import { clearUsersTable, closeDatabase } from "../helpers/database.js";
+import { clearUsersTable } from "../helpers/database.js";
 
 const testUser = {
   name: "Authentication Test",
@@ -22,7 +22,6 @@ describe("Authentication", () => {
 
   afterAll(async () => {
     await clearUsersTable();
-    await closeDatabase();
   });
 
   describe("POST /api/auth/login", () => {
@@ -134,7 +133,7 @@ describe("Authentication", () => {
       const response = await request(app)
         .get("/api/auth/me")
         .set("Authorization", `Bearer ${token}`);
-
+        
       expect(response.status).toBe(401);
 
       expect(response.body.code).toBe("INVALID_TOKEN");

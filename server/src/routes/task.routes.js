@@ -44,7 +44,7 @@ router.get(
   getTask,
 );
 
-router.put(
+router.patch(
   "/:taskId",
   updateTaskValidator,
   validate,

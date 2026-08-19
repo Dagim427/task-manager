@@ -12,6 +12,8 @@ export const createTask = async (req, res, next) => {
       userId: req.user.id,
       title: req.body.title,
       description: req.body.description,
+      status: req.body.status,
+      priority: req.body.priority,
       dueDate: req.body.dueDate,
     });
 
@@ -75,6 +77,7 @@ export const updateTask = async (req, res, next) => {
       title: req.body.title,
       description: req.body.description,
       status: req.body.status,
+      priority: req.body.priority,
       dueDate: req.body.dueDate,
     });
 

@@ -4,8 +4,7 @@ import { getTasks } from "../../services/task.service";
 
 function DashboardPage() {
   const [tasks, setTasks] = useState([]);
-  const [isLoading, setIsLoading] =
-    useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -24,9 +23,7 @@ function DashboardPage() {
       } catch (requestError) {
         if (isMounted) {
           setError(
-            requestError.response?.data
-              ?.message ??
-              "Unable to load tasks.",
+            requestError.response?.data?.message ?? "Unable to load tasks.",
           );
         }
       } finally {
@@ -47,19 +44,11 @@ function DashboardPage() {
     return {
       total: tasks.length,
 
-      todo: tasks.filter(
-        (task) => task.status === "todo",
-      ).length,
+      todo: tasks.filter((task) => task.status === "todo").length,
 
-      inProgress: tasks.filter(
-        (task) =>
-          task.status === "in_progress",
-      ).length,
+      inProgress: tasks.filter((task) => task.status === "in_progress").length,
 
-      completed: tasks.filter(
-        (task) =>
-          task.status === "completed",
-      ).length,
+      completed: tasks.filter((task) => task.status === "completed").length,
     };
   }, [tasks]);
 
@@ -69,17 +58,12 @@ function DashboardPage() {
         <div>
           <h2>Dashboard</h2>
 
-          <p>
-            Overview of your task management.
-          </p>
+          <p>Overview of your task management.</p>
         </div>
       </div>
 
       {error && (
-        <div
-          className="form-error"
-          role="alert"
-        >
+        <div className="form-error" role="alert">
           {error}
         </div>
       )}
@@ -87,38 +71,22 @@ function DashboardPage() {
       <div className="dashboard-stats">
         <article className="stat-card">
           <span>Total tasks</span>
-          <strong>
-            {isLoading
-              ? "—"
-              : statistics.total}
-          </strong>
+          <strong>{isLoading ? "—" : statistics.total}</strong>
         </article>
 
         <article className="stat-card">
           <span>To do</span>
-          <strong>
-            {isLoading
-              ? "—"
-              : statistics.todo}
-          </strong>
+          <strong>{isLoading ? "—" : statistics.todo}</strong>
         </article>
 
         <article className="stat-card">
           <span>In progress</span>
-          <strong>
-            {isLoading
-              ? "—"
-              : statistics.inProgress}
-          </strong>
+          <strong>{isLoading ? "—" : statistics.inProgress}</strong>
         </article>
 
         <article className="stat-card">
           <span>Completed</span>
-          <strong>
-            {isLoading
-              ? "—"
-              : statistics.completed}
-          </strong>
+          <strong>{isLoading ? "—" : statistics.completed}</strong>
         </article>
       </div>
 
@@ -135,31 +103,23 @@ function DashboardPage() {
           <div className="empty-state">
             <h4>No tasks yet</h4>
 
-            <p>
-              Create your first task to get
-              started.
-            </p>
+            <p>Create your first task to get started.</p>
           </div>
         ) : (
           <div className="task-list">
             {tasks.slice(0, 5).map((task) => (
-              <article
-                className="task-item"
-                key={task.id}
-              >
+              <article className="task-item" key={task.id}>
                 <div>
                   <h4>{task.title}</h4>
 
-                  {task.description && (
-                    <p>
-                      {task.description}
-                    </p>
-                  )}
+                  {task.description && <p>{task.description}</p>}
                 </div>
+                
+                <span className={`priority priority-${task.priority}`}>
+                  {formatPriority(task.priority)}
+                </span>
 
-                <span
-                  className={`task-status task-status-${task.status}`}
-                >
+                <span className={`task-status task-status-${task.status}`}>
                   {formatStatus(task.status)}
                 </span>
               </article>
@@ -179,6 +139,16 @@ function formatStatus(status) {
   };
 
   return labels[status] ?? status;
+}
+
+function formatPriority(priority) {
+  const labels = {
+    low: "Low",
+    medium: "Medium",
+    high: "High",
+  };
+
+  return labels[priority] ?? priority;
 }
 
 export default DashboardPage;

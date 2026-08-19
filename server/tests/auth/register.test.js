@@ -3,7 +3,7 @@ import request from "supertest";
 import app from "../../src/app.js";
 import pool from "../../src/config/database.js";
 
-import { clearUsersTable, closeDatabase } from "../helpers/database.js";
+import { clearUsersTable } from "../helpers/database.js";
 
 describe("POST /api/auth/register", () => {
   beforeEach(async () => {
@@ -11,7 +11,7 @@ describe("POST /api/auth/register", () => {
   });
 
   afterAll(async () => {
-    await closeDatabase();
+    await clearUsersTable();
   });
 
   it("creates a new user successfully", async () => {

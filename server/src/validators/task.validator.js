@@ -24,6 +24,11 @@ export const createTaskValidator = [
     .optional({ nullable: true })
     .isIn(["todo", "in_progress", "completed"])
     .withMessage("Status must be todo, in_progress, or completed."),
+  
+  body("priority")
+    .optional({ nullable: true })
+    .isIn(["low", "medium", "high"])
+    .withMessage("Priority must be low, medium, or high."),
 
   body("dueDate")
     .optional({ nullable: true })
@@ -65,6 +70,10 @@ export const updateTaskValidator = [
   body("status")
     .isIn(["todo", "in_progress", "completed"])
     .withMessage("Status must be todo, in_progress, or completed."),
+
+  body("priority")
+    .isIn(["low", "medium", "high"])
+    .withMessage("Priority must be low, medium, or high."),
 
   body("dueDate")
     .optional({ nullable: true })

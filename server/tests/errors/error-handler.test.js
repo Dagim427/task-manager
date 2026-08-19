@@ -2,10 +2,7 @@ import request from "supertest";
 
 import app from "../../src/app.js";
 
-import {
-  clearUsersTable,
-  closeDatabase,
-} from "../helpers/database.js";
+import { clearUsersTable } from "../helpers/database.js";
 
 const user = {
   name: "Error Test User",
@@ -14,12 +11,10 @@ const user = {
 };
 
 const login = async () => {
-  const response = await request(app)
-    .post("/api/auth/login")
-    .send({
-      email: user.email,
-      password: user.password,
-    });
+  const response = await request(app).post("/api/auth/login").send({
+    email: user.email,
+    password: user.password,
+  });
 
   return response.body.data.accessToken;
 };
@@ -28,14 +23,11 @@ describe("Error Handler Tests", () => {
   beforeEach(async () => {
     await clearUsersTable();
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(user);
+    await request(app).post("/api/auth/register").send(user);
   });
 
   afterAll(async () => {
     await clearUsersTable();
-    await closeDatabase();
   });
 
   it("returns a consistent 404 error", async () => {
@@ -67,12 +59,8 @@ describe("Error Handler Tests", () => {
     expect(response.status).toBe(400);
 
     expect(response.body.success).toBe(false);
-    expect(response.body.code).toBe(
-      "VALIDATION_ERROR",
-    );
+    expect(response.body.code).toBe("VALIDATION_ERROR");
 
-    expect(response.body.details).toEqual(
-      expect.any(Array),
-    );
+    expect(response.body.details).toEqual(expect.any(Array));
   });
 });

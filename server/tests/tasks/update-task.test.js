@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../../src/app.js";
-import { clearUsersTable, closeDatabase } from "../helpers/database.js";
+import { clearUsersTable } from "../helpers/database.js";
 
 const userA = {
   name: "Update Task User A",
@@ -20,7 +20,7 @@ const login = async (credentials) => {
   return response.body.data.accessToken;
 };
 
-describe("PUT /api/tasks/:taskId", () => {
+describe("PATCH /api/tasks/:taskId", () => {
   beforeEach(async () => {
     await clearUsersTable();
 
@@ -31,7 +31,6 @@ describe("PUT /api/tasks/:taskId", () => {
 
   afterAll(async () => {
     await clearUsersTable();
-    await closeDatabase();
   });
 
   it("updates a task owned by the authenticated user", async () => {
@@ -45,14 +44,15 @@ describe("PUT /api/tasks/:taskId", () => {
       });
 
     const taskId = createResponse.body.data.task.id;
-    
+
     const response = await request(app)
-      .put(`/api/tasks/${taskId}`)
+      .patch(`/api/tasks/${taskId}`)
       .set("Authorization", `Bearer ${token}`)
       .send({
         title: "Updated title",
         description: "Updated description",
         status: "in_progress",
+        priority: "low",
         dueDate: "2026-08-25T18:00:00Z",
       });
 
@@ -60,6 +60,7 @@ describe("PUT /api/tasks/:taskId", () => {
     expect(response.body.data.task.title).toBe("Updated title");
     expect(response.body.data.task.description).toBe("Updated description");
     expect(response.body.data.task.status).toBe("in_progress");
+    expect(response.body.data.task.priority).toBe("low");
   });
 
   it("cannot update another user's task", async () => {
@@ -76,12 +77,13 @@ describe("PUT /api/tasks/:taskId", () => {
     const taskId = createResponse.body.data.task.id;
 
     const response = await request(app)
-      .put(`/api/tasks/${taskId}`)
+      .patch(`/api/tasks/${taskId}`)
       .set("Authorization", `Bearer ${tokenA}`)
       .send({
         title: "Malicious update",
         description: "Should not work",
         status: "completed",
+        priority: "high",
         dueDate: null,
       });
 
@@ -102,12 +104,13 @@ describe("PUT /api/tasks/:taskId", () => {
     const taskId = createResponse.body.data.task.id;
 
     const response = await request(app)
-      .put(`/api/tasks/${taskId}`)
+      .patch(`/api/tasks/${taskId}`)
       .set("Authorization", `Bearer ${token}`)
       .send({
         title: "Updated",
         description: "Test",
         status: "invalid_status",
+        priority: "invalid priority",
         dueDate: null,
       });
 

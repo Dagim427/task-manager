@@ -6,6 +6,7 @@ const TASK_COLUMNS = `
   title,
   description,
   status,
+  priority,
   due_date,
   created_at,
   updated_at
@@ -15,6 +16,8 @@ export const createTask = async ({
   userId,
   title,
   description = null,
+  status,
+  priority,
   dueDate = null,
 }) => {
   const [result] = await pool.execute(
@@ -23,11 +26,13 @@ export const createTask = async ({
         user_id,
         title,
         description,
+        status,
+        priority, 
         due_date
       )
-      VALUES (?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?)
     `,
-    [userId, title, description, dueDate],
+    [userId, title, description, status, priority, dueDate],
   );
 
   return findTaskByIdForUser(result.insertId, userId);
@@ -70,6 +75,7 @@ export const updateTaskForUser = async ({
   title,
   description,
   status,
+  priority,
   dueDate,
 }) => {
   const query = `
@@ -78,17 +84,19 @@ export const updateTaskForUser = async ({
       title = COALESCE(?, title), 
       description = COALESCE(?, description), 
       status = COALESCE(?, status), 
+      priority = COALESCE(?, priority),
       due_date = COALESCE(?, due_date) 
     WHERE id = ? AND user_id = ?
   `;
-  
+
   await pool.execute(query, [
-    title !== undefined ? title : null, 
-    description !== undefined ? description : null, 
-    status !== undefined ? status : null, 
-    dueDate !== undefined ? dueDate : null, 
-    taskId, 
-    userId
+    title !== undefined ? title : null,
+    description !== undefined ? description : null,
+    status !== undefined ? status : null,
+    priority !== undefined ? priority : null,
+    dueDate !== undefined ? dueDate : null,
+    taskId,
+    userId,
   ]);
 
   return findTaskByIdForUser(taskId, userId);

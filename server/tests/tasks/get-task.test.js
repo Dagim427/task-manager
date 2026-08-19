@@ -2,10 +2,7 @@ import request from "supertest";
 
 import app from "../../src/app.js";
 
-import {
-  clearUsersTable,
-  closeDatabase,
-} from "../helpers/database.js";
+import { clearUsersTable } from "../helpers/database.js";
 
 const userA = {
   name: "Get Task User A",
@@ -20,9 +17,7 @@ const userB = {
 };
 
 const login = async (credentials) => {
-  const response = await request(app)
-    .post("/api/auth/login")
-    .send(credentials);
+  const response = await request(app).post("/api/auth/login").send(credentials);
 
   return response.body.data.accessToken;
 };
@@ -31,18 +26,13 @@ describe("GET /api/tasks/:taskId", () => {
   beforeEach(async () => {
     await clearUsersTable();
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(userA);
+    await request(app).post("/api/auth/register").send(userA);
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(userB);
+    await request(app).post("/api/auth/register").send(userB);
   });
 
   afterAll(async () => {
     await clearUsersTable();
-    await closeDatabase();
   });
 
   it("returns a task owned by the authenticated user", async () => {
@@ -56,8 +46,7 @@ describe("GET /api/tasks/:taskId", () => {
         description: "My description",
       });
 
-    const taskId =
-      createResponse.body.data.task.id;
+    const taskId = createResponse.body.data.task.id;
 
     const response = await request(app)
       .get(`/api/tasks/${taskId}`)
@@ -65,9 +54,7 @@ describe("GET /api/tasks/:taskId", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data.task.id).toBe(taskId);
-    expect(response.body.data.task.title).toBe(
-      "My task",
-    );
+    expect(response.body.data.task.title).toBe("My task");
   });
 
   it("returns 404 for another user's task", async () => {
@@ -81,8 +68,7 @@ describe("GET /api/tasks/:taskId", () => {
         title: "Private User B task",
       });
 
-    const taskId =
-      createResponse.body.data.task.id;
+    const taskId = createResponse.body.data.task.id;
 
     const response = await request(app)
       .get(`/api/tasks/${taskId}`)
@@ -90,9 +76,7 @@ describe("GET /api/tasks/:taskId", () => {
 
     expect(response.status).toBe(404);
 
-    expect(response.body.code).toBe(
-      "TASK_NOT_FOUND",
-    );
+    expect(response.body.code).toBe("TASK_NOT_FOUND");
   });
 
   it("rejects an invalid task ID", async () => {
@@ -106,10 +90,8 @@ describe("GET /api/tasks/:taskId", () => {
   });
 
   it("rejects unauthenticated requests", async () => {
-    const response = await request(app)
-      .get("/api/tasks/1");
+    const response = await request(app).get("/api/tasks/1");
 
     expect(response.status).toBe(401);
   });
 });
-

@@ -13,6 +13,7 @@ const normalizeTaskInput = ({
   title,
   description = null,
   status = "todo",
+  priority = "medium",
   dueDate = null,
 }) => {
   let formattedDueDate = null;
@@ -30,14 +31,24 @@ const normalizeTaskInput = ({
     description:
       typeof description === "string" ? description.trim() || null : null,
     status,
+    priority,
     dueDate: formattedDueDate,
   };
 };
 
-export const createTask = async ({ userId, title, description, dueDate }) => {
+export const createTask = async ({
+  userId,
+  title,
+  description,
+  status,
+  priority,
+  dueDate,
+}) => {
   const taskData = normalizeTaskInput({
     title,
     description,
+    status,
+    priority,
     dueDate,
   });
 
@@ -87,6 +98,7 @@ export const updateTask = async ({
   title,
   description,
   status,
+  priority,
   dueDate,
 }) => {
   const existingTask = await findTaskByIdForUser(taskId, userId);
@@ -99,6 +111,7 @@ export const updateTask = async ({
     title,
     description,
     status,
+    priority,
     dueDate,
   });
 

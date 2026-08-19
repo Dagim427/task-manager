@@ -2,10 +2,7 @@ import request from "supertest";
 
 import app from "../../src/app.js";
 
-import {
-  clearUsersTable,
-  closeDatabase,
-} from "../helpers/database.js";
+import { clearUsersTable } from "../helpers/database.js";
 
 const user = {
   name: "Delete Task User",
@@ -14,12 +11,10 @@ const user = {
 };
 
 const login = async () => {
-  const response = await request(app)
-    .post("/api/auth/login")
-    .send({
-      email: user.email,
-      password: user.password,
-    });
+  const response = await request(app).post("/api/auth/login").send({
+    email: user.email,
+    password: user.password,
+  });
 
   return response.body.data.accessToken;
 };
@@ -28,14 +23,11 @@ describe("DELETE /api/tasks/:taskId", () => {
   beforeEach(async () => {
     await clearUsersTable();
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(user);
+    await request(app).post("/api/auth/register").send(user);
   });
 
   afterAll(async () => {
     await clearUsersTable();
-    await closeDatabase();
   });
 
   it("deletes a task owned by the authenticated user", async () => {
@@ -48,8 +40,7 @@ describe("DELETE /api/tasks/:taskId", () => {
         title: "Task to delete",
       });
 
-    const taskId =
-      createResponse.body.data.task.id;
+    const taskId = createResponse.body.data.task.id;
 
     const deleteResponse = await request(app)
       .delete(`/api/tasks/${taskId}`)
@@ -63,9 +54,7 @@ describe("DELETE /api/tasks/:taskId", () => {
 
     expect(getResponse.status).toBe(404);
 
-    expect(getResponse.body.code).toBe(
-      "TASK_NOT_FOUND",
-    );
+    expect(getResponse.body.code).toBe("TASK_NOT_FOUND");
   });
 
   it("returns 404 when the task does not exist", async () => {
@@ -77,14 +66,11 @@ describe("DELETE /api/tasks/:taskId", () => {
 
     expect(response.status).toBe(404);
 
-    expect(response.body.code).toBe(
-      "TASK_NOT_FOUND",
-    );
+    expect(response.body.code).toBe("TASK_NOT_FOUND");
   });
 
   it("rejects unauthenticated requests", async () => {
-    const response = await request(app)
-      .delete("/api/tasks/1");
+    const response = await request(app).delete("/api/tasks/1");
 
     expect(response.status).toBe(401);
   });
@@ -102,27 +88,19 @@ describe("DELETE /api/tasks/:taskId", () => {
       password: "StrongPassword123!",
     };
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(userA);
+    await request(app).post("/api/auth/register").send(userA);
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(userB);
+    await request(app).post("/api/auth/register").send(userB);
 
-    const loginA = await request(app)
-      .post("/api/auth/login")
-      .send({
-        email: userA.email,
-        password: userA.password,
-      });
+    const loginA = await request(app).post("/api/auth/login").send({
+      email: userA.email,
+      password: userA.password,
+    });
 
-    const loginB = await request(app)
-      .post("/api/auth/login")
-      .send({
-        email: userB.email,
-        password: userB.password,
-      });
+    const loginB = await request(app).post("/api/auth/login").send({
+      email: userB.email,
+      password: userB.password,
+    });
 
     const tokenA = loginA.body.data.accessToken;
     const tokenB = loginB.body.data.accessToken;
@@ -134,8 +112,7 @@ describe("DELETE /api/tasks/:taskId", () => {
         title: "Private User B task",
       });
 
-    const taskId =
-      createResponse.body.data.task.id;
+    const taskId = createResponse.body.data.task.id;
 
     const deleteResponse = await request(app)
       .delete(`/api/tasks/${taskId}`)
@@ -149,8 +126,6 @@ describe("DELETE /api/tasks/:taskId", () => {
 
     expect(ownerResponse.status).toBe(200);
 
-    expect(
-      ownerResponse.body.data.task.title,
-    ).toBe("Private User B task");
+    expect(ownerResponse.body.data.task.title).toBe("Private User B task");
   });
 });

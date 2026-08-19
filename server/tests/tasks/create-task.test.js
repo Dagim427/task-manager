@@ -1,12 +1,8 @@
 import request from "supertest";
 
 import app from "../../src/app.js";
-// import pool from "../../src/config/database.js";
 
-import {
-  clearUsersTable,
-  closeDatabase,
-} from "../helpers/database.js";
+import { clearUsersTable } from "../helpers/database.js";
 
 const userA = {
   name: "Task User A",
@@ -21,9 +17,7 @@ const userB = {
 };
 
 const login = async (credentials) => {
-  const response = await request(app)
-    .post("/api/auth/login")
-    .send(credentials);
+  const response = await request(app).post("/api/auth/login").send(credentials);
 
   return response.body.data.accessToken;
 };
@@ -32,18 +26,13 @@ describe("POST /api/tasks", () => {
   beforeEach(async () => {
     await clearUsersTable();
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(userA);
+    await request(app).post("/api/auth/register").send(userA);
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(userB);
+    await request(app).post("/api/auth/register").send(userB);
   });
 
   afterAll(async () => {
     await clearUsersTable();
-    await closeDatabase();
   });
 
   it("creates a task for the authenticated user", async () => {
@@ -61,15 +50,12 @@ describe("POST /api/tasks", () => {
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
 
-    expect(response.body.data.task.title).toBe(
-      "Build production API",
-    );
+    expect(response.body.data.task.title).toBe("Build production API");
 
-    expect(response.body.data.task.description).toBe(
-      "Implement task creation",
-    );
+    expect(response.body.data.task.description).toBe("Implement task creation");
 
     expect(response.body.data.task.status).toBe("todo");
+    expect(response.body.data.task.priority).toBe("medium");
     expect(response.body.data.task.user_id).toBeDefined();
   });
 
@@ -85,17 +71,25 @@ describe("POST /api/tasks", () => {
 
     expect(response.status).toBe(201);
 
-    expect(response.body.data.task.status).toBe(
-      "todo",
-    );
+    expect(response.body.data.task.status).toBe("todo");
+  });
+
+  it("creates a task with the default medium priority", async () => {
+    const token = await login(userA);
+
+    const response = await request(app)
+      .post("/api/tasks")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ title: "Default priority test" });
+
+    expect(response.status).toBe(201);
+    expect(response.body.data.task.priority).toBe("medium");
   });
 
   it("rejects a request without authentication", async () => {
-    const response = await request(app)
-      .post("/api/tasks")
-      .send({
-        title: "Unauthorized task",
-      });
+    const response = await request(app).post("/api/tasks").send({
+      title: "Unauthorized task",
+    });
 
     expect(response.status).toBe(401);
   });
@@ -147,8 +141,6 @@ describe("POST /api/tasks", () => {
 
     expect(response.status).toBe(201);
 
-    expect(
-      response.body.data.task.user_id,
-    ).not.toBe(userBId);
+    expect(response.body.data.task.user_id).not.toBe(userBId);
   });
 });
