@@ -1,4 +1,5 @@
 import { checkDatabaseConnection } from "../config/database.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const liveness = (req, res) => {
   return res.status(200).json({
@@ -7,15 +8,11 @@ export const liveness = (req, res) => {
   });
 };
 
-export const readiness = async (req, res, next) => {
-  try {
-    await checkDatabaseConnection();
+export const readiness = asyncHandler(async (req, res) => {
+  await checkDatabaseConnection();
 
-    return res.status(200).json({
-      success: true,
-      status: "ready",
-    });
-  } catch (error) {
-    return next(error);
-  }
-};
+  return res.status(200).json({
+    success: true,
+    status: "ready",
+  });
+});
