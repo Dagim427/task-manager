@@ -1,26 +1,22 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import { z } from "zod";
+
+const envFilePath =
+  process.env.DOTENV_CONFIG_PATH ||
+  (process.env.NODE_ENV === "test" ? ".env.test" : ".env");
+
+dotenv.config({ path: envFilePath });
 
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
 
-  PORT: z.coerce
-    .number()
-    .int()
-    .min(1)
-    .max(65535)
-    .default(5000),
+  PORT: z.coerce.number().int().min(1).max(65535).default(5000),
 
   DATABASE_HOST: z.string().min(1),
 
-  DATABASE_PORT: z.coerce
-    .number()
-    .int()
-    .min(1)
-    .max(65535)
-    .default(3306),
+  DATABASE_PORT: z.coerce.number().int().min(1).max(65535).default(3306),
 
   DATABASE_NAME: z.string().min(1),
 
@@ -28,41 +24,23 @@ const envSchema = z.object({
 
   DATABASE_PASSWORD: z.string(),
 
-  JWT_SECRET: z
-    .string()
-    .min(32),
+  JWT_SECRET: z.string().min(32),
 
-  JWT_EXPIRES_IN: z
-    .string()
-    .min(1)
-    .default("15m"),
+  JWT_EXPIRES_IN: z.string().min(1).default("15m"),
 
-  CORS_ORIGINS: z.string().default(
-    "http://localhost:5173",
-  ),
+  CORS_ORIGINS: z.string().default("http://localhost:5173"),
 
   LOG_LEVEL: z
-    .enum([
-      "fatal",
-      "error",
-      "warn",
-      "info",
-      "debug",
-      "trace",
-    ])
+    .enum(["fatal", "error", "warn", "info", "debug", "trace"])
     .default("info"),
 });
 
 const result = envSchema.safeParse(process.env);
 
 if (!result.success) {
-  console.error(
-    "Invalid environment configuration:",
-  );
+  console.error("Invalid environment configuration:");
 
-  console.error(
-    result.error.flatten().fieldErrors,
-  );
+  console.error(result.error.flatten().fieldErrors);
 
   process.exit(1);
 }
