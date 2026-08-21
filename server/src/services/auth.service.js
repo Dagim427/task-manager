@@ -22,6 +22,19 @@ const sanitizeUser = (user) => {
   return safeUser;
 };
 
+const createAccessToken = (user) => {
+  return jwt.sign(
+    {
+      sub: String(user.id),
+      email: user.email,
+    },
+    env.JWT_SECRET,
+    {
+      expiresIn: env.JWT_EXPIRES_IN,
+    },
+  );
+};
+
 export const registerUser = async ({ name, email, password }) => {
   const normalizedName = name.trim();
   const normalizedEmail = email.trim().toLowerCase();
@@ -45,7 +58,13 @@ export const registerUser = async ({ name, email, password }) => {
       passwordHash,
     });
 
-    return sanitizeUser(user);
+    const safeUser = sanitizeUser(user);
+    const accessToken = createAccessToken(user);
+
+    return {
+      accessToken,
+      user: safeUser,
+    };
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
       throw new ApiError(
@@ -82,17 +101,7 @@ export const loginUser = async ({ email, password }) => {
     );
   }
 
-  const accessToken = jwt.sign(
-    {
-      sub: String(user.id),
-      email: user.email,
-    },
-    env.JWT_SECRET,
-    {
-      expiresIn: env.JWT_EXPIRES_IN,
-    },
-  );
-
+  const accessToken = createAccessToken(user)
   return {
     accessToken,
     user: sanitizeUser(user),

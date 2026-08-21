@@ -7,7 +7,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const register = asyncHandler(async (req, res) => {
-  const user = await registerUser({
+  const {accessToken, user} = await registerUser({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
@@ -17,6 +17,7 @@ export const register = asyncHandler(async (req, res) => {
     success: true,
     message: "User registered successfully.",
     data: {
+      accessToken,
       user,
     },
   });

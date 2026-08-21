@@ -28,6 +28,7 @@ describe("POST /api/auth/register", () => {
         success: true,
         message: "User registered successfully.",
         data: expect.objectContaining({
+          accessToken: expect.any(String),
           user: expect.objectContaining({
             name: "Test User",
             email: "test@example.com",
@@ -36,9 +37,24 @@ describe("POST /api/auth/register", () => {
       }),
     );
 
+    expect(response.body.data.accessToken).toBeTruthy();
     expect(response.body.data.user.password).toBeUndefined();
-
     expect(response.body.data.user.password_hash).toBeUndefined();
+  });
+
+  it("returns a valid access token after registration", async () => {
+    const response = await request(app).post("/api/auth/register").send({
+      name: "Token Test",
+      email: "token@example.com",
+      password: "StrongPassword123!",
+    });
+
+    expect(response.status).toBe(201);
+
+    const { accessToken } = response.body.data;
+
+    expect(accessToken).toEqual(expect.any(String));
+    expect(accessToken.split(".")).toHaveLength(3);
   });
 
   it("stores the user in the database", async () => {
