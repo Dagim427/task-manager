@@ -1,24 +1,119 @@
-Here is the table sorted progressively by **Tier** (from Entry to Principal), and within each tier, ordered by **Total Compensation (Highest to Lowest)** based on the top end of the range.
+# Task Manager
 
-| Company | Tier | Grade | Title | TC Range | Exp | Scope |
-| --- | --- | --- | --- | --- | --- | --- |
-| **Meta** | Entry | E3 | Software Engineer | $180k - $210k | 0-2 yrs | Single Task |
-| **Google** | Entry | L3 | SDE I | $180k - $210k | 0-2 yrs | Single Task |
-| **Amazon** | Entry | L4 | SDE I | $160k - $180k | 0-2 yrs | Single Task |
-| **Microsoft** | Entry | 59-60 | SDE | $150k - $175k | 0-2 yrs | Single Task |
-| **Meta** | Mid | E4 | Software Engineer | $250k - $320k | 2-5 yrs | Component |
-| **Google** | Mid | L4 | SDE II | $250k - $300k | 2-5 yrs | Component |
-| **Amazon** | Mid | L5 | SDE II | $220k - $260k | 2-5 yrs | Component |
-| **Microsoft** | Mid | 61-62 | SDE II | $180k - $220k | 2-5 yrs | Component |
-| **Meta** | Senior | E5 | Senior Software Engineer | $370k - $450k | 5-10 yrs | Feature/Service |
-| **Google** | Senior | L5 | Senior SDE | $340k - $420k | 5-10 yrs | Feature/Service |
-| **Amazon** | Senior | L6 | SDE III | $320k - $380k | 5-10 yrs | Feature/Service |
-| **Microsoft** | Senior | 63-64 | Senior SDE | $240k - $290k | 5-10 yrs | Feature/Service |
-| **Meta** | Staff | E6 | Staff Software Engineer | $550k - $650k | 10-15 yrs | Product/Domain |
-| **Amazon** | Staff | L7 | Principal SDE | $500k - $650k | 10-15 yrs | Product/Domain |
-| **Google** | Staff | L6 | Staff SDE | $450k - $550k | 10-15 yrs | Product/Domain |
-| **Microsoft** | Staff | 65-67 | Principal SDE | $330k - $420k | 10-15 yrs | Product/Domain |
-| **Meta** | Principal | E7 | Senior Staff Software Eng | $800k - $1.2M+ | 15+ yrs | Organization |
-| **Amazon** | Principal | L8 | Sr Principal | $800k - $1M+ | 15+ yrs | Organization |
-| **Google** | Principal | L7 | Senior Staff | $650k - $900k | 15+ yrs | Organization |
-| **Microsoft** | Principal | 68-69 | Partner SDE | $500k - $750k | 15+ yrs | Organization |
+A simple full-stack task manager application (Express + SQLite backend, React + Vite frontend) used for learning and demonstration purposes.
+
+## Tech stack
+
+- Server: Node.js, Express, SQLite (via `sqlite3`), Knex-style migrations (scripts/)
+- Client: React, Vite
+- Testing: Jest (server), React Testing Library (client)
+
+## Repository layout
+
+- `server/` — Express API, models, controllers, services, validators, and tests
+- `client/` — React single-page app built with Vite
+- `docs/` — API and architecture notes
+
+## Requirements
+
+- Node.js 18+ (or your project's target version)
+- npm or yarn
+
+## Quick start (development)
+
+1. Install dependencies for server and client:
+
+```bash
+# from repository root
+cd server
+npm install
+
+cd ../client
+npm install
+```
+
+2. Environment variables
+
+Create a `.env` file for the server (see `server/src/config/env.js`) with at minimum:
+
+```
+PORT=3000
+DATABASE_URL=./dev.sqlite
+JWT_SECRET=your_jwt_secret
+```
+
+3. Run database migrations (server):
+
+```bash
+cd server
+node scripts/migrate.js
+```
+
+4. Run the server and client for development:
+
+```bash
+# in one terminal
+cd server
+npm run dev
+
+# in another terminal
+cd client
+npm run dev
+```
+
+The client should be available at `http://localhost:5173` (Vite default) and the API at the configured server `PORT` (default `3000`).
+
+## Running tests
+
+Server unit/integration tests (Jest):
+
+```bash
+cd server
+npm test
+```
+
+Client tests (React Testing Library):
+
+```bash
+cd client
+npm test
+```
+
+## API
+
+See `docs/api.md` for endpoint documentation and examples. In brief, the API exposes:
+
+- `POST /api/auth/register` — register a new user
+- `POST /api/auth/login` — authenticate and get a JWT
+- `GET /api/tasks` — list tasks for the authenticated user
+- `POST /api/tasks` — create a task
+- `GET /api/tasks/:id` — get a task
+- `PUT /api/tasks/:id` — update a task
+- `DELETE /api/tasks/:id` — delete a task
+
+API requests require the `Authorization: Bearer <token>` header where applicable.
+
+## Database
+
+- Migrations are in `server/migrations/` and applied with `node scripts/migrate.js`.
+- The project uses a local SQLite file by default — change `DATABASE_URL` to point elsewhere if desired.
+
+## Environment variables reference
+
+- `PORT` — server port
+- `DATABASE_URL` — path/URL to the SQLite DB
+- `JWT_SECRET` — secret for signing JWTs
+
+## Development notes & suggestions
+
+- The server uses modular controllers/services/validators — keep business logic in `services/` and routing in `routes/`.
+- Add integration tests for authentication and task flows if you expand endpoints.
+- Consider adding a `docker-compose` file if you want reproducible dev environments.
+
+## Contributing
+
+Contributions are welcome. Please open issues for bugs or feature requests and submit pull requests with clear descriptions and tests where applicable.
+
+## License
+
+This project is provided for demonstration and learning. Add a license file if you intend to publish or share under a specific license.
