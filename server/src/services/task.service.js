@@ -106,19 +106,30 @@ export const updateTask = async ({
   if (!existingTask) {
     throw new ApiError(404, "Task not found.", "TASK_NOT_FOUND");
   }
+  
+  const updates = {};
 
-  const taskData = normalizeTaskInput({
-    title,
-    description,
-    status,
-    priority,
-    dueDate,
-  });
+  if (title !== undefined) updates.title = title.trim();
+  if (description !== undefined) {
+    updates.description = description === null ? null : description.trim();
+  }
+  if (status !== undefined) updates.status = status;
+  if (priority !== undefined) updates.priority = priority;
+  if (dueDate !== undefined) {
+    if (dueDate === null) {
+      updates.dueDate = null;
+    } else {
+      const dateObj = new Date(dueDate);
+      updates.dueDate = !isNaN(dateObj.getTime())
+        ? dateObj.toISOString().slice(0, 19).replace("T", " ")
+        : null;
+    }
+  }
 
   const updatedTask = await updateTaskForUser({
     taskId,
     userId,
-    ...taskData,
+    updates,
   });
 
   if (!updatedTask) {

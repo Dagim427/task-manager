@@ -24,7 +24,7 @@ export const createTaskValidator = [
     .optional({ nullable: true })
     .isIn(["todo", "in_progress", "completed"])
     .withMessage("Status must be todo, in_progress, or completed."),
-  
+
   body("priority")
     .optional({ nullable: true })
     .isIn(["low", "medium", "high"])
@@ -49,15 +49,15 @@ export const updateTaskValidator = [
   ...taskIdValidator,
 
   body("title")
-    .trim()
-    .notEmpty()
-    .withMessage("Title is required.")
-    .bail()
+    .optional()
     .isString()
     .withMessage("Title must be a string.")
     .bail()
-    .isLength({ min: 1, max: 200 })
-    .withMessage("Title must be between 1 and 200 characters."),
+    .trim()
+    .notEmpty()
+    .withMessage("Title cannot be empty.")
+    .isLength({ max: 255 })
+    .withMessage("Title must not exceed 255 characters."),
 
   body("description")
     .optional({ nullable: true })
@@ -68,10 +68,12 @@ export const updateTaskValidator = [
     .withMessage("Description must not exceed 5000 characters."),
 
   body("status")
+    .optional()
     .isIn(["todo", "in_progress", "completed"])
     .withMessage("Status must be todo, in_progress, or completed."),
 
   body("priority")
+    .optional()
     .isIn(["low", "medium", "high"])
     .withMessage("Priority must be low, medium, or high."),
 
@@ -91,8 +93,6 @@ export const listTasksValidator = [
   query("limit")
     .optional()
     .isInt({ min: 1, max: 100 })
-    .withMessage(
-      "Limit must be between 1 and 100.",
-    )
+    .withMessage("Limit must be between 1 and 100.")
     .toInt(),
 ];

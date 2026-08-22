@@ -1,4 +1,5 @@
 import pool from "../config/database.js";
+import { ApiError } from "../utils/ApiError.js";
 
 const TASK_COLUMNS = `
   id,
@@ -69,35 +70,55 @@ export const findTaskByIdForUser = async (taskId, userId) => {
   return rows[0] || null;
 };
 
-export const updateTaskForUser = async ({
-  taskId,
-  userId,
-  title,
-  description,
-  status,
-  priority,
-  dueDate,
-}) => {
-  const query = `
-    UPDATE tasks 
-    SET 
-      title = COALESCE(?, title), 
-      description = COALESCE(?, description), 
-      status = COALESCE(?, status), 
-      priority = COALESCE(?, priority),
-      due_date = COALESCE(?, due_date) 
-    WHERE id = ? AND user_id = ?
-  `;
+export const updateTaskForUser = async ({ taskId, userId, updates }) => {
+  const fields = [];
+  const values = [];
 
-  await pool.execute(query, [
-    title !== undefined ? title : null,
-    description !== undefined ? description : null,
-    status !== undefined ? status : null,
-    priority !== undefined ? priority : null,
-    dueDate !== undefined ? dueDate : null,
-    taskId,
-    userId,
-  ]);
+  if (Object.prototype.hasOwnProperty.call(updates, "title")) {
+    fields.push("title = ?");
+    values.push(updates.title);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(updates, "description")) {
+    fields.push("description = ?");
+    values.push(updates.description);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(updates, "status")) {
+    fields.push("status = ?");
+    values.push(updates.status);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(updates, "priority")) {
+    fields.push("priority = ?");
+    values.push(updates.priority);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(updates, "dueDate")) {
+    fields.push("due_date = ?");
+    values.push(updates.dueDate);
+  }
+
+  if (fields.length === 0) {
+    throw new ApiError(
+      400,
+      "At least one task field must be provided.",
+      "NO_UPDATE_FIELDS",
+    );
+  }
+
+  values.push(taskId);
+  values.push(userId);
+
+ await pool.execute(
+    `
+      UPDATE tasks
+      SET ${fields.join(", ")}
+      WHERE id = ?
+        AND user_id = ?
+    `,
+    values,
+  );
 
   return findTaskByIdForUser(taskId, userId);
 };

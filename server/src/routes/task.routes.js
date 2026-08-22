@@ -43,7 +43,6 @@ router.get(
   validate,
   getTask,
 );
-
 router.patch(
   "/:taskId",
   updateTaskValidator,
