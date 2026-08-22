@@ -148,3 +148,33 @@ export const countTasksByUserId = async (userId) => {
 
   return Number(rows[0].total);
 };
+
+export const getTaskStatsByUserId = async (userId) => {
+  const [rows] = await pool.execute(
+    `
+      SELECT
+        COUNT(*) AS total,
+        SUM(status = 'todo') AS todo,
+        SUM(status = 'in_progress') AS in_progress,
+        SUM(status = 'completed') AS completed,
+        SUM(priority = 'low') AS low,
+        SUM(priority = 'medium') AS medium,
+        SUM(priority = 'high') AS high
+      FROM tasks
+      WHERE user_id = ?
+    `,
+    [userId],
+  );
+
+  const stats = rows[0];
+
+  return {
+    total: Number(stats.total),
+    todo: Number(stats.todo),
+    in_progress: Number(stats.in_progress),
+    completed: Number(stats.completed),
+    low: Number(stats.low),
+    medium: Number(stats.medium),
+    high: Number(stats.high),
+  };
+};

@@ -5,6 +5,7 @@ import {
   getTask as getTaskService,
   getTasks as getTasksService,
   updateTask as updateTaskService,
+  getTaskStats as getTaskStatsService
 } from "../services/task.service.js";
 
 export const createTask = asyncHandler(async (req, res) => {
@@ -40,6 +41,18 @@ export const getTasks = asyncHandler(async (req, res) => {
     success: true,
     message: "Tasks retrieved successfully.",
     data: result,
+  });
+});
+
+export const getTaskStats = asyncHandler(async (req, res) => {
+  const stats = await getTaskStatsService(req.user.id);
+
+  return res.status(200).json({
+    success: true,
+    message: "Task statistics retrieved successfully.",
+    data: {
+      stats,
+    },
   });
 });
 

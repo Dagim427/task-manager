@@ -1,29 +1,42 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { getTasks } from "../../services/task.service";
+import { getTasks, getTaskStats } from "../../services/task.service";
 
 function DashboardPage() {
   const [tasks, setTasks] = useState([]);
+  const [stats, setStats] = useState({
+    total: 0,
+    todo: 0,
+    in_progress: 0,
+    completed: 0,
+    low: 0,
+    medium: 0,
+    high: 0,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let isMounted = true;
 
-    const loadTasks = async () => {
+    const loadDashboardData = async () => {
       setIsLoading(true);
       setError("");
 
       try {
-        const response = await getTasks();
+        const [tasksResponse, statsData] = await Promise.all([
+          getTasks(),
+          getTaskStats(),
+        ]);
 
         if (isMounted) {
-          setTasks(response.data?.tasks ?? response.tasks ?? []);
+          setTasks(tasksResponse.data?.tasks ?? tasksResponse.tasks ?? []);
+          setStats(statsData);
         }
       } catch (requestError) {
         if (isMounted) {
           setError(
-            requestError.response?.data?.message ?? "Unable to load tasks.",
+            requestError.response?.data?.message ?? "Unable to load dashboard data.",
           );
         }
       } finally {
@@ -33,24 +46,12 @@ function DashboardPage() {
       }
     };
 
-    void loadTasks();
+    void loadDashboardData();
 
     return () => {
       isMounted = false;
     };
   }, []);
-
-  const statistics = useMemo(() => {
-    return {
-      total: tasks.length,
-
-      todo: tasks.filter((task) => task.status === "todo").length,
-
-      inProgress: tasks.filter((task) => task.status === "in_progress").length,
-
-      completed: tasks.filter((task) => task.status === "completed").length,
-    };
-  }, [tasks]);
 
   return (
     <section>
@@ -71,22 +72,22 @@ function DashboardPage() {
       <div className="dashboard-stats">
         <article className="stat-card">
           <span>Total tasks</span>
-          <strong>{isLoading ? "—" : statistics.total}</strong>
+          <strong>{isLoading ? "—" : stats.total}</strong>
         </article>
 
         <article className="stat-card">
           <span>To do</span>
-          <strong>{isLoading ? "—" : statistics.todo}</strong>
+          <strong>{isLoading ? "—" : stats.todo}</strong>
         </article>
 
         <article className="stat-card">
           <span>In progress</span>
-          <strong>{isLoading ? "—" : statistics.inProgress}</strong>
+          <strong>{isLoading ? "—" : stats.in_progress}</strong>
         </article>
 
         <article className="stat-card">
           <span>Completed</span>
-          <strong>{isLoading ? "—" : statistics.completed}</strong>
+          <strong>{isLoading ? "—" : stats.completed}</strong>
         </article>
       </div>
 

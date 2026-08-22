@@ -6,6 +6,7 @@ import {
   getTask,
   getTasks,
   updateTask,
+  getTaskStats
 } from "../controllers/task.controller.js";
 
 import { authenticate } from "../middleware/auth.middleware.js";
@@ -35,6 +36,11 @@ router.get(
   listTasksValidator,
   validate,
   getTasks,
+);
+
+router.get(
+  "/stats",
+  getTaskStats
 );
 
 router.get(

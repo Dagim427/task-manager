@@ -5,6 +5,7 @@ import {
   findTaskByIdForUser,
   findTasksByUserId,
   updateTaskForUser,
+  getTaskStatsByUserId,
 } from "../models/task.model.js";
 
 import { ApiError } from "../utils/ApiError.js";
@@ -151,4 +152,8 @@ export const deleteTask = async ({ taskId, userId }) => {
   if (!deleted) {
     throw new ApiError(404, "Task not found.", "TASK_NOT_FOUND");
   }
+};
+
+export const getTaskStats = async (userId) => {
+  return getTaskStatsByUserId(userId);
 };

@@ -155,6 +155,11 @@ function TasksPage() {
     });
   }, [tasks, search, statusFilter, priority]);
 
+  const hasFilters =
+    search.trim() !== "" ||
+    statusFilter !== "all" ||
+    priority !== "all";
+
   return (
     <section>
       <div className="page-heading">
@@ -232,18 +237,17 @@ function TasksPage() {
         ) : filteredTasks.length === 0 ? (
           <EmptyState
             title={
-              search || statusFilter !== "all"
-                ? "No matching tasks"
-                : "No tasks yet"
+              hasFilters
+                ? "No tasks match your filters."
+                : "No tasks yet."
             }
             message={
-              search || statusFilter !== "all"
+              hasFilters
                 ? "Try changing your search or filters."
                 : "Create your first task to get started."
             }
             action={
-              !search &&
-              statusFilter === "all" && (
+              !hasFilters && (
                 <button
                   type="button"
                   className="primary-button"

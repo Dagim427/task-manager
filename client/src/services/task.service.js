@@ -29,3 +29,9 @@ export const deleteTask = async (taskId) => {
 
   return response.data;
 };
+
+export const getTaskStats = async () => {
+  const response = await api.get("/tasks/stats");
+
+  return response.data.data.stats;
+};
