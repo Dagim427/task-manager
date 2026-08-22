@@ -1,177 +1,131 @@
-# Task Management Architecture Documentation
+Absolutely — here is the professional `architecture.md` documentation for your **Task Management SaaS V1**, designed to match the project structure and the `requirements.md` / `api.md` / `database.md` documentation we’ve been building.
+
+# Task Management SaaS — Architecture
 
 ## 1. Overview
 
-The Task Management SaaS is a full-stack web application built using a client-server architecture.
+The Task Management SaaS is a full-stack web application that allows authenticated users to create, manage, update, and organize their tasks.
 
-The system is divided into three primary layers:
+The application follows a **client-server architecture** with a clear separation between:
+
+* Frontend — React.js
+* Backend — Node.js and Express.js
+* Database — MySQL
+* Authentication — JWT
+* Password Security — bcrypt
+* API Communication — REST API
+
+The architecture is designed to be:
+
+* Maintainable
+* Scalable
+* Secure
+* Testable
+* Easy to extend in future versions
+
+---
+
+# 2. Architecture Diagram
 
 ```text
-┌──────────────────────┐
-│       Client         │
-│      React.js        │
-└──────────┬───────────┘
-           │
-           │ HTTP / REST API
-           │
-           ▼
-┌──────────────────────┐
-│       Server         │
-│ Node.js + Express.js │
-└──────────┬───────────┘
-           │
-           │ SQL
-           │
-           ▼
-┌──────────────────────┐
-│      Database        │
-│        MySQL         │
-└──────────────────────┘
-```
-
-The architecture separates responsibilities between the frontend, backend, and database.
-
----
-
-# 2. Architecture Goals
-
-The architecture is designed to provide:
-
-- Clear separation of concerns
-- Maintainable code
-- Secure authentication
-- Secure task ownership
-- Reusable frontend components
-- Predictable API behavior
-- Reliable database access
-- Easy testing
-- Easy deployment
-- A foundation for future V2 development
-
----
-
-# 3. Technology Stack
-
-## Frontend
-
-- React.js
-- JSX
-- CSS
-- Axios
-- React Router
-
-## Backend
-
-- Node.js
-- Express.js
-- JWT
-- bcrypt
-- MySQL driver
-
-## Database
-
-- MySQL
-
-## Development
-
-- Git
-- GitHub
-- npm
-- Environment variables
-
----
-
-# 4. High-Level Architecture
-
-The application follows a client-server architecture.
-
-```text
-                         ┌─────────────────┐
-                         │      User       │
-                         └────────┬────────┘
-                                  │
-                                  ▼
-                         ┌─────────────────┐
-                         │     Client      │
-                         │     React       │
-                         └────────┬────────┘
-                                  │
-                           HTTP / REST API
-                                  │
-                                  ▼
-                         ┌─────────────────┐
-                         │     Server      │
-                         │ Node + Express  │
-                         └────────┬────────┘
-                                  │
-                           SQL / Database
-                                  │
-                                  ▼
-                         ┌─────────────────┐
-                         │     MySQL       │
-                         └─────────────────┘
+┌───────────────────────────────────────────────┐
+│                    Client                     │
+│                                               │
+│              React.js Application             │
+│                                               │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────┐  │
+│  │   Pages  │ │Components│ │   Services   │  │
+│  └────┬─────┘ └────┬─────┘ └──────┬───────┘  │
+│       │             │              │          │
+│       └─────────────┴──────────────┘          │
+│                     │                         │
+│                  Axios                        │
+└─────────────────────┼─────────────────────────┘
+                      │
+                 HTTP / REST API
+                      │
+                      ▼
+┌───────────────────────────────────────────────┐
+│                    Server                     │
+│                                               │
+│              Node.js + Express.js             │
+│                                               │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────┐  │
+│  │  Routes  │→│Controllers│→│   Services   │  │
+│  └──────────┘ └────┬─────┘ └──────┬───────┘  │
+│                    │              │           │
+│              ┌─────▼─────┐  ┌────▼───────┐   │
+│              │ Middleware│  │  Database   │   │
+│              │    Auth   │  │    Layer    │   │
+│              └───────────┘  └────┬────────┘   │
+└──────────────────────────────────┼────────────┘
+                                   │
+                              MySQL Database
+                                   │
+                    ┌──────────────┴──────────────┐
+                    │                             │
+                users table                  tasks table
 ```
 
 ---
 
-# 5. Client Architecture
+# 3. Architectural Pattern
 
-The client is responsible for the user interface and interaction with the API.
-
-The frontend should not directly communicate with the database.
+The backend follows a layered architecture.
 
 ```text
-User
- ↓
-React Component
- ↓
-Event Handler
- ↓
-API Service
- ↓
-HTTP Request
- ↓
-Backend API
+Request
+   │
+   ▼
+Route
+   │
+   ▼
+Middleware
+   │
+   ▼
+Controller
+   │
+   ▼
+Service / Database Layer
+   │
+   ▼
+MySQL
+   │
+   ▼
+Response
 ```
 
----
+Each layer has a specific responsibility.
 
-# 6. Client Responsibilities
-
-The client is responsible for:
-
-- Rendering the user interface
-- Handling user interactions
-- Form state
-- Client-side validation
-- Authentication state
-- Storing the authentication token according to the application's security design
-- Calling backend APIs
-- Displaying API responses
-- Displaying errors
-- Routing between pages
-- Managing loading states
-
-The client is not responsible for:
-
-- Database access
-- Password hashing
-- JWT signing
-- Authorization decisions
-- Enforcing task ownership
-
-Those responsibilities belong to the server.
+This separation prevents business logic, authentication logic, database operations, and HTTP handling from becoming tightly coupled.
 
 ---
 
-# 7. Client Folder Structure
+# 4. Frontend Architecture
+
+The frontend is built with React.js.
+
+The frontend is responsible for:
+
+* Rendering the user interface
+* Handling user interactions
+* Managing application state
+* Managing authentication state
+* Sending API requests
+* Displaying API responses
+* Handling loading and error states
+
+## 4.1 Frontend Structure
 
 Recommended structure:
 
 ```text
 client/
 ├── public/
+│
 ├── src/
+│   ├── assets/
+│   │
 │   ├── components/
 │   │   ├── common/
 │   │   └── ui/
@@ -179,22 +133,21 @@ client/
 │   ├── pages/
 │   │   ├── Login.jsx
 │   │   ├── Register.jsx
-│   │   └── Dashboard.jsx
+│   │   ├── Dashboard.jsx
+│   │   └── Tasks.jsx
 │   │
 │   ├── hooks/
+│   │
+│   ├── context/
+│   │   └── AuthContext.jsx
 │   │
 │   ├── services/
 │   │   ├── api.js
 │   │   ├── authService.js
 │   │   └── taskService.js
 │   │
-│   ├── context/
-│   │   └── AuthContext.jsx
-│   │
 │   ├── routes/
 │   │   └── AppRoutes.jsx
-│   │
-│   ├── styles/
 │   │
 │   ├── App.jsx
 │   └── main.jsx
@@ -205,403 +158,429 @@ client/
 
 ---
 
-# 8. Client Components
+# 5. Frontend Responsibilities
 
-Components are reusable UI building blocks.
+## Pages
+
+Pages represent complete application screens.
 
 Examples:
-
-```text
-Button
-Input
-Modal
-TaskCard
-TaskForm
-Navbar
-Sidebar
-LoadingSpinner
-ErrorMessage
-```
-
-Components should focus primarily on presentation and user interaction.
-
-Business rules and API communication should be kept outside reusable presentation components when practical.
-
----
-
-# 9. Client Pages
-
-Pages represent application-level screens.
-
-V1 pages include:
 
 ```text
 Login
 Register
 Dashboard
+Tasks
 ```
 
-A page can compose multiple reusable components.
-
-Example:
-
-```text
-Dashboard
-├── Navbar
-├── Sidebar
-├── TaskForm
-├── TaskList
-└── TaskCard
-```
+Pages should focus on composing components rather than containing large amounts of business logic.
 
 ---
 
-# 10. API Service Layer
+## Components
 
-The frontend communicates with the backend through service modules.
+Components are reusable UI elements.
 
-Example:
-
-```text
-components/pages
-        ↓
-service layer
-        ↓
-Axios
-        ↓
-REST API
-```
-
-Example services:
+Examples:
 
 ```text
-authService.js
-taskService.js
+Navbar
+Sidebar
+TaskCard
+TaskForm
+Button
+Input
+Modal
+LoadingSpinner
 ```
 
-The service layer centralizes API requests instead of putting HTTP calls throughout the UI.
+Components should remain reusable and focused on presentation and user interaction.
 
 ---
 
-# 11. Authentication Context
+## Context
 
-Authentication state is managed through an authentication context.
+React Context is used for global application state.
 
-Conceptually:
+For example:
 
 ```text
 AuthContext
-├── user
-├── token
-├── login()
-├── logout()
-└── register()
 ```
 
-Components can access authentication state without passing it through many levels of props.
+It can provide:
+
+```text
+user
+token
+isAuthenticated
+login()
+logout()
+```
+
+This prevents authentication state from being duplicated across multiple pages.
 
 ---
 
-# 12. Protected Routes
+# 6. Frontend Service Layer
 
-Authenticated pages should be protected.
+API communication is separated from UI components.
 
 Example:
 
 ```text
-                    ┌───────────────┐
-                    │ User requests │
-                    │  /dashboard   │
-                    └───────┬───────┘
-                            │
-                            ▼
-                     Authenticated?
-                       /         \
-                     No           Yes
-                     │             │
-                     ▼             ▼
-                  Login        Dashboard
+services/
+├── api.js
+├── authService.js
+└── taskService.js
 ```
 
-The frontend route guard improves user experience, but it is not a security boundary.
+Instead of putting API calls directly inside every component:
 
-The backend must independently authenticate and authorize every protected API request.
+```javascript
+axios.get("/api/tasks");
+```
+
+the application can use:
+
+```javascript
+taskService.getTasks();
+```
+
+This provides better separation of concerns and makes future API changes easier.
 
 ---
 
-# 13. Server Architecture
+# 7. Backend Architecture
 
-The backend follows a layered architecture.
+The backend uses:
 
 ```text
-Request
-   ↓
-Middleware
-   ↓
-Route
-   ↓
-Controller
-   ↓
-Database / Model Layer
-   ↓
-Response
+Node.js
+Express.js
+MySQL
+JWT
+bcrypt
 ```
 
-Each layer has a specific responsibility.
+The backend exposes RESTful API endpoints consumed by the React frontend.
 
 ---
 
-# 14. Server Responsibilities
-
-The server is responsible for:
-
-- API routing
-- Request validation
-- Authentication
-- Authorization
-- Password hashing
-- JWT creation and verification
-- Business logic
-- Database access
-- Error handling
-- Security middleware
-- Rate limiting
-
----
-
-# 15. Server Folder Structure
+# 8. Backend Structure
 
 Recommended structure:
 
 ```text
 server/
-├── src/
-│   ├── config/
-│   │   └── database.js
-│   │
-│   ├── controllers/
-│   │   ├── authController.js
-│   │   └── taskController.js
-│   │
-│   ├── middleware/
-│   │   ├── authMiddleware.js
-│   │   ├── errorMiddleware.js
-│   │   └── validationMiddleware.js
-│   │
-│   ├── routes/
-│   │   ├── authRoutes.js
-│   │   └── taskRoutes.js
-│   │
-│   ├── services/
-│   │   ├── authService.js
-│   │   └── taskService.js
-│   │
-│   ├── validators/
-│   │   ├── authValidator.js
-│   │   └── taskValidator.js
-│   │
-│   ├── app.js
-│   └── server.js
+├── config/
+│   └── database.js
 │
-├── migrations/
+├── controllers/
+│   ├── authController.js
+│   └── taskController.js
+│
+├── middleware/
+│   ├── authMiddleware.js
+│   └── errorMiddleware.js
+│
+├── routes/
+│   ├── authRoutes.js
+│   └── taskRoutes.js
+│
+├── services/
+│   ├── authService.js
+│   └── taskService.js
+│
+├── models/
+│   ├── userModel.js
+│   └── taskModel.js
+│
+├── utils/
+│   ├── jwt.js
+│   └── password.js
+│
 ├── scripts/
 │   └── migrate.js
-├── tests/
-├── .env
-├── .env.example
+│
+├── app.js
+├── server.js
 ├── package.json
 └── README.md
 ```
 
 ---
 
-# 16. Application Entry Point
+# 9. Backend Request Flow
 
-The backend starts from the server entry point.
-
-Conceptually:
+A typical authenticated request follows this flow:
 
 ```text
-server.js
-   ↓
-app.js
-   ↓
-middleware
-   ↓
-routes
+Client
+  │
+  │ GET /api/tasks
+  ▼
+Express Router
+  │
+  ▼
+Authentication Middleware
+  │
+  ├── Invalid Token → 401 Unauthorized
+  │
+  └── Valid Token
+          │
+          ▼
+      Controller
+          │
+          ▼
+       Service
+          │
+          ▼
+       Database
+          │
+          ▼
+       MySQL
+          │
+          ▼
+       Response
+          │
+          ▼
+        Client
 ```
-
-The separation allows the Express application to be configured independently from the process that starts the server.
 
 ---
 
-# 17. Middleware Layer
+# 10. Routes
 
-Middleware runs during the request lifecycle.
+Routes define the public API endpoints.
 
 Example:
 
 ```text
-HTTP Request
-     ↓
-CORS
-     ↓
-Helmet
-     ↓
-Body Parser
-     ↓
-Rate Limiter
-     ↓
-Authentication
-     ↓
-Validation
-     ↓
-Route Handler
+/api/auth
+/api/tasks
 ```
 
-Middleware can:
-
-- Modify requests
-- Reject requests
-- Authenticate users
-- Validate input
-- Handle errors
-- Add security controls
-
----
-
-# 18. Authentication Middleware
-
-Protected endpoints use authentication middleware.
-
-Flow:
+Authentication routes:
 
 ```text
-Authorization Header
-        ↓
-Extract Bearer Token
-        ↓
-Verify JWT
-        ↓
-Decode User Information
-        ↓
-req.user
-        ↓
-Controller
+POST /api/auth/register
+POST /api/auth/login
+GET  /api/auth/me
 ```
 
-Example request:
-
-```http
-Authorization: Bearer <JWT_TOKEN>
-```
-
-The middleware should reject:
-
-- Missing tokens
-- Malformed tokens
-- Invalid tokens
-- Expired tokens
-
----
-
-# 19. Authorization
-
-Authentication answers:
-
-> Who is the user?
-
-Authorization answers:
-
-> Is this user allowed to access this resource?
-
-For task operations:
+Task routes:
 
 ```text
-Authenticated User
-        ↓
-      req.user.id
-        ↓
-      Task Owner
-        ↓
-   Access Allowed?
-      /       \
-    Yes        No
-     ↓          ↓
-Continue      Reject
+GET    /api/tasks
+POST   /api/tasks
+GET    /api/tasks/:id
+PUT    /api/tasks/:id
+DELETE /api/tasks/:id
 ```
 
-The server must enforce ownership.
+Routes should remain lightweight.
+
+They should primarily connect HTTP endpoints to middleware and controllers.
 
 ---
 
-# 20. Controller Layer
+# 11. Controllers
 
 Controllers handle HTTP requests and responses.
 
-Examples:
-
-```text
-authController.js
-taskController.js
-```
-
 Responsibilities include:
 
-- Reading request data
-- Calling application logic
-- Returning HTTP responses
-- Handling expected errors
+* Reading request data
+* Validating basic request information
+* Calling the appropriate service
+* Returning HTTP responses
+* Handling controller-level errors
 
-Controllers should avoid becoming large blocks of unrelated business logic.
-
----
-
-# 21. Service Layer
-
-Services contain reusable application/business logic.
-
-Example:
+Example flow:
 
 ```text
-Controller
-    ↓
-Service
-    ↓
+POST /api/tasks
+        │
+        ▼
+taskRoutes.js
+        │
+        ▼
+createTask()
+        │
+        ▼
+taskService.createTask()
+        │
+        ▼
 Database
 ```
 
-For authentication:
-
-```text
-authController
-      ↓
-authService
-      ↓
-user database
-```
-
-For tasks:
-
-```text
-taskController
-      ↓
-taskService
-      ↓
-task database
-```
-
-This separation makes the application easier to test and maintain.
+Controllers should avoid containing large amounts of database logic.
 
 ---
 
-# 22. Database Layer
+# 12. Services
+
+Services contain application/business logic.
+
+For example:
+
+```text
+authService.js
+taskService.js
+```
+
+The service layer can handle operations such as:
+
+```text
+Register user
+Authenticate user
+Generate JWT
+Create task
+Update task
+Delete task
+Retrieve tasks
+```
+
+This keeps controllers small and easier to maintain.
+
+---
+
+# 13. Authentication Architecture
+
+Authentication uses JWT.
+
+The authentication flow is:
+
+```text
+User
+ │
+ │ Email + Password
+ ▼
+Login API
+ │
+ ▼
+Find User
+ │
+ ▼
+Compare Password
+ │
+ ▼
+Generate JWT
+ │
+ ▼
+Return Token
+ │
+ ▼
+Client Stores Token
+```
+
+For protected requests:
+
+```text
+Client
+ │
+ │ Authorization: Bearer <token>
+ ▼
+Auth Middleware
+ │
+ ▼
+Verify JWT
+ │
+ ├── Invalid → 401
+ │
+ └── Valid
+       │
+       ▼
+    req.user
+       │
+       ▼
+   Controller
+```
+
+---
+
+# 14. Password Security
+
+Passwords must never be stored as plain text.
+
+During registration:
+
+```text
+Plain Password
+      │
+      ▼
+bcrypt
+      │
+      ▼
+Password Hash
+      │
+      ▼
+MySQL
+```
+
+During login:
+
+```text
+Entered Password
+      │
+      ▼
+bcrypt.compare()
+      │
+      ▼
+Stored Password Hash
+```
+
+Only the password hash is stored in the database.
+
+---
+
+# 15. JWT Architecture
+
+After successful authentication, the server generates a JWT.
+
+The token contains the authenticated user's identity.
+
+Example conceptual payload:
+
+```text
+{
+    id,
+    email
+}
+```
+
+The client sends the token with protected requests:
+
+```text
+Authorization: Bearer <JWT>
+```
+
+The authentication middleware verifies the token and attaches the user information to the request:
+
+```javascript
+req.user = {
+    id,
+    name,
+    email
+};
+```
+
+Controllers can then use:
+
+```javascript
+req.user.id
+```
+
+to determine which user's data should be accessed.
+
+---
+
+# 16. Database Architecture
 
 The application uses MySQL as its relational database.
 
-The database stores persistent application data.
-
-V1 primary entities include:
+Core entities include:
 
 ```text
 users
@@ -612,679 +591,462 @@ Relationship:
 
 ```text
 users
-  │
-  │ 1
-  │
-  │
-  │ many
-  ▼
+   │
+   │ 1
+   │
+   │
+   │ many
+   ▼
 tasks
 ```
 
-Each task belongs to a user.
+One user can own multiple tasks.
 
----
-
-# 23. Database Access Flow
+Each task belongs to a specific user through:
 
 ```text
-HTTP Request
-     ↓
-Route
-     ↓
-Controller
-     ↓
-Service
-     ↓
-Database Query
-     ↓
-MySQL
-     ↓
-Database Result
-     ↓
-Service
-     ↓
-Controller
-     ↓
-HTTP Response
-```
-
-The client never connects directly to MySQL.
-
----
-
-# 24. Database Migrations
-
-Database schema changes are managed using migration files.
-
-Example:
-
-```text
-migrations/
-├── 001_create_users.sql
-└── 002_create_tasks.sql
-```
-
-Migration execution:
-
-```text
-npm run migrate
-        ↓
-scripts/migrate.js
-        ↓
-Read migration files
-        ↓
-Execute SQL
-        ↓
-Record completed migration
-```
-
-The migration system prevents already executed migrations from being run again.
-
----
-
-# 25. Data Flow: Registration
-
-```text
-User
- ↓
-Register Form
- ↓
-POST /api/auth/register
- ↓
-Auth Route
- ↓
-Validation
- ↓
-Auth Controller
- ↓
-Hash Password
- ↓
-Create User
- ↓
-MySQL
- ↓
-User Created
- ↓
-HTTP Response
- ↓
-Client
-```
-
-The plaintext password must never be stored in the database.
-
----
-
-# 26. Data Flow: Login
-
-```text
-User
- ↓
-Login Form
- ↓
-POST /api/auth/login
- ↓
-Auth Route
- ↓
-Validation
- ↓
-Auth Controller
- ↓
-Find User
- ↓
-Compare Password
- ↓
-Create JWT
- ↓
-HTTP Response
- ↓
-Client
-```
-
-The client receives authentication information required for subsequent protected requests.
-
----
-
-# 27. Data Flow: Get Current User
-
-```text
-Client
- ↓
-GET /api/auth/me
- ↓
-Authorization Header
- ↓
-Auth Middleware
- ↓
-Verify JWT
- ↓
-req.user
- ↓
-Auth Controller
- ↓
-User Data
- ↓
-HTTP Response
- ↓
-Client
+tasks.user_id
 ```
 
 ---
 
-# 28. Data Flow: Create Task
+# 17. Data Ownership
+
+Users should only be able to access their own tasks.
+
+For example:
 
 ```text
-Client
- ↓
-Task Form
- ↓
-POST /api/tasks
- ↓
-Auth Middleware
- ↓
-Validation
- ↓
-Task Controller
- ↓
-Task Service
- ↓
-MySQL
- ↓
-Task Created
- ↓
-HTTP Response
- ↓
-Client
+User A
+ ├── Task 1
+ ├── Task 2
+ └── Task 3
+
+User B
+ ├── Task 4
+ └── Task 5
 ```
 
-The server obtains the task owner from the authenticated user.
+User A must not be able to access User B's tasks.
+
+The backend should enforce ownership using the authenticated user's ID.
+
+Example concept:
+
+```sql
+SELECT *
+FROM tasks
+WHERE user_id = ?;
+```
+
+The `user_id` should come from the authenticated user rather than being trusted directly from the client.
 
 ---
 
-# 29. Data Flow: Update Task
+# 18. Error Handling
 
-```text
-Client
- ↓
-PATCH /api/tasks/:id
- ↓
-Auth Middleware
- ↓
-Validation
- ↓
-Task Controller
- ↓
-Check Task Ownership
- ↓
-Update Task
- ↓
-MySQL
- ↓
-HTTP Response
- ↓
-Client
-```
-
----
-
-# 30. Data Flow: Delete Task
-
-```text
-Client
- ↓
-DELETE /api/tasks/:id
- ↓
-Auth Middleware
- ↓
-Task Controller
- ↓
-Check Task Ownership
- ↓
-Delete Task
- ↓
-MySQL
- ↓
-HTTP Response
- ↓
-Client
-```
-
----
-
-# 31. Error Handling Architecture
-
-Errors should be handled consistently.
-
-```text
-Request
-   ↓
-Route
-   ↓
-Controller
-   ↓
-Error
-   ↓
-Error Middleware
-   ↓
-Standard JSON Response
-```
+The backend should provide consistent error responses.
 
 Example:
 
 ```json
 {
-  "message": "Task not found.",
-  "code": "TASK_NOT_FOUND"
+  "success": false,
+  "message": "Task not found"
 }
 ```
 
-Internal errors should not expose sensitive implementation details.
-
----
-
-# 32. Security Architecture
-
-Security is implemented in multiple layers.
+Common HTTP status codes:
 
 ```text
-                    Client
-                      │
-                      ▼
-                     CORS
-                      │
-                      ▼
-                    Helmet
-                      │
-                      ▼
-                Rate Limiting
-                      │
-                      ▼
-                  Validation
-                      │
-                      ▼
-                Authentication
-                      │
-                      ▼
-                Authorization
-                      │
-                      ▼
-               Parameterized SQL
-                      │
-                      ▼
-                   MySQL
+200 OK
+201 Created
+400 Bad Request
+401 Unauthorized
+403 Forbidden
+404 Not Found
+409 Conflict
+500 Internal Server Error
 ```
-
-Important security principles:
-
-1. Never trust client-provided ownership information.
-2. Never store plaintext passwords.
-3. Never expose secrets.
-4. Validate incoming data.
-5. Use parameterized queries.
-6. Protect private routes.
-7. Use HTTPS in production.
-8. Keep secrets in environment variables.
-9. Do not commit `.env`.
-10. Do not expose internal errors.
 
 ---
 
-# 33. Environment Configuration
+# 19. Security Architecture
 
-Environment-specific configuration is stored in environment variables.
+The application should follow basic security principles.
+
+## Authentication
+
+JWT protects authenticated routes.
+
+## Password Protection
+
+Passwords are hashed using bcrypt.
+
+## Authorization
+
+Users can only access resources they own.
+
+## Input Validation
+
+User input should be validated before processing.
+
+## Environment Variables
+
+Sensitive configuration should not be committed to Git.
 
 Example:
 
-```env
-NODE_ENV=development
-PORT=5000
-
-DATABASE_HOST=localhost
-DATABASE_PORT=3306
-DATABASE_USER=your_user
-DATABASE_PASSWORD=your_password
-DATABASE_NAME=task_manager
-
-JWT_SECRET=your_secret
-JWT_EXPIRES_IN=1d
-
-CLIENT_URL=http://localhost:5173
-```
-
-The actual `.env` file must not be committed to Git.
-
-A safe example file can be committed:
-
 ```text
-.env.example
+JWT_SECRET
+DB_HOST
+DB_USER
+DB_PASSWORD
+DB_NAME
+PORT
 ```
+
+These values should be stored in environment variables.
 
 ---
 
-# 34. Request Lifecycle
+# 20. API Communication
 
-The complete backend request lifecycle is:
+The client communicates with the server using HTTP requests.
 
-```text
-┌───────────────┐
-│ HTTP Request  │
-└───────┬───────┘
-        ↓
-┌───────────────┐
-│    CORS       │
-└───────┬───────┘
-        ↓
-┌───────────────┐
-│   Security    │
-│   Middleware  │
-└───────┬───────┘
-        ↓
-┌───────────────┐
-│ Authentication │
-└───────┬───────┘
-        ↓
-┌───────────────┐
-│  Validation   │
-└───────┬───────┘
-        ↓
-┌───────────────┐
-│     Route     │
-└───────┬───────┘
-        ↓
-┌───────────────┐
-│  Controller   │
-└───────┬───────┘
-        ↓
-┌───────────────┐
-│    Service    │
-└───────┬───────┘
-        ↓
-┌───────────────┐
-│    MySQL      │
-└───────┬───────┘
-        ↓
-┌───────────────┐
-│   Response    │
-└───────────────┘
-```
-
----
-
-# 35. Separation of Responsibilities
-
-| Layer | Responsibility |
-|---|---|
-| React Components | UI and interaction |
-| Pages | Screen composition |
-| API Services | HTTP communication |
-| Context | Shared authentication state |
-| Routes | Endpoint definitions |
-| Middleware | Cross-cutting request processing |
-| Controllers | HTTP request/response handling |
-| Services | Application/business logic |
-| Database | Persistent data |
-| Migrations | Database schema changes |
-
-A layer should not unnecessarily take responsibility for another layer.
-
----
-
-# 36. Dependency Direction
-
-The application follows a controlled dependency direction.
+Example:
 
 ```text
-Client
-  ↓
-API
-  ↓
-Routes
-  ↓
-Controllers
-  ↓
-Services
-  ↓
-Database
-```
-
-The database does not depend on the React client.
-
-The React client does not directly depend on MySQL.
-
----
-
-# 37. Scalability Considerations
-
-The V1 architecture is intentionally simple.
-
-Future versions can introduce:
-
-- Redis caching
-- Background jobs
-- Message queues
-- File/object storage
-- WebSockets
-- Search infrastructure
-- Load balancing
-- Database read replicas
-- Monitoring
-- Logging infrastructure
-
-These are not required for the V1 application.
-
----
-
-# 38. Testing Architecture
-
-Testing should exist at multiple levels.
-
-```text
-Tests
-├── Unit Tests
-├── Integration Tests
-└── API Tests
-```
-
-### Unit Tests
-
-Test isolated application logic.
-
-### Integration Tests
-
-Test interactions between application components.
-
-### API Tests
-
-Test complete HTTP behavior such as:
-
-```text
-Request
- ↓
-Middleware
- ↓
+React
+  │
+  │ Axios
+  ▼
+Express API
+  │
+  ▼
 Controller
- ↓
+  │
+  ▼
 Database
- ↓
-Response
 ```
 
-Critical authentication and authorization behavior should be tested.
+Example request:
+
+```http
+POST /api/tasks
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+Example request body:
+
+```json
+{
+  "title": "Complete documentation",
+  "description": "Finish project documentation"
+}
+```
 
 ---
 
-# 39. Deployment Architecture
+# 21. State Management
 
-A production deployment can follow:
+V1 keeps state management intentionally simple.
+
+Local component state can manage:
 
 ```text
-                    Internet
-                       │
-                       ▼
-              ┌─────────────────┐
-              │   React Client  │
-              │     Hosting     │
-              └────────┬────────┘
-                       │
-                       │ HTTPS
-                       ▼
-              ┌─────────────────┐
-              │  Express API    │
-              │   Node.js       │
-              └────────┬────────┘
-                       │
-                       │ Secure DB connection
-                       ▼
-              ┌─────────────────┐
-              │      MySQL      │
-              │     Database    │
-              └─────────────────┘
+Form values
+Loading states
+Modal state
+Validation errors
+Task data
 ```
 
-The exact hosting providers are deployment decisions and are not part of the core application architecture.
+Global authentication state is managed through:
+
+```text
+AuthContext
+```
+
+More advanced state management can be introduced in V2 if the application becomes more complex.
 
 ---
 
-# 40. V1 Architecture Scope
+# 22. Deployment Architecture
 
-## Included
+The production architecture can be represented as:
 
-- React frontend
-- Node.js backend
-- Express REST API
-- MySQL database
-- JWT authentication
-- bcrypt password hashing
-- Task CRUD
-- User-task ownership
-- Validation
-- Error handling
-- Security middleware
-- Database migrations
+```text
+                 Internet
+                    │
+          ┌─────────┴─────────┐
+          │                   │
+          ▼                   ▼
+       Frontend             Backend
+       Hosting              Hosting
+          │                   │
+       React App          Node.js API
+                              │
+                              ▼
+                         MySQL Database
+```
 
-## Not Included
-
-- Microservices
-- Kubernetes
-- Message queues
-- Redis
-- WebSockets
-- AI services
-- Advanced analytics
-- Multi-tenant organizations
-- Complex role-based access control
-- Event-driven architecture
-
-The V1 architecture prioritizes simplicity and maintainability.
+The frontend communicates with the deployed backend through HTTPS.
 
 ---
 
-# 41. Architecture Principles
+# 23. Environment Configuration
+
+Development:
+
+```text
+React Client
+     │
+     ▼
+Local Express Server
+     │
+     ▼
+Local MySQL
+```
+
+Production:
+
+```text
+React Frontend
+     │
+     ▼
+Production API
+     │
+     ▼
+Production MySQL
+```
+
+Environment-specific configuration should be handled using environment variables.
+
+---
+
+# 24. Separation of Concerns
+
+Each part of the application has a defined responsibility.
+
+| Layer       | Responsibility                        |
+| ----------- | ------------------------------------- |
+| Pages       | Application screens                   |
+| Components  | Reusable UI                           |
+| Context     | Global frontend state                 |
+| Services    | API communication/business operations |
+| Routes      | API endpoint definitions              |
+| Middleware  | Authentication and request processing |
+| Controllers | HTTP request/response handling        |
+| Services    | Backend business logic                |
+| Models      | Database interaction                  |
+| Database    | Persistent data storage               |
+
+This separation makes the application easier to understand and maintain.
+
+---
+
+# 25. Scalability Considerations
+
+The V1 architecture is intentionally simple, but it provides a foundation for future versions.
+
+Possible V2 improvements:
+
+```text
+Redis
+Caching
+Advanced validation
+Centralized logging
+Rate limiting
+Automated testing
+Background jobs
+Email notifications
+File uploads
+Pagination
+Search
+Filtering
+```
+
+Possible V3 improvements:
+
+```text
+Microservices
+Message queues
+Event-driven architecture
+Advanced observability
+Horizontal scaling
+Containerization
+CI/CD pipelines
+Cloud infrastructure
+```
+
+These technologies should only be introduced when the application's requirements justify their complexity.
+
+---
+
+# 26. Testing Architecture
+
+Testing can be introduced at multiple levels.
+
+## Unit Tests
+
+Test individual functions and services.
+
+```text
+authService
+taskService
+utility functions
+```
+
+## Integration Tests
+
+Test interactions between:
+
+```text
+API
+Database
+Authentication
+```
+
+## Frontend Tests
+
+Test:
+
+```text
+Components
+Forms
+Authentication flows
+Task interactions
+```
+
+## End-to-End Tests
+
+Test complete user workflows:
+
+```text
+Register
+   ↓
+Login
+   ↓
+Dashboard
+   ↓
+Create Task
+   ↓
+Update Task
+   ↓
+Delete Task
+```
+
+---
+
+# 27. Architecture Principles
 
 The project follows these principles:
 
-### Separation of Concerns
-
-Each layer has a focused responsibility.
-
-### Security by Design
-
-Authentication and authorization are enforced by the backend.
-
 ### Single Responsibility
 
-Modules should have clear and focused responsibilities.
+Each module should have one primary responsibility.
+
+### Separation of Concerns
+
+UI, API, business logic, authentication, and database operations should remain separated.
 
 ### Reusability
 
 Common frontend components and backend services should be reusable.
 
+### Security by Design
+
+Authentication, authorization, password hashing, and input validation are built into the architecture.
+
 ### Maintainability
 
-The project structure should make future changes easy.
+The project structure should make it easy for another developer to understand and modify the codebase.
 
-### Simplicity
+### Scalability
 
-V1 avoids unnecessary infrastructure and complexity.
-
-### API Contract
-
-The frontend and backend communicate through a defined REST API contract.
+The architecture should support adding features without requiring a complete rewrite.
 
 ---
 
-# 42. V1 Architecture Completion Criteria
+# 28. V1 Architecture Goals
 
-The architecture is considered complete for V1 when:
+The main goals of the V1 architecture are:
 
-- [ ] Client and server are separated.
-- [ ] Client communicates with server through REST APIs.
-- [ ] Server communicates with MySQL.
-- [ ] Authentication middleware protects private routes.
-- [ ] Authorization enforces task ownership.
-- [ ] Controllers and services have clear responsibilities.
-- [ ] Database migrations work.
-- [ ] Environment variables are used for secrets.
-- [ ] Error handling is centralized.
-- [ ] Input validation is implemented.
-- [ ] Security middleware is configured.
-- [ ] Critical API behavior is tested.
-- [ ] Documentation matches the implementation.
+* Build a clean full-stack application.
+* Separate frontend and backend responsibilities.
+* Implement secure authentication.
+* Protect user-specific resources.
+* Use a relational database correctly.
+* Provide a consistent REST API.
+* Keep business logic organized.
+* Create a foundation for V2 and V3 development.
 
 ---
 
-# 43. Related Documentation
+# 29. Future Architecture Evolution
 
-- `README.md` — Project overview and setup
-- `docs/requirements.md` — Product and functional requirements
-- `docs/architecture.md` — System architecture
-- `docs/api.md` — REST API documentation
-- `docs/database.md` — Database design
-
----
-
-# 44. Final Architecture
-
-The final V1 architecture is:
+The architecture is expected to evolve as the product grows.
 
 ```text
-                         ┌──────────────┐
-                         │     User     │
-                         └──────┬───────┘
-                                │
-                                ▼
-                    ┌─────────────────────┐
-                    │   React Client      │
-                    │                     │
-                    │ Pages               │
-                    │ Components          │
-                    │ Context             │
-                    │ API Services        │
-                    └──────────┬──────────┘
-                               │
-                         HTTPS / REST
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │   Node + Express    │
-                    │                     │
-                    │ Routes              │
-                    │ Middleware          │
-                    │ Controllers         │
-                    │ Services            │
-                    └──────────┬──────────┘
-                               │
-                              SQL
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │       MySQL         │
-                    │                     │
-                    │ users               │
-                    │ tasks               │
-                    └─────────────────────┘
+V1
+│
+├── React
+├── Express
+├── MySQL
+├── JWT
+└── REST API
+        │
+        ▼
+V2
+│
+├── Better validation
+├── Testing
+├── Pagination
+├── Search
+├── Filtering
+├── Notifications
+└── Improved state management
+        │
+        ▼
+V3
+│
+├── CI/CD
+├── Docker
+├── Redis
+├── Background jobs
+├── Observability
+└── Cloud scalability
 ```
 
-## Architecture Principle
+The goal is not to over-engineer V1.
 
-> **Keep the client focused on user experience, the server responsible for application logic and security, and the database responsible for persistent data.**
+The architecture should remain simple enough to develop quickly while maintaining professional software engineering practices.
+
+---
+
+# 30. Summary
+
+The Task Management SaaS uses a **layered full-stack architecture**.
+
+```text
+React Client
+     │
+     │ REST API
+     ▼
+Express Server
+     │
+     ├── Routes
+     ├── Middleware
+     ├── Controllers
+     ├── Services
+     └── Models
+     │
+     ▼
+MySQL Database
+```
+
+Authentication is handled using JWT, passwords are protected using bcrypt, and authorization ensures users can only access their own resources.
+
+This architecture provides a clean foundation for the V1 application while allowing the project to evolve into a more scalable production system in V2 and V3.

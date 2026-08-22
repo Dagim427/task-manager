@@ -1,116 +1,538 @@
-# Client — Task Manager (React + Vite)
+# Task Management SaaS — Client
 
-This folder contains the front-end single-page application for the Task Manager project, implemented with React and Vite.
+The `client` directory contains the frontend application for the Task Management SaaS.
 
-## Purpose
+The frontend is built with React.js and communicates with the backend through a REST API.
 
-- Provide a clean UI for users to register, log in, and manage tasks.
-- Communicate with the server API for authentication and task CRUD operations.
+---
 
-## Prerequisites
+## 1. Frontend Responsibilities
 
-- Node.js 18+ and npm (or yarn)
-- A running server API (see `../server/README.md`) or set `VITE_API_URL` to a reachable API endpoint.
+The client application is responsible for:
 
-## Setup
+* Rendering the user interface
+* User registration
+* User login
+* Authentication state
+* Protected routes
+* Dashboard
+* Task management UI
+* Form handling
+* API communication
+* Loading states
+* Error handling
+* User feedback
+
+---
+
+## 2. Tech Stack
+
+* React.js
+* JavaScript
+* JSX
+* CSS
+* Axios
+* React Router
+* npm
+
+---
+
+## 3. Frontend Architecture
+
+```text
+React Application
+       │
+       ├── Pages
+       │
+       ├── Components
+       │
+       ├── Context
+       │
+       ├── Hooks
+       │
+       ├── Services
+       │
+       └── Routes
+                │
+                ▼
+            REST API
+                │
+                ▼
+          Node.js Server
+```
+
+---
+
+## 4. Folder Structure
+
+```text
+client/
+│
+├── public/
+│
+├── src/
+│   │
+│   ├── assets/
+│   │
+│   ├── components/
+│   │   ├── common/
+│   │   └── ui/
+│   │
+│   ├── pages/
+│   │   ├── Login.jsx
+│   │   ├── Register.jsx
+│   │   ├── Dashboard.jsx
+│   │   └── Tasks.jsx
+│   │
+│   ├── hooks/
+│   │
+│   ├── context/
+│   │   └── AuthContext.jsx
+│   │
+│   ├── services/
+│   │   ├── api.js
+│   │   ├── authService.js
+│   │   └── taskService.js
+│   │
+│   ├── routes/
+│   │   └── AppRoutes.jsx
+│   │
+│   ├── App.jsx
+│   └── main.jsx
+│
+├── package.json
+└── README.md
+```
+
+---
+
+## 5. Pages
+
+Pages represent complete application screens.
+
+### Login
+
+Allows existing users to authenticate.
+
+### Register
+
+Allows new users to create an account.
+
+### Dashboard
+
+Displays authenticated user information and task-related information.
+
+### Tasks
+
+Provides the main task-management interface.
+
+---
+
+## 6. Components
+
+Components are reusable UI elements.
+
+Examples:
+
+```text
+Navbar
+Sidebar
+TaskCard
+TaskForm
+Button
+Input
+Modal
+LoadingSpinner
+ErrorMessage
+```
+
+Components should be kept reusable and focused.
+
+---
+
+## 7. Common Components
+
+Common components are reusable application-level components.
+
+Example:
+
+```text
+components/common/
+├── Navbar.jsx
+├── Sidebar.jsx
+├── Loading.jsx
+└── ErrorMessage.jsx
+```
+
+These components may be used across multiple pages.
+
+---
+
+## 8. UI Components
+
+UI components represent reusable visual building blocks.
+
+Example:
+
+```text
+components/ui/
+├── Button.jsx
+├── Input.jsx
+├── Modal.jsx
+└── Card.jsx
+```
+
+They should have minimal application-specific logic.
+
+---
+
+## 9. Authentication Context
+
+`AuthContext` manages global authentication state.
+
+Example state:
+
+```text
+user
+token
+isAuthenticated
+loading
+```
+
+Example operations:
+
+```text
+login()
+logout()
+```
+
+This allows different parts of the application to access authentication information without passing it through many component levels.
+
+---
+
+## 10. Services
+
+The service layer handles communication with the backend.
+
+```text
+services/
+├── api.js
+├── authService.js
+└── taskService.js
+```
+
+### api.js
+
+Contains the Axios configuration.
+
+### authService.js
+
+Handles authentication API requests.
+
+### taskService.js
+
+Handles task API requests.
+
+---
+
+## 11. API Communication
+
+Example:
+
+```text
+React Component
+      │
+      ▼
+taskService.js
+      │
+      ▼
+Axios
+      │
+      ▼
+Express API
+```
+
+Components should preferably call service functions instead of directly implementing API requests everywhere.
+
+---
+
+## 12. Authentication Flow
+
+```text
+Login Page
+    │
+    ▼
+authService.login()
+    │
+    ▼
+POST /api/auth/login
+    │
+    ▼
+Backend
+    │
+    ▼
+JWT Token
+    │
+    ▼
+AuthContext
+    │
+    ▼
+Authenticated Application
+```
+
+---
+
+## 13. Protected Routes
+
+Authenticated pages should only be accessible when the user has a valid authentication state.
+
+Example:
+
+```text
+Public Routes
+├── /login
+└── /register
+
+Protected Routes
+├── /dashboard
+└── /tasks
+```
+
+Unauthenticated users attempting to access protected routes should be redirected to the login page.
+
+---
+
+## 14. Task Flow
+
+```text
+Tasks Page
+    │
+    ▼
+taskService.getTasks()
+    │
+    ▼
+GET /api/tasks
+    │
+    ▼
+Backend
+    │
+    ▼
+Tasks
+    │
+    ▼
+React State
+    │
+    ▼
+Task Components
+```
+
+Creating a task:
+
+```text
+Task Form
+    │
+    ▼
+taskService.createTask()
+    │
+    ▼
+POST /api/tasks
+    │
+    ▼
+Backend
+    │
+    ▼
+Database
+```
+
+---
+
+## 15. Environment Variables
+
+Frontend environment variables may contain the backend API URL.
+
+Example:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+Production:
+
+```env
+VITE_API_URL=https://your-production-api.com/api
+```
+
+Do not place private secrets in frontend environment variables.
+
+---
+
+## 16. Installation
+
+From the project root:
 
 ```bash
 cd client
 npm install
 ```
 
-## Environment variables
+---
 
-Create a `.env` file in `client/` for local overrides. Common variables:
+## 17. Development
 
-```
-VITE_API_URL=http://localhost:3000/api
-```
-
-Vite exposes variables prefixed with `VITE_` to the client bundle.
-
-## Development (run)
+Run the frontend:
 
 ```bash
-cd client
 npm run dev
 ```
 
-The dev server typically runs on `http://localhost:5173`.
+The development server URL will be displayed in the terminal.
 
-## Build (production)
+---
+
+## 18. Production Build
+
+Create a production build:
 
 ```bash
-cd client
 npm run build
+```
+
+Preview the production build:
+
+```bash
 npm run preview
-```
-
-`npm run build` produces a `dist/` folder ready for static hosting.
-
-## Tests
-
-Client unit and component tests use React Testing Library.
-
-```bash
-cd client
-npm test
-```
-
-See `src/components/` and `src/hooks/` for example tests.
-
-## Project structure
-
-- `index.html` — app entry HTML
-- `src/main.jsx` — app bootstrap
-- `src/App.jsx` — top-level routes and providers
-- `src/components/` — shared and feature components (`task/`, `common/`, `ui/`)
-- `src/pages/` — page-level route components
-- `src/services/` — API clients and services (`api.js`, `auth.service.js`, `task.service.js`)
-- `src/hooks/` — React hooks (e.g. `useTasks.js`)
-- `public/` — static assets
-
-## Key dev notes
-
-- Keep UI logic in components and side effects in hooks (e.g. `useTasks`).
-- `src/services/api.js` centralizes HTTP configuration and authorization header handling.
-- Prefer testing the behavior of components using React Testing Library rather than implementation details.
-
-## API integration
-
-The client calls the API under `VITE_API_URL`. The main auth flow:
-
-1. `POST /auth/login` — returns JWT
-2. Client stores token (in memory or secure storage) and attaches `Authorization: Bearer <token>` for protected requests
-
-Important: avoid storing long-lived secrets in `localStorage` for production apps without secure refresh flows.
-
-## Styling
-
-Global styles are under `src/styles/index.css`. Replace or extend with your preferred CSS strategy (CSS modules, Tailwind, etc.) if needed.
-
-## Linting & Formatting
-
-See `eslint.config.js` in the client root. Run linters or formatters as part of CI or pre-commit if configured.
-
-## Contributing
-
-- Add components under `src/components/` and pages under `src/pages/`.
-- Add/update tests alongside components.
-- Run `npm run dev` locally and ensure all tests pass before submitting PRs.
-
-## Example requests (quick)
-
-Authenticate and list tasks (replace `VITE_API_URL` and credentials):
-
-```bash
-# obtain token
-curl -X POST $VITE_API_URL/auth/login -H "Content-Type: application/json" -d '{"email":"user@example.com","password":"secret"}'
-
-# list tasks
-curl -H "Authorization: Bearer <token>" $VITE_API_URL/tasks
 ```
 
 ---
 
-If you want, I can add step-by-step examples for common flows (register/login/create task) and include them in this file or `docs/api.md`.
+## 19. Code Organization Principles
+
+The frontend follows these principles:
+
+### Reusability
+
+Create reusable components instead of duplicating UI.
+
+### Separation of Concerns
+
+Keep UI, state, routing, and API communication separated.
+
+### Maintainability
+
+Use clear names and predictable folder structures.
+
+### Simplicity
+
+Avoid unnecessary state-management libraries and abstractions in V1.
+
+---
+
+## 20. Frontend Data Flow
+
+```text
+User Interaction
+       │
+       ▼
+React Component
+       │
+       ▼
+Service Function
+       │
+       ▼
+Axios
+       │
+       ▼
+REST API
+       │
+       ▼
+Response
+       │
+       ▼
+React State
+       │
+       ▼
+UI Update
+```
+
+---
+
+## 21. Error Handling
+
+The frontend should handle:
+
+* Invalid login
+* Registration errors
+* Unauthorized requests
+* Validation errors
+* Network errors
+* Server errors
+* Loading states
+* Empty task lists
+
+Example:
+
+```text
+Loading
+   ↓
+API Request
+   ↓
+Success → Display Data
+
+Error → Display Error Message
+```
+
+---
+
+## 22. Frontend Security
+
+The frontend should:
+
+* Never store passwords.
+* Never expose backend secrets.
+* Send JWT with protected requests.
+* Handle expired authentication.
+* Avoid trusting client-side authorization.
+* Validate user input before submission.
+
+The backend remains the source of truth for authentication and authorization.
+
+---
+
+## 23. Testing
+
+Future frontend tests can cover:
+
+```text
+Login
+Registration
+Protected routes
+Task creation
+Task update
+Task deletion
+Error states
+Loading states
+```
+
+---
+
+## 24. Future Improvements
+
+Potential V2 improvements:
+
+* Better dashboard
+* Task filtering
+* Search
+* Pagination
+* Drag-and-drop task management
+* Improved responsive design
+* Reusable form components
+* Better loading states
+* Automated frontend testing
+
+---
+
+## 25. Frontend Goal
+
+The goal of the V1 frontend is to provide a clean, responsive, maintainable React application that communicates reliably with the backend API.
+
+The frontend should remain simple enough to understand while providing a strong foundation for future versions.
