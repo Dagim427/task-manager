@@ -71,18 +71,12 @@ function TasksPage() {
   const handleStatusChange = async (task, nextStatus) => {
     try {
       await updateTask(task.id, {
-        title: task.title,
-        description: task.description ?? null,
         status: nextStatus,
-        priority: task.priority ?? task.priority_level ?? "medium",
-        dueDate: task.dueDate ?? task.due_date ?? null,
       });
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ?? "Unable to update task status.",
       );
-
-      throw requestError;
     }
   };
 

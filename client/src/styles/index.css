@@ -758,6 +758,24 @@ button[type="submit"]:disabled {
   line-height: 1.5;
 }
 
+/* Pagination styling */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.pagination span {
+  color: #475467;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 /* Mobile navigation button & drawer overlay */
 .mobile-menu-button {
   display: none;
@@ -858,5 +876,19 @@ button[type="submit"]:disabled {
 
   .modal-actions button {
     width: 100%;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pagination button {
+    width: 100%;
+  }
+
+  .task-table-container {
+    border-radius: 8px;
+    margin-bottom: 16px;
   }
 }
