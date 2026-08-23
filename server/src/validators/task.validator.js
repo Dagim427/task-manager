@@ -95,4 +95,24 @@ export const listTasksValidator = [
     .isInt({ min: 1, max: 100 })
     .withMessage("Limit must be between 1 and 100.")
     .toInt(),
+
+  query("search")
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage("Search must not exceed 100 characters."),
+
+  query("status")
+    .optional()
+    .isIn(["todo", "in_progress", "completed"])
+    .withMessage(
+      "Status must be todo, in_progress, or completed.",
+    ),
+
+  query("priority")
+    .optional()
+    .isIn(["low", "medium", "high"])
+    .withMessage(
+      "Priority must be low, medium, or high.",
+    ),
 ];

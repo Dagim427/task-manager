@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Modal from "../../components/common/modal";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
@@ -10,7 +10,7 @@ import TaskStatusSelect from "../../components/task/TaskStatusSelect";
 import useTasks from "../../hooks/useTasks";
 
 const STATUS_OPTIONS = [
-  { value: "all", label: "All statuses" },
+  { value: "", label: "All statuses" },
   { value: "todo", label: "To do" },
   {
     value: "in_progress",
@@ -23,15 +23,22 @@ const STATUS_OPTIONS = [
 ];
 
 const PRIORITY_OPTIONS = [
-  { value: "all", label: "All priorities" },
+  { value: "", label: "All priorities" },
   { value: "low", label: "Low" },
   { value: "medium", label: "Medium" },
   { value: "high", label: "High" },
 ];
 
 function TasksPage() {
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [priority, setPriority] = useState("");
+
   const {
     tasks,
+    pagination,
+    page,
+    setPage,
     isLoading,
     isCreating,
     isUpdating,
@@ -42,11 +49,11 @@ function TasksPage() {
     createTask,
     updateTask,
     removeTask,
-  } = useTasks();
-
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [priority, setPriority] = useState("all");
+  } = useTasks({
+    search,
+    status: statusFilter,
+    priority,
+  });
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createError, setCreateError] = useState("");
@@ -56,6 +63,10 @@ function TasksPage() {
 
   const [deletingTask, setDeletingTask] = useState(null);
   const [deleteError, setDeleteError] = useState("");
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter, priority, setPage]);
 
   const handleStatusChange = async (task, nextStatus) => {
     try {
@@ -129,36 +140,10 @@ function TasksPage() {
     }
   };
 
-  const filteredTasks = useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase();
-
-    return tasks.filter((task) => {
-      if (!task) return false;
-
-      const rawPriority =
-        task.priority ?? task.priority_level ?? task.priorityLevel;
-      const taskPriority = rawPriority
-        ? String(rawPriority).trim().toLowerCase()
-        : "";
-
-      const matchesSearch =
-        !normalizedSearch ||
-        task.title?.toLowerCase().includes(normalizedSearch) ||
-        task.description?.toLowerCase().includes(normalizedSearch);
-
-      const matchesStatus =
-        statusFilter === "all" || task.status === statusFilter;
-
-      const matchesPriority = priority === "all" || taskPriority === priority;
-
-      return matchesSearch && matchesStatus && matchesPriority;
-    });
-  }, [tasks, search, statusFilter, priority]);
-
   const hasFilters =
     search.trim() !== "" ||
-    statusFilter !== "all" ||
-    priority !== "all";
+    statusFilter !== "" ||
+    priority !== "";
 
   return (
     <section>
@@ -234,7 +219,7 @@ function TasksPage() {
           <LoadingState message="Loading tasks..." />
         ) : error ? (
           <ErrorState message={error} onRetry={loadTasks} />
-        ) : filteredTasks.length === 0 ? (
+        ) : tasks.length === 0 ? (
           <EmptyState
             title={
               hasFilters
@@ -277,7 +262,7 @@ function TasksPage() {
               </thead>
 
               <tbody>
-                {filteredTasks.map((task) => {
+                {tasks.map((task) => {
                   const rawPriority =
                     task.priority ?? task.priority_level ?? task.priorityLevel;
                   const normalizedPriority = rawPriority
@@ -345,6 +330,44 @@ function TasksPage() {
           </div>
         )}
       </div>
+
+      {pagination?.totalPages > 1 && (
+        <div className="pagination">
+          <button
+            type="button"
+            className="secondary-button"
+            disabled={page <= 1 || isLoading}
+            onClick={() =>
+              setPage((currentPage) =>
+                currentPage - 1,
+              )
+            }
+          >
+            Previous
+          </button>
+
+          <span>
+            Page {pagination.page} of{" "}
+            {pagination.totalPages}
+          </span>
+
+          <button
+            type="button"
+            className="secondary-button"
+            disabled={
+              page >= pagination.totalPages ||
+              isLoading
+            }
+            onClick={() =>
+              setPage((currentPage) =>
+                currentPage + 1,
+              )
+            }
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {isCreateOpen && (
         <Modal

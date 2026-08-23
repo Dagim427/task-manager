@@ -1,7 +1,21 @@
 import { api } from "./api";
 
-export const getTasks = async () => {
-  const response = await api.get("/tasks");
+export const getTasks = async ({
+  page = 1,
+  limit = 20,
+  search = "",
+  status = "",
+  priority = "",
+} = {}) => {
+  const response = await api.get("/tasks", {
+    params: {
+      page,
+      limit,
+      ...(search && { search }),
+      ...(status && { status }),
+      ...(priority && { priority }),
+    },
+  });
 
   return response.data;
 };
@@ -18,11 +32,11 @@ export const createTask = async (data) => {
   return response.data;
 };
 
-export const updateTask = async (taskId, data)=> {
+export const updateTask = async (taskId, data) => {
   const response = await api.patch(`/tasks/${taskId}`, data);
 
   return response.data;
-}
+};
 
 export const deleteTask = async (taskId) => {
   const response = await api.delete(`/tasks/${taskId}`);

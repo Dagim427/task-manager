@@ -30,11 +30,17 @@ export const createTask = asyncHandler(async (req, res) => {
 export const getTasks = asyncHandler(async (req, res) => {
   const page = req.query.page ?? 1;
   const limit = req.query.limit ?? 20;
+  const search = req.query.search ?? "";
+  const status = req.query.status ?? "";
+  const priority = req.query.priority ?? "";
 
   const result = await getTasksService({
     userId: req.user.id,
     page,
     limit,
+    search,
+    status,
+    priority,
   });
 
   return res.status(200).json({

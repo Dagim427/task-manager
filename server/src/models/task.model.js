@@ -39,17 +39,47 @@ export const createTask = async ({
   return findTaskByIdForUser(result.insertId, userId);
 };
 
-export const findTasksByUserId = async ({ userId, limit, offset }) => {
+export const findTasksByUserId = async ({
+  userId,
+  limit,
+  offset,
+  search = "",
+  status = "",
+  priority = "",
+}) => {
+  const conditions = ["user_id = ?"];
+  const values = [userId];
+
+  if (search) {
+    conditions.push("(title LIKE ? OR description LIKE ?)");
+
+    const searchPattern = `%${search}%`;
+
+    values.push(searchPattern, searchPattern);
+  }
+
+  if (status) {
+    conditions.push("status = ?");
+    values.push(status);
+  }
+
+  if (priority) {
+    conditions.push("priority = ?");
+    values.push(priority);
+  }
+
+  values.push(limit, offset);
+
   const [rows] = await pool.execute(
     `
       SELECT ${TASK_COLUMNS}
       FROM tasks
-      WHERE user_id = ?
+      WHERE ${conditions.join(" AND ")}
       ORDER BY created_at DESC, id DESC
       LIMIT ?
       OFFSET ?
     `,
-    [userId, limit, offset],
+    values,
   );
 
   return rows;
@@ -110,7 +140,7 @@ export const updateTaskForUser = async ({ taskId, userId, updates }) => {
   values.push(taskId);
   values.push(userId);
 
- await pool.execute(
+  await pool.execute(
     `
       UPDATE tasks
       SET ${fields.join(", ")}
@@ -136,14 +166,40 @@ export const deleteTaskForUser = async (taskId, userId) => {
   return result.affectedRows > 0;
 };
 
-export const countTasksByUserId = async (userId) => {
+export const countTasksByUserId = async ({
+  userId,
+  search = "",
+  status = "",
+  priority = "",
+}) => {
+  const conditions = ["user_id = ?"];
+  const values = [userId];
+
+  if (search) {
+    conditions.push("(title LIKE ? OR description LIKE ?)");
+
+    const searchPattern = `%${search}%`;
+
+    values.push(searchPattern, searchPattern);
+  }
+
+  if (status) {
+    conditions.push("status = ?");
+    values.push(status);
+  }
+
+  if (priority) {
+    conditions.push("priority = ?");
+    values.push(priority);
+  }
+
   const [rows] = await pool.execute(
     `
       SELECT COUNT(*) AS total
       FROM tasks
-      WHERE user_id = ?
+      WHERE ${conditions.join(" AND ")}
     `,
-    [userId],
+    values,
   );
 
   return Number(rows[0].total);

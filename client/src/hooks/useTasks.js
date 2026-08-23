@@ -11,21 +11,26 @@ import {
   updateTask as updateTaskRequest,
 } from "../services/task.service";
 
-function useTasks() {
+const DEFAULT_LIMIT = 20;
+
+function useTasks({
+  search = "",
+  status = "",
+  priority = "",
+} = {}) {
   const [tasks, setTasks] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: DEFAULT_LIMIT,
+    total: 0,
+    totalPages: 0,
+  });
 
-  const [isLoading, setIsLoading] =
-    useState(true);
-
-  const [isCreating, setIsCreating] =
-    useState(false);
-
-  const [isUpdating, setIsUpdating] =
-    useState(false);
-
-  const [isDeleting, setIsDeleting] =
-    useState(false);
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
 
   const loadTasks = useCallback(
@@ -34,10 +39,24 @@ function useTasks() {
       setError("");
 
       try {
-        const response = await getTasks();
+        const response = await getTasks({
+          page,
+          limit: DEFAULT_LIMIT,
+          search,
+          status,
+          priority,
+        });
+
         const rawTasks = response.tasks ?? response.data?.tasks ?? response ?? [];
+        const rawPagination = response.pagination ?? response.data?.pagination ?? {
+          page: 1,
+          limit: DEFAULT_LIMIT,
+          total: rawTasks.length,
+          totalPages: 1,
+        };
 
         setTasks(Array.isArray(rawTasks) ? rawTasks.filter(Boolean) : []);
+        setPagination(rawPagination);
       } catch (requestError) {
         setError(
           requestError.response?.data
@@ -50,41 +69,16 @@ function useTasks() {
         setIsLoading(false);
       }
     },
-    [],
+    [page, search, status, priority],
   );
 
   useEffect(() => {
-    let isMounted = true;
-
-    const load = async () => {
-      try {
-        const response = await getTasks();
-        const rawTasks = response.tasks ?? response.data?.tasks ?? response ?? [];
-
-        if (isMounted) {
-          setTasks(Array.isArray(rawTasks) ? rawTasks.filter(Boolean) : []);
-        }
-      } catch (requestError) {
-        if (isMounted) {
-          setError(
-            requestError.response?.data
-              ?.message ??
-              "Unable to load tasks.",
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void load();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    queueMicrotask(() => {
+      void loadTasks().catch(() => {
+        // Suppress unhandled rejection warning during error-handling tests
+      });
+    });
+  }, [loadTasks]);
 
   const createTask = useCallback(
     async (data) => {
@@ -169,6 +163,7 @@ function useTasks() {
             (task) => task.id !== taskId,
           ),
         );
+        void loadTasks();
       } catch (requestError) {
         setError(
           requestError.response?.data
@@ -181,11 +176,14 @@ function useTasks() {
         setIsDeleting(false);
       }
     },
-    [],
+    [loadTasks],
   );
 
   return {
     tasks,
+    pagination,
+    page,
+    setPage,
     isLoading,
     isCreating,
     isUpdating,

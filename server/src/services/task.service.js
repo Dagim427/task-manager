@@ -59,17 +59,36 @@ export const createTask = async ({
   });
 };
 
-export const getTasks = async ({ userId, page = 1, limit = 20 }) => {
+export const getTasks = async ({
+  userId,
+  page = 1,
+  limit = 20,
+  search = "",
+  status = "",
+  priority = "",
+}) => {
   const offset = (page - 1) * limit;
+
+  const normalizedSearch = search.trim();
+  const normalizedStatus = status.trim();
+  const normalizedPriority = priority.trim();
 
   const [tasks, total] = await Promise.all([
     findTasksByUserId({
       userId,
       limit,
       offset,
+      search: normalizedSearch,
+      status: normalizedStatus,
+      priority: normalizedPriority,
     }),
 
-    countTasksByUserId(userId),
+    countTasksByUserId({
+      userId,
+      search: normalizedSearch,
+      status: normalizedStatus,
+      priority: normalizedPriority,
+    }),
   ]);
 
   return {
