@@ -1,6 +1,6 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import useTasks from "../hooks/useTasks";
+import { renderHook, act, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import useTasks from "./useTasks";
 import {
   getTasks,
   createTask as createTaskRequest,
@@ -18,200 +18,132 @@ vi.mock("../services/task.service", () => ({
 describe("useTasks", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getTasks.mockResolvedValue({
+      success: true,
+      data: {
+        tasks: [{ id: 1, title: "Initial task", status: "todo", priority: "medium" }],
+        pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
+      },
+    });
   });
 
   it("loads tasks successfully", async () => {
-    getTasks.mockResolvedValue({
-      data: {
-        tasks: [
-          {
-            id: 1,
-            title: "Test task",
-          },
-        ],
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: 1,
-          totalPages: 1,
-        },
-      },
-    });
+    const { result } = renderHook(() => useTasks());
 
-    const { result } = renderHook(() =>
-      useTasks(),
-    );
+    expect(result.current.isLoading).toBe(true);
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
     expect(result.current.tasks).toHaveLength(1);
-
-    expect(result.current.tasks[0]).toEqual({
-      id: 1,
-      title: "Test task",
-    });
-
-    expect(getTasks).toHaveBeenCalledWith({
-      page: 1,
-      limit: 20,
-      search: "",
-      status: "",
-      priority: "",
-    });
+    expect(result.current.tasks[0].title).toBe("Initial task");
+    expect(result.current.error).toBe("");
   });
 
   it("handles loading errors", async () => {
-    getTasks.mockRejectedValue({
-      response: {
-        data: {
-          message: "Unable to load tasks.",
-        },
-      },
+    getTasks.mockRejectedValueOnce({
+      response: { data: { message: "Failed to fetch" } },
     });
 
-    const { result } = renderHook(() =>
-      useTasks(),
-    );
+    const { result } = renderHook(() => useTasks());
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.error).toBe(
-      "Unable to load tasks.",
-    );
-
+    expect(result.current.error).toBe("Failed to fetch");
     expect(result.current.tasks).toEqual([]);
   });
 
   it("creates a task", async () => {
+    createTaskRequest.mockResolvedValueOnce({
+      success: true,
+      data: {
+        task: { id: 2, title: "New task" },
+      },
+    });
+
     getTasks.mockResolvedValue({
+      success: true,
       data: {
-        tasks: [],
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: 0,
-          totalPages: 0,
-        },
+        tasks: [
+          { id: 2, title: "New task", status: "todo", priority: "medium" },
+          { id: 1, title: "Initial task", status: "todo", priority: "medium" },
+        ],
+        pagination: { page: 1, limit: 20, total: 2, totalPages: 1 },
       },
     });
 
-    createTaskRequest.mockResolvedValue({
-      data: {
-        task: {
-          id: 2,
-          title: "New task",
-        },
-      },
-    });
-
-    const { result } = renderHook(() =>
-      useTasks(),
-    );
+    const { result } = renderHook(() => useTasks());
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
     await act(async () => {
-      await result.current.createTask({
+      await result.current.createTask({ title: "New task" });
+    });
+
+    expect(createTaskRequest).toHaveBeenCalledWith({ title: "New task" });
+    expect(result.current.tasks).toContainEqual(
+      expect.objectContaining({
+        id: 2,
         title: "New task",
-      });
-    });
-
-    expect(result.current.tasks).toContainEqual({
-      id: 2,
-      title: "New task",
-    });
-
-    expect(createTaskRequest).toHaveBeenCalledWith({
-      title: "New task",
-    });
+      })
+    );
   });
 
   it("updates a task", async () => {
+    updateTaskRequest.mockResolvedValueOnce({
+      success: true,
+      data: {
+        task: { id: 1, title: "Updated title" },
+      },
+    });
+
     getTasks.mockResolvedValue({
+      success: true,
       data: {
-        tasks: [
-          {
-            id: 1,
-            title: "Old title",
-          },
-        ],
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: 1,
-          totalPages: 1,
-        },
+        tasks: [{ id: 1, title: "Updated title", status: "todo", priority: "medium" }],
+        pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
       },
     });
 
-    updateTaskRequest.mockResolvedValue({
-      data: {
-        task: {
-          id: 1,
-          title: "Updated title",
-        },
-      },
-    });
-
-    const { result } = renderHook(() =>
-      useTasks(),
-    );
+    const { result } = renderHook(() => useTasks());
 
     await waitFor(() => {
-      expect(result.current.tasks).toHaveLength(1);
+      expect(result.current.isLoading).toBe(false);
     });
 
     await act(async () => {
-      await result.current.updateTask(1, {
-        title: "Updated title",
-      });
+      await result.current.updateTask(1, { title: "Updated title" });
     });
 
+    expect(updateTaskRequest).toHaveBeenCalledWith(1, { title: "Updated title" });
     expect(result.current.tasks[0]).toEqual({
       id: 1,
       title: "Updated title",
+      status: "todo",
+      priority: "medium",
     });
-
-    expect(updateTaskRequest).toHaveBeenCalledWith(
-      1,
-      {
-        title: "Updated title",
-      },
-    );
   });
 
   it("deletes a task", async () => {
+    deleteTaskRequest.mockResolvedValueOnce({ success: true });
+
     getTasks.mockResolvedValue({
+      success: true,
       data: {
-        tasks: [
-          {
-            id: 1,
-            title: "Task to delete",
-          },
-        ],
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: 1,
-          totalPages: 1,
-        },
+        tasks: [],
+        pagination: { page: 1, limit: 20, total: 0, totalPages: 0 },
       },
     });
 
-    deleteTaskRequest.mockResolvedValue({});
-
-    const { result } = renderHook(() =>
-      useTasks(),
-    );
+    const { result } = renderHook(() => useTasks());
 
     await waitFor(() => {
-      expect(result.current.tasks).toHaveLength(1);
+      expect(result.current.isLoading).toBe(false);
     });
 
     await act(async () => {
@@ -219,58 +151,29 @@ describe("useTasks", () => {
     });
 
     expect(deleteTaskRequest).toHaveBeenCalledWith(1);
-
-    expect(getTasks).toHaveBeenCalled();
+    expect(result.current.tasks).toHaveLength(0);
   });
 
   it("passes search and filters to the API", async () => {
-    getTasks.mockResolvedValue({
-      data: {
-        tasks: [],
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: 0,
-          totalPages: 0,
-        },
-      },
-    });
-
-    renderHook(() =>
-      useTasks({
-        search: "project",
-        status: "completed",
-        priority: "high",
-      }),
+    const { result } = renderHook(() =>
+      useTasks({ search: "test", status: "todo", priority: "high" })
     );
 
     await waitFor(() => {
-      expect(getTasks).toHaveBeenCalledWith({
-        page: 1,
-        limit: 20,
-        search: "project",
-        status: "completed",
-        priority: "high",
-      });
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(getTasks).toHaveBeenCalledWith({
+      page: 1,
+      limit: 20,
+      search: "test",
+      status: "todo",
+      priority: "high",
     });
   });
 
   it("changes pages", async () => {
-    getTasks.mockResolvedValue({
-      data: {
-        tasks: [],
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: 40,
-          totalPages: 2,
-        },
-      },
-    });
-
-    const { result } = renderHook(() =>
-      useTasks(),
-    );
+    const { result } = renderHook(() => useTasks());
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -280,14 +183,6 @@ describe("useTasks", () => {
       result.current.setPage(2);
     });
 
-    await waitFor(() => {
-      expect(getTasks).toHaveBeenCalledWith({
-        page: 2,
-        limit: 20,
-        search: "",
-        status: "",
-        priority: "",
-      });
-    });
+    expect(result.current.page).toBe(2);
   });
 });

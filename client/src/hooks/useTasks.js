@@ -1,8 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   createTask as createTaskRequest,
@@ -13,11 +9,7 @@ import {
 
 const DEFAULT_LIMIT = 20;
 
-function useTasks({
-  search = "",
-  status = "",
-  priority = "",
-} = {}) {
+function useTasks({ search = "", status = "", priority = "" } = {}) {
   const [tasks, setTasks] = useState([]);
   const [page, setPage] = useState(1);
 
@@ -47,13 +39,9 @@ function useTasks({
         priority,
       });
 
-      const rawTasks =
-        response.data?.tasks ??
-        response.tasks ??
-        [];
+      const rawTasks = response.data?.tasks ?? response.tasks ?? [];
 
-      const rawPagination =
-        response.data?.pagination ??
+      const rawPagination = response.data?.pagination ??
         response.pagination ?? {
           page,
           limit: DEFAULT_LIMIT,
@@ -61,27 +49,18 @@ function useTasks({
           totalPages: 1,
         };
 
-      setTasks(
-        Array.isArray(rawTasks)
-          ? rawTasks.filter(Boolean)
-          : [],
-      );
+      setTasks(Array.isArray(rawTasks) ? rawTasks.filter(Boolean) : []);
 
       setPagination(rawPagination);
     } catch (requestError) {
-      setError(
-        requestError.response?.data?.message ??
-          "Unable to load tasks.",
-      );
+      setError(requestError.response?.data?.message ?? "Unable to load tasks.");
     } finally {
       setIsLoading(false);
     }
   }, [page, search, status, priority]);
 
   useEffect(() => {
-    queueMicrotask(() => {
-      void loadTasks();
-    });
+    void loadTasks();
   }, [loadTasks]);
 
   const createTask = useCallback(
@@ -90,30 +69,16 @@ function useTasks({
       setError("");
 
       try {
-        const response =
-          await createTaskRequest(data);
+        const response = await createTaskRequest(data);
 
-        const newTask =
-          response.data?.task ??
-          response.task ??
-          response;
+        const newTask = response.data?.task ?? response.task ?? response;
 
-        try {
-          await loadTasks();
-        } catch {
-          // Fallback if loadTasks fails
-        }
-
-        setTasks((current) => {
-          const exists = current.some((t) => t.id === newTask.id);
-          return exists ? current : [newTask, ...current];
-        });
+        await loadTasks();
 
         return newTask;
       } catch (requestError) {
         setError(
-          requestError.response?.data?.message ??
-            "Unable to create task.",
+          requestError.response?.data?.message ?? "Unable to create task.",
         );
 
         throw requestError;
@@ -130,36 +95,16 @@ function useTasks({
       setError("");
 
       try {
-        const response =
-          await updateTaskRequest(
-            taskId,
-            data,
-          );
+        const response = await updateTaskRequest(taskId, data);
 
-        const updatedTask =
-          response.data?.task ??
-          response.task ??
-          response;
+        const updatedTask = response.data?.task ?? response.task ?? response;
 
-        try {
-          await loadTasks();
-        } catch {
-          // Fallback if loadTasks fails
-        }
-
-        setTasks((current) =>
-          current.map((task) =>
-            task.id === taskId
-              ? { ...task, ...updatedTask, ...data }
-              : task,
-          ),
-        );
+        await loadTasks();
 
         return updatedTask;
       } catch (requestError) {
         setError(
-          requestError.response?.data?.message ??
-            "Unable to update task.",
+          requestError.response?.data?.message ?? "Unable to update task.",
         );
 
         throw requestError;
@@ -179,24 +124,13 @@ function useTasks({
         await deleteTaskRequest(taskId);
 
         if (tasks.length === 1 && page > 1) {
-          setPage(
-            (currentPage) => currentPage - 1,
-          );
+          setPage((currentPage) => currentPage - 1);
         } else {
-          try {
-            await loadTasks();
-          } catch {
-            setTasks((current) =>
-              current.filter(
-                (task) => task.id !== taskId,
-              ),
-            );
-          }
+          await loadTasks();
         }
       } catch (requestError) {
         setError(
-          requestError.response?.data?.message ??
-            "Unable to delete task.",
+          requestError.response?.data?.message ?? "Unable to delete task.",
         );
 
         throw requestError;
