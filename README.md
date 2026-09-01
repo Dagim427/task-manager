@@ -1,137 +1,97 @@
 # Task Management SaaS
 
-A full-stack Task Management SaaS application built with React.js, Node.js, Express.js, and MySQL.
+A full-stack Task Management SaaS application built with **React, Node.js, Express.js, and MySQL**.
 
-The project demonstrates professional full-stack development practices including authentication, REST API design, database relationships, protected routes, task ownership, and a scalable project architecture.
+The application allows authenticated users to create and manage personal tasks through a responsive web interface backed by a RESTful API.
+
+V1 focuses on building a solid full-stack foundation with authentication, task CRUD operations, authorization, validation, search, filtering, pagination, task statistics, database persistence, automated testing, and security-focused backend practices.
 
 ---
 
 ## 1. Project Overview
 
-Task Management SaaS allows authenticated users to:
+Task Management SaaS is a personal task management application designed to demonstrate professional full-stack software development practices.
+
+Authenticated users can:
 
 * Create an account
 * Log in securely
-* Access a personal dashboard
+* Access a protected dashboard
 * Create tasks
 * View tasks
+* View individual tasks
 * Update tasks
 * Delete tasks
-* Manage task status
-* Access only their own tasks
+* Change task status
+* Set task priority
+* Set task due dates
+* Search tasks
+* Filter tasks by status and priority
+* Navigate paginated task results
+* View task statistics
+* Log out
 
-The project is developed in multiple versions, with V1 focusing on the core task-management functionality.
+Each task belongs to the authenticated user who created it.
 
----
-
-## 2. Tech Stack
-
-### Frontend
-
-* React.js
-* JavaScript
-* JSX
-* CSS
-* Axios
-* React Router
-
-### Backend
-
-* Node.js
-* Express.js
-* JavaScript
-* JWT
-* bcrypt
-
-### Database
-
-* MySQL
-
-### Development Tools
-
-* Git
-* GitHub
-* npm
-* VS Code
+The backend enforces ownership so users cannot access or modify tasks belonging to another user.
 
 ---
 
-## 3. Architecture
+## 2. Problem Statement
 
-The application uses a client-server architecture.
+Managing personal tasks becomes difficult when tasks are stored across notes, documents, messages, or multiple applications.
 
-```text
-                    ┌─────────────────┐
-                    │      User       │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ React Frontend  │
-                    │     Client      │
-                    └────────┬────────┘
-                             │
-                         REST API
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ Express Backend │
-                    │     Server      │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ MySQL Database  │
-                    └─────────────────┘
-```
+The purpose of this project is to provide a simple centralized application where users can securely manage their tasks from one dashboard.
+
+The application addresses the following problems:
+
+* Lack of centralized task management
+* Difficulty tracking task status
+* Difficulty organizing tasks by priority
+* Difficulty finding specific tasks
+* Lack of ownership and authorization controls
+* Lack of a structured full-stack architecture
+
+The project also serves as a practical demonstration of building and maintaining a production-oriented full-stack web application.
 
 ---
 
-## 4. Repository Structure
+## 3. Project Goals
 
-```text
-task-manager/
-│
-├── client/
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── README.md
-│
-├── server/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   ├── config/
-│   ├── scripts/
-│   ├── package.json
-│   └── README.md
-│
-├── docs/
-│   ├── requirements.md
-│   ├── architecture.md
-│   ├── api.md
-│   └── database.md
-│
-├── .gitignore
-└── README.md
-```
+The main goals of V1 are to:
+
+1. Build secure user authentication.
+2. Implement JWT-based authorization.
+3. Allow users to manage their own tasks.
+4. Provide complete task CRUD functionality.
+5. Support task status and priority management.
+6. Support task due dates.
+7. Provide task search and filtering.
+8. Provide pagination for task results.
+9. Provide dashboard task statistics.
+10. Persist application data using MySQL.
+11. Validate incoming user input.
+12. Implement centralized error handling.
+13. Protect backend endpoints with security middleware.
+14. Provide automated frontend and backend tests.
+15. Maintain a clean and scalable project structure.
+16. Provide professional technical documentation.
 
 ---
 
-## 5. Core Features
+## 4. Features
 
 ### Authentication
 
 * User registration
 * User login
-* Password hashing
+* Password hashing with bcrypt
 * JWT authentication
 * Protected API routes
-* Current-user endpoint
-* Logout
+* Current authenticated-user endpoint
+* Protected frontend routes
+* Authentication state management
+* Logout functionality
 
 ### Task Management
 
@@ -140,76 +100,380 @@ task-manager/
 * View individual tasks
 * Update tasks
 * Delete tasks
-* Change task status
+* Task status management
+* Task priority management
+* Task due dates
+* Task descriptions
+* Task search
+* Task filtering
+* Pagination
+* Task statistics
+
+Supported task statuses:
+
+```text
+todo
+in_progress
+completed
+```
+
+Supported task priorities:
+
+```text
+low
+medium
+high
+```
 
 ### Authorization
 
-Users can only access tasks that belong to their account.
+Task resources are associated with the authenticated user.
+
+The backend uses the authenticated user's identity from the JWT when performing task operations.
+
+Users can only:
+
+* View their own tasks
+* View their own task details
+* Update their own tasks
+* Delete their own tasks
+
+A user cannot access another user's tasks by changing a task ID in a request.
+
+### Validation
+
+The application validates incoming authentication and task data before processing requests.
+
+Validation is implemented on the backend using request validators and validation middleware.
+
+Examples include:
+
+* Registration validation
+* Login validation
+* Task creation validation
+* Task update validation
+* Task ID validation
+* Task list query validation
+
+### Error Handling
+
+The backend uses centralized error handling to provide consistent API responses.
+
+The frontend also handles:
+
+* Loading states
+* Error states
+* Empty states
+* Form errors
+* Failed API requests
 
 ---
 
-## 6. Documentation
+## 5. Tech Stack
 
-Project documentation is available in the `docs/` directory.
+### Frontend
 
-```text
-docs/
-├── requirements.md
-├── architecture.md
-├── api.md
-└── database.md
-```
+* React 19
+* JavaScript
+* JSX
+* React Router
+* Axios
+* Tailwind CSS
+* Lucide React
+* Vite
 
-### Requirements
+### Backend
 
-Describes the functional and non-functional requirements of the application.
-
-### Architecture
-
-Describes the system architecture, frontend architecture, backend architecture, authentication flow, and future scalability.
-
-### API
-
-Documents all REST API endpoints, request bodies, responses, authentication requirements, and status codes.
+* Node.js
+* Express.js
+* JavaScript
+* JWT
+* bcrypt
+* Express Validator
+* Zod
 
 ### Database
 
-Documents the MySQL database schema, tables, relationships, constraints, indexes, and database security.
+* MySQL
+* mysql2
+* SQL migrations
+
+### Testing
+
+Frontend:
+
+* Vitest
+* Testing Library
+* jsdom
+* User Event
+
+Backend:
+
+* Jest
+* Supertest
+
+### Development Tools
+
+* Git
+* GitHub
+* npm
+* ESLint
+* Prettier
+* Nodemon
+* VS Code
+
+### Backend Security and Infrastructure
+
+* Helmet
+* CORS
+* Express Rate Limit
+* Compression
+* Pino logging
+* Morgan
+* Environment variables
 
 ---
 
-## 7. Installation
+## 6. System Architecture
 
-### Clone the Repository
+The application uses a **client-server architecture**.
+
+```text
+                         ┌──────────────────┐
+                         │       User       │
+                         └────────┬─────────┘
+                                  │
+                                  ▼
+                         ┌──────────────────┐
+                         │  React Frontend  │
+                         │     Client       │
+                         └────────┬─────────┘
+                                  │
+                             HTTP / REST
+                                  │
+                                  ▼
+                         ┌──────────────────┐
+                         │ Express Backend  │
+                         │     Server       │
+                         └────────┬─────────┘
+                                  │
+                         ┌────────┴─────────┐
+                         │                  │
+                         ▼                  ▼
+                 ┌───────────────┐   ┌───────────────┐
+                 │ Authentication│   │ Task Services │
+                 │ & Middleware  │   │ & Controllers │
+                 └───────────────┘   └───────┬───────┘
+                                             │
+                                             ▼
+                                      ┌───────────────┐
+                                      │ MySQL Database│
+                                      └───────────────┘
+```
+
+### Authentication Flow
+
+```text
+User
+  │
+  ▼
+Register / Login
+  │
+  ▼
+Backend Validation
+  │
+  ▼
+Password Verification
+  │
+  ▼
+JWT Generation
+  │
+  ▼
+Authenticated Client
+  │
+  ▼
+Protected API Requests
+  │
+  ▼
+JWT Verification
+  │
+  ▼
+Authorized Resource Access
+```
+
+The frontend communicates with the backend through REST API endpoints.
+
+The backend contains separate layers for:
+
+* Routes
+* Controllers
+* Services
+* Models
+* Middleware
+* Validators
+* Configuration
+* Utilities
+
+---
+
+## 7. Repository Structure
+
+```text
+task-manager/
+│
+├── client/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── common/
+│   │   │   └── task/
+│   │   │
+│   │   ├── context/
+│   │   ├── hooks/
+│   │   ├── layouts/
+│   │   ├── pages/
+│   │   │   ├── auth/
+│   │   │   └── dashboard/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── styles/
+│   │   └── test/
+│   │
+│   ├── package.json
+│   └── README.md
+│
+├── server/
+│   ├── migrations/
+│   │   ├── 001_create_users_table.sql
+│   │   └── 002_create_tasks_table.sql
+│   │
+│   ├── scripts/
+│   │   └── migrate.js
+│   │
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   └── validators/
+│   │
+│   ├── tests/
+│   ├── package.json
+│   └── server.js
+│
+├── docs/
+│   ├── requirements.md
+│   ├── architecture.md
+│   ├── api.md
+│   ├── database.md
+│   ├── testing.md
+│   ├── security.md
+│   ├── deployment.md
+│   └── development.md
+│
+├── .gitignore
+└── README.md
+```
+
+---
+
+## 8. Screenshots
+
+### Login
+
+Add the V1 login-page screenshot here.
+
+```text
+docs/screenshots/login.png
+```
+
+### Registration
+
+Add the V1 registration-page screenshot here.
+
+```text
+docs/screenshots/register.png
+```
+
+### Dashboard
+
+Add the V1 dashboard screenshot here.
+
+```text
+docs/screenshots/dashboard.png
+```
+
+### Task Management
+
+Add the V1 task-management screenshot here.
+
+```text
+docs/screenshots/tasks.png
+```
+
+Example Markdown:
+
+```markdown
+![Login](docs/screenshots/login.png)
+
+![Dashboard](docs/screenshots/dashboard.png)
+
+![Task Management](docs/screenshots/tasks.png)
+```
+
+Screenshots should be added before publishing the final portfolio version of V1.
+
+---
+
+## 9. Installation
+
+### Prerequisites
+
+Make sure the following are installed:
+
+* Node.js
+* npm
+* MySQL
+* Git
+
+Check the installed versions:
+
+```bash
+node --version
+npm --version
+mysql --version
+git --version
+```
+
+### Clone Repository
 
 ```bash
 git clone <repository-url>
+
 cd task-manager
 ```
 
----
+### Install Dependencies
 
-## 8. Install Client Dependencies
+Install frontend dependencies:
 
 ```bash
 cd client
+
 npm install
 ```
 
----
-
-## 9. Install Server Dependencies
-
-Open another terminal:
+Install backend dependencies:
 
 ```bash
-cd server
+cd ../server
+
 npm install
 ```
 
----
-
-## 10. Environment Variables
+### Environment Variables
 
 Create a `.env` file inside the `server` directory.
 
@@ -228,11 +492,11 @@ JWT_SECRET=your_jwt_secret
 JWT_EXPIRES_IN=7d
 ```
 
-Never commit `.env` files to GitHub.
+Create the frontend environment configuration according to the provided `.env.example` file.
 
----
+Never commit real environment variables or secrets to GitHub.
 
-## 11. Database Setup
+### Database Setup
 
 Create the MySQL database:
 
@@ -240,256 +504,457 @@ Create the MySQL database:
 CREATE DATABASE task_manager;
 ```
 
-Then run the project's migration command:
+Run the database migrations:
 
 ```bash
 cd server
+
 npm run migrate
 ```
 
-This creates the required database tables and relationships.
+The migrations create:
+
+* `users`
+* `tasks`
+
+and configure their relationships, constraints, and indexes.
 
 ---
 
-## 12. Run the Backend
+## 10. Running the Application
+
+### Start Backend
+
+Open a terminal:
 
 ```bash
 cd server
+
 npm run dev
 ```
 
-The API should be available at:
+The backend runs on the configured server port.
+
+By default:
 
 ```text
 http://localhost:5000
 ```
 
----
-
-## 13. Run the Frontend
+### Start Frontend
 
 Open another terminal:
 
 ```bash
 cd client
+
 npm run dev
 ```
 
-The React application will run using the development server URL displayed by the terminal.
+Vite will display the frontend development URL in the terminal.
+
+Open that URL in your browser.
 
 ---
 
-## 14. API
+## 11. Testing
 
-Main API endpoints:
+The project includes automated tests for important frontend and backend functionality.
 
-```text
-POST   /api/auth/register
-POST   /api/auth/login
-GET    /api/auth/me
+### Frontend Tests
 
-GET    /api/tasks
-GET    /api/tasks/:id
-POST   /api/tasks
-PUT    /api/tasks/:id
-DELETE /api/tasks/:id
+Run:
+
+```bash
+cd client
+
+npm test
 ```
 
-See:
+Frontend tests cover areas such as:
+
+* Common UI components
+* Loading states
+* Error states
+* Empty states
+* Task forms
+* Task hooks
+
+### Backend Tests
+
+Run:
+
+```bash
+cd server
+
+npm test
+```
+
+Backend testing uses Jest and Supertest.
+
+Tests cover areas such as:
+
+* Authentication
+* API behavior
+* Task operations
+* Validation
+* Authorization
+* Error handling
+
+### Linting
+
+Frontend:
+
+```bash
+cd client
+
+npm run lint
+```
+
+Backend:
+
+```bash
+cd server
+
+npm run lint
+```
+
+### Formatting
+
+Backend formatting:
+
+```bash
+cd server
+
+npm run format
+```
+
+Check formatting:
+
+```bash
+npm run check-format
+```
+
+---
+
+## 12. API Overview
+
+The backend exposes a REST API.
+
+### Health
+
+```text
+GET /health/live
+GET /health/ready
+```
+
+### Authentication
+
+```text
+POST /api/auth/register
+POST /api/auth/login
+GET  /api/auth/me
+```
+
+### Tasks
+
+```text
+POST   /api/tasks
+GET    /api/tasks
+GET    /api/tasks/stats
+GET    /api/tasks/:taskId
+PATCH  /api/tasks/:taskId
+DELETE /api/tasks/:taskId
+```
+
+Task listing supports query parameters for:
+
+```text
+page
+limit
+search
+status
+priority
+```
+
+Example:
+
+```text
+GET /api/tasks?page=1&limit=20&search=website&status=todo&priority=high
+```
+
+Protected task endpoints require a valid JWT authentication token.
+
+For complete endpoint documentation, request/response examples, validation rules, and HTTP status codes, see:
 
 ```text
 docs/api.md
 ```
 
-for complete API documentation.
-
 ---
 
-## 15. Authentication Flow
+## 13. Security
 
-```text
-Register
-   │
-   ▼
-Hash Password
-   │
-   ▼
-Create User
-   │
-   ▼
-Login
-   │
-   ▼
-Verify Password
-   │
-   ▼
-Generate JWT
-   │
-   ▼
-Client Stores Token
-   │
-   ▼
-Protected Requests
-```
-
----
-
-## 16. Database Relationship
-
-```text
-Users
-  │
-  │ 1
-  │
-  │ N
-  ▼
-Tasks
-```
-
-One user can have many tasks.
-
-Each task belongs to one user.
-
----
-
-## 17. Security
+Security is an important part of the V1 implementation.
 
 The application uses:
 
-* bcrypt for password hashing
-* JWT for authentication
+* bcrypt password hashing
+* JWT authentication
 * Protected API routes
 * User-specific resource authorization
-* Environment variables for secrets
-* Parameterized database queries
 * Input validation
+* Parameterized MySQL queries
+* Environment variables for secrets
+* Helmet security headers
+* CORS configuration
+* Rate limiting
+* Centralized error handling
+* Request logging
+* Compression
 
----
+### Password Security
 
-## 18. Development Workflow
+User passwords are never stored as plaintext.
 
-Recommended development workflow:
+Passwords are hashed before being stored in the database.
+
+### Authentication
+
+Authenticated requests use JWT-based authentication.
+
+The backend verifies the token before allowing access to protected resources.
+
+### Authorization
+
+The authenticated user's ID is used when accessing task resources.
+
+This prevents users from accessing tasks belonging to other users.
+
+### Secrets
+
+Sensitive configuration such as database credentials and JWT secrets must be stored in environment variables.
+
+Real `.env` files must never be committed to the repository.
+
+More detailed security information is documented in:
 
 ```text
-1. Create feature branch
-       ↓
-2. Implement feature
-       ↓
-3. Test feature
-       ↓
-4. Review code
-       ↓
-5. Commit changes
-       ↓
-6. Push branch
-       ↓
-7. Create Pull Request
-       ↓
-8. Merge into main
+docs/security.md
 ```
 
 ---
 
-## 19. Git Workflow
+## 14. Documentation
 
-Example:
+The project documentation is organized into separate technical documents.
 
-```bash
-git checkout -b feature/task-update
-
-git add .
-
-git commit -m "feat: add task update functionality"
-
-git push origin feature/task-update
+```text
+docs/
+│
+├── requirements.md
+├── architecture.md
+├── api.md
+├── database.md
+├── testing.md
+├── security.md
+├── deployment.md
+└── development.md
 ```
+
+### Requirements
+
+Defines the functional and non-functional requirements of the application.
+
+### Architecture
+
+Explains the frontend architecture, backend architecture, authentication flow, authorization, data flow, and system design.
+
+### API
+
+Documents REST API endpoints, authentication requirements, request parameters, request bodies, responses, and error handling.
+
+### Database
+
+Documents the MySQL schema, tables, relationships, constraints, indexes, and migrations.
+
+### Testing
+
+Documents the testing strategy, test types, test structure, and how to run the test suites.
+
+### Security
+
+Documents authentication, authorization, password security, validation, rate limiting, CORS, security headers, and other security practices.
+
+### Deployment
+
+Documents how the frontend, backend, and database can be prepared and deployed to a production environment.
+
+### Development
+
+Documents local development setup, coding workflow, Git workflow, migrations, testing, and development practices.
 
 ---
 
-## 20. V1 Goals
+## 15. V1 Scope
 
-V1 focuses on building a strong full-stack foundation.
+V1 focuses on the core functionality required for a complete personal task management application.
+
+### Included in V1
 
 ```text
-Authentication
+User Registration
+       +
+User Login
+       +
+JWT Authentication
+       +
+Protected Routes
        +
 Task CRUD
        +
-Database
+Task Status
        +
-REST API
+Task Priority
        +
-Professional Architecture
+Task Due Date
+       +
+Task Search
+       +
+Task Filtering
+       +
+Pagination
+       +
+Task Statistics
+       +
+MySQL Persistence
+       +
+Input Validation
+       +
+Authorization
+       +
+Error Handling
+       +
+Automated Testing
+       +
+Security Middleware
 ```
 
-The goal is to build a functional, maintainable, and production-oriented application rather than adding unnecessary complexity.
+The goal of V1 is not to implement every possible SaaS feature.
+
+The goal is to establish a clean, maintainable, secure, and testable full-stack foundation that can be extended in future versions.
 
 ---
 
-## 21. Future Versions
+## 16. Future Versions
 
 ### V2
 
-Potential improvements:
+V2 can extend the V1 foundation with improved productivity and user experience features.
 
-* Better UI/UX
-* Task filtering
-* Task search
-* Pagination
-* Improved validation
-* Automated tests
+Potential features include:
+
+* Improved dashboard UI
+* Advanced task filtering
+* Better task search
+* Improved pagination controls
+* Task sorting
+* Improved task forms
+* Better responsive design
 * Notifications
-* Improved dashboard
-* Better error handling
+* Improved user experience
+* More comprehensive automated testing
+* Improved API documentation
+* Production deployment
 
 ### V3
 
-Potential advanced features:
+V3 can introduce more advanced SaaS and collaboration capabilities.
+
+Potential features include:
 
 * Projects
-* Team collaboration
+* Team workspaces
+* Team members
 * Task comments
 * File attachments
+* Task collaboration
+* Role-based access control
 * Real-time updates
-* Redis
+* Redis caching
 * Background jobs
 * Docker
 * CI/CD
 * Advanced monitoring
+* Production observability
+* Scalable infrastructure
+
+Future features will be introduced incrementally rather than adding unnecessary complexity to V1.
 
 ---
 
-## 22. Project Status
+## 17. Project Status
 
 ```text
-V1 — Core Task Management
-Status: In Development / Completed features depend on current branch
+Version: V1
+Status: Completed / Final Review
+Focus: Core Task Management
 ```
 
+### V1 Completion Checklist
+
+* [x] Authentication
+* [x] JWT authorization
+* [x] Protected routes
+* [x] Task creation
+* [x] Task listing
+* [x] Task details
+* [x] Task updating
+* [x] Task deletion
+* [x] Task status
+* [x] Task priority
+* [x] Task due date
+* [x] Search
+* [x] Filtering
+* [x] Pagination
+* [x] Task statistics
+* [x] MySQL database
+* [x] Database migrations
+* [x] Input validation
+* [x] Error handling
+* [x] Security middleware
+* [x] Frontend tests
+* [x] Backend tests
+* [ ] Final production deployment
+* [ ] Final screenshots
+* [ ] Final portfolio presentation
+
 ---
 
-## 23. License
+## 18. License
 
-This project is currently intended as a portfolio and learning project.
+This project is currently developed as a portfolio and learning project.
 
-A production license can be added when the project is published as an open-source application.
+A formal open-source license can be added if the project is later published for public contribution or distribution.
 
 ---
 
-## 24. Author
+## Author
 
 **Dagi**
 
 Full-Stack JavaScript Developer
 
-Technologies:
+### Technologies
 
 ```text
 JavaScript
-React.js
+React
 Node.js
 Express.js
 MySQL
+REST API
+JWT
 Git
 GitHub
 ```

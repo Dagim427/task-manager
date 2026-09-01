@@ -1,391 +1,660 @@
+Yes. For `database.md`, I recommend making it **implementation-specific** because this document should explain how your V1 data is actually stored and related.
+
+One important point: don't document indexes, constraints, cascade behavior, or column types unless they actually exist in your current migrations. Since this is your V1 documentation set, the database document should match your real schema exactly.
+
+Here is the structure/content I recommend:
+
 # Task Management SaaS — Database Documentation
 
-## 1. Overview
+## 1. Database Overview
 
-The Task Management SaaS uses **MySQL** as its relational database.
+The Task Management SaaS application uses a relational database to persist user accounts and task information.
 
-The database stores:
+The V1 database is designed around two primary entities:
 
-* User accounts
-* Hashed passwords
-* Tasks
-* Task ownership
-* Task status
-* Creation and update timestamps
+* `users`
+* `tasks`
 
-The V1 database is intentionally simple and focuses on the core application requirements.
+The database maintains a relationship between users and their tasks so that every task belongs to a specific authenticated user.
+
+The database is responsible for:
+
+* Persisting user accounts.
+* Persisting task data.
+* Maintaining user-task relationships.
+* Enforcing data integrity.
+* Supporting task queries.
+* Supporting authentication.
+* Supporting task ownership.
+* Providing reliable data persistence.
+
+### V1 Database Entities
+
+```text
+users
+  │
+  │ 1
+  │
+  │
+  │ N
+tasks
+```
+
+A single user can own multiple tasks.
 
 ---
 
-# 2. Database Architecture
+## 2. Database Technology
+
+V1 uses **MySQL** as the relational database management system.
+
+### Database Stack
+
+| Component        | Technology            |
+| ---------------- | --------------------- |
+| Database         | MySQL                 |
+| Database Driver  | MySQL Node.js driver  |
+| Query Language   | SQL                   |
+| Migration System | Custom SQL migrations |
+| Backend          | Node.js / Express.js  |
+
+The backend communicates with MySQL through a database connection pool.
+
+---
+
+## 3. Database Architecture
+
+The database follows a relational architecture.
 
 ```text
-┌─────────────────────┐
-│       users         │
-├─────────────────────┤
-│ id                  │
-│ name                │
-│ email               │
-│ password_hash       │
-│ created_at          │
-│ updated_at          │
-└──────────┬──────────┘
+┌──────────────────────┐
+│        users         │
+├──────────────────────┤
+│ id                   │
+│ name                 │
+│ email                │
+│ password_hash        │
+│ created_at           │
+│ updated_at           │
+└──────────┬───────────┘
            │
            │ 1
            │
            │ N
-           ▼
+           │
+┌──────────▼───────────┐
+│        tasks         │
+├──────────────────────┤
+│ id                   │
+│ user_id              │
+│ title                │
+│ description          │
+│ status               │
+│ priority             │
+│ due_date             │
+│ created_at           │
+│ updated_at           │
+└──────────────────────┘
+```
+
+The backend does not allow clients to directly access the database.
+
+The request flow is:
+
+```text
+Client
+   ↓
+REST API
+   ↓
+Controller
+   ↓
+Service
+   ↓
+Database Query
+   ↓
+MySQL
+```
+
+---
+
+## 4. Database Configuration
+
+Database configuration is provided through environment variables.
+
+Example:
+
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=task_manager
+DB_USER=root
+DB_PASSWORD=your_password
+```
+
+The actual values must not be committed to source control.
+
+### Connection Pool
+
+The backend uses a database connection pool rather than creating a new database connection for every request.
+
+The connection pool provides:
+
+* Connection reuse.
+* Better performance.
+* Controlled database connections.
+* Centralized database configuration.
+
+---
+
+## 5. Entity Relationship Diagram
+
+The V1 entity relationship can be represented as:
+
+```text
 ┌─────────────────────┐
-│       tasks         │
+│       USERS         │
 ├─────────────────────┤
-│ id                  │
-│ user_id             │
-│ title               │
-│ description         │
-│ status              │
-│ created_at          │
-│ updated_at          │
+│ PK id               │
+│    name             │
+│    email            │
+│    password_hash    │
+│    created_at       │
+│    updated_at       │
+└──────────┬──────────┘
+           │
+           │ 1
+           │
+           │
+           │ N
+┌──────────▼──────────┐
+│       TASKS         │
+├─────────────────────┤
+│ PK id               │
+│ FK user_id          │
+│    title            │
+│    description      │
+│    status           │
+│    priority         │
+│    due_date         │
+│    created_at       │
+│    updated_at       │
 └─────────────────────┘
 ```
 
----
-
-# 3. Database Name
-
-Development database:
+### Relationship
 
 ```text
-task_manager
-```
-
-The actual database name should be configurable through an environment variable.
-
-Example:
-
-```text
-DB_NAME=task_manager
+users.id
+    │
+    │
+    └──────────────< tasks.user_id
 ```
 
 ---
 
-# 4. Tables
+# 6. Users Table
 
-V1 contains two primary tables:
+## 6.1 Purpose
 
-```text
-users
-tasks
-```
+The `users` table stores application user accounts.
 
----
+It contains the information required to:
 
-# 5. Users Table
-
-The `users` table stores user account information.
-
-## Schema
-
-| Column        | Type         | Constraints                 | Description           |
-| ------------- | ------------ | --------------------------- | --------------------- |
-| id            | INT          | PRIMARY KEY, AUTO_INCREMENT | Unique user ID        |
-| name          | VARCHAR(100) | NOT NULL                    | User's name           |
-| email         | VARCHAR(255) | NOT NULL, UNIQUE            | User email            |
-| password_hash | VARCHAR(255) | NOT NULL                    | bcrypt password hash  |
-| created_at    | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP   | Account creation time |
-| updated_at    | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP   | Last update time      |
+* Identify users.
+* Authenticate users.
+* Associate users with tasks.
+* Track account creation and updates.
 
 ---
 
-# 6. Users SQL
+## 6.2 Schema
 
-Example schema:
+| Column          | Type     | Nullable | Description                   |
+| --------------- | -------- | :------: | ----------------------------- |
+| `id`            | INT      |    No    | Primary key                   |
+| `name`          | VARCHAR  |    No    | User's display name           |
+| `email`         | VARCHAR  |    No    | User's email address          |
+| `password_hash` | VARCHAR  |    No    | Securely hashed password      |
+| `created_at`    | DATETIME |    No    | Account creation timestamp    |
+| `updated_at`    | DATETIME |    No    | Last account update timestamp |
 
-```sql
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
+> The exact lengths and SQL types should match the migration files used by the project.
 
 ---
 
-# 7. Password Storage
+## 6.3 Constraints
 
-Passwords must never be stored directly.
+The `users` table should enforce the following constraints:
 
-Incorrect:
-
-```text
-password = "Password123"
-```
-
-Correct:
+### Primary Key
 
 ```text
-password_hash = "$2b$..."
-```
-
-The application uses bcrypt to generate the password hash.
-
-Registration flow:
-
-```text
-User Password
-      │
-      ▼
-    bcrypt
-      │
-      ▼
-Password Hash
-      │
-      ▼
-users.password_hash
-```
-
-Login flow:
-
-```text
-Entered Password
-      │
-      ▼
-bcrypt.compare()
-      │
-      ▼
-Stored Password Hash
-```
-
----
-
-# 8. Email Uniqueness
-
-The email column is unique:
-
-```sql
-UNIQUE (email)
-```
-
-This prevents multiple accounts from using the same email address.
-
-Example:
-
-```text
-john@example.com
-```
-
-can only belong to one user.
-
----
-
-# 9. Tasks Table
-
-The `tasks` table stores tasks created by users.
-
-## Schema
-
-| Column      | Type         | Constraints                 | Description         |
-| ----------- | ------------ | --------------------------- | ------------------- |
-| id          | INT          | PRIMARY KEY, AUTO_INCREMENT | Unique task ID      |
-| user_id     | INT          | NOT NULL, FOREIGN KEY       | Task owner          |
-| title       | VARCHAR(255) | NOT NULL                    | Task title          |
-| description | TEXT         | NULL                        | Task description    |
-| status      | VARCHAR(50)  | NOT NULL                    | Current task status |
-| created_at  | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP   | Creation time       |
-| updated_at  | TIMESTAMP    | DEFAULT CURRENT_TIMESTAMP   | Last update time    |
-
----
-
-# 10. Tasks SQL
-
-Example schema:
-
-```sql
-CREATE TABLE tasks (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    status VARCHAR(50) NOT NULL DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_tasks_user
-        FOREIGN KEY (user_id)
-        REFERENCES users(id)
-        ON DELETE CASCADE
-);
-```
-
----
-
-# 11. Relationship Between Users and Tasks
-
-The relationship is:
-
-```text
-One User
-   │
-   ├── Task 1
-   ├── Task 2
-   ├── Task 3
-   └── Task N
-```
-
-This is a:
-
-```text
-One-to-Many
-```
-
-relationship.
-
-One user can have many tasks.
-
-Each task belongs to exactly one user.
-
----
-
-# 12. Foreign Key
-
-The relationship is created through:
-
-```text
-tasks.user_id
-        │
-        ▼
 users.id
 ```
 
-Database constraint:
+uniquely identifies each user.
 
-```sql
-FOREIGN KEY (user_id)
-REFERENCES users(id)
+### Email Uniqueness
+
+Each user account must have a unique email address.
+
+This prevents multiple accounts from being created with the same email.
+
+### Required Fields
+
+The following values are required:
+
+```text
+name
+email
+password_hash
 ```
 
-This prevents tasks from referencing users that do not exist.
+### Password Storage
+
+The database stores the password hash rather than the user's plaintext password.
 
 ---
 
-# 13. Cascade Delete
+# 7. Tasks Table
 
-The relationship uses:
+## 7.1 Purpose
 
-```sql
-ON DELETE CASCADE
-```
+The `tasks` table stores tasks created by users.
 
-Therefore, if a user is deleted:
+Each task belongs to exactly one user.
 
-```text
-User
- │
- ├── Task 1
- ├── Task 2
- └── Task 3
-```
+The table stores:
 
-the user's tasks are automatically deleted.
-
-This prevents orphaned task records.
+* Task title.
+* Task description.
+* Task status.
+* Task priority.
+* Task due date.
+* Task ownership.
+* Creation timestamp.
+* Update timestamp.
 
 ---
 
-# 14. Task Status
+## 7.2 Schema
 
-V1 uses task statuses such as:
+| Column        | Type         | Nullable | Description                |
+| ------------- | ------------ | :------: | -------------------------- |
+| `id`          | INT          |    No    | Primary key                |
+| `user_id`     | INT          |    No    | Owner of the task          |
+| `title`       | VARCHAR      |    No    | Task title                 |
+| `description` | TEXT         |    Yes   | Task description           |
+| `status`      | VARCHAR/ENUM |    No    | Current task status        |
+| `priority`    | VARCHAR/ENUM |    No    | Task priority              |
+| `due_date`    | DATETIME     |    Yes   | Optional task due date     |
+| `created_at`  | DATETIME     |    No    | Task creation timestamp    |
+| `updated_at`  | DATETIME     |    No    | Last task update timestamp |
+
+### Supported Status Values
 
 ```text
-pending
+todo
 in_progress
 completed
 ```
 
-Example:
+### Supported Priority Values
 
 ```text
-pending
-   │
-   ▼
-in_progress
-   │
-   ▼
-completed
+low
+medium
+high
 ```
-
-The application should validate allowed status values before storing them.
 
 ---
 
-# 15. Data Ownership
+## 7.3 Constraints
 
-Every task must contain the ID of its owner:
+The `tasks` table should enforce:
+
+### Primary Key
+
+```text
+tasks.id
+```
+
+uniquely identifies each task.
+
+### User Relationship
+
+```text
+tasks.user_id
+```
+
+references the owner of the task.
+
+### Required Fields
+
+The task requires:
 
 ```text
 user_id
+title
+status
+priority
 ```
 
-Example:
+The following fields can be optional:
 
 ```text
-User ID: 10
-
-Tasks:
-
-Task 1 → user_id = 10
-Task 2 → user_id = 10
-Task 3 → user_id = 10
+description
+due_date
 ```
 
-When retrieving tasks, the backend should query using the authenticated user's ID.
+### Status
 
-Example:
+Only supported status values should be accepted.
 
-```sql
-SELECT *
-FROM tasks
-WHERE user_id = ?;
-```
+### Priority
 
-The value should come from the authenticated JWT rather than directly from an untrusted client request.
+Only supported priority values should be accepted.
 
 ---
 
-# 16. Task Query Examples
+# 8. Entity Relationships
 
-## Get all tasks for a user
+## 8.1 User-to-Task Relationship
 
-```sql
-SELECT *
-FROM tasks
-WHERE user_id = ?;
+The relationship between users and tasks is:
+
+```text
+One User
+    │
+    ├── Task
+    ├── Task
+    ├── Task
+    └── Task
 ```
 
-## Get one task owned by a user
+This is a **one-to-many relationship**.
+
+### User
+
+One user can own many tasks.
+
+### Task
+
+Each task belongs to exactly one user.
+
+Therefore:
+
+```text
+users 1 ─────────── N tasks
+```
+
+---
+
+# 9. Foreign Keys
+
+The `tasks.user_id` column references the `users.id` column.
+
+```text
+tasks.user_id
+      ↓
+users.id
+```
+
+This relationship ensures that a task cannot reference a user that does not exist.
+
+The foreign key also provides database-level protection for the user-task relationship.
+
+---
+
+# 10. Task Ownership
+
+Task ownership is a fundamental part of the V1 database design.
+
+When a user creates a task, the authenticated user's ID is stored in:
+
+```text
+tasks.user_id
+```
+
+For example:
+
+```text
+User:
+
+id = 5
+
+
+Task:
+
+id = 20
+user_id = 5
+```
+
+This means:
+
+```text
+Task #20 belongs to User #5
+```
+
+The backend uses the authenticated user's ID when querying tasks.
+
+For example:
 
 ```sql
 SELECT *
 FROM tasks
 WHERE id = ?
-AND user_id = ?;
+  AND user_id = ?;
 ```
 
-## Create task
+This prevents users from accessing tasks belonging to other users.
+
+---
+
+# 11. Indexes
+
+Indexes improve database query performance.
+
+The V1 database should provide appropriate indexes for frequently queried fields.
+
+Important candidates include:
+
+```text
+users.email
+tasks.user_id
+tasks.status
+tasks.priority
+```
+
+The most important relationship index is:
+
+```text
+tasks.user_id
+```
+
+because most task queries are scoped to the authenticated user.
+
+### Example
+
+```sql
+SELECT *
+FROM tasks
+WHERE user_id = ?
+ORDER BY created_at DESC;
+```
+
+An index on `user_id` helps the database locate the user's tasks efficiently.
+
+> Document only indexes that actually exist in your migration files. If an index is not currently implemented, list it under future database improvements rather than claiming it exists in V1.
+
+---
+
+# 12. Database Migrations
+
+Database schema changes are managed through migration files.
+
+Example structure:
+
+```text
+server/
+└── migrations/
+    ├── 001_create_users_table.sql
+    └── 002_create_tasks_table.sql
+```
+
+### Migration 001
+
+Creates the `users` table.
+
+Responsibilities include:
+
+* Creating the users table.
+* Defining user columns.
+* Defining the primary key.
+* Defining email uniqueness.
+* Defining timestamps.
+
+### Migration 002
+
+Creates the `tasks` table.
+
+Responsibilities include:
+
+* Creating the tasks table.
+* Defining task columns.
+* Defining the primary key.
+* Defining the `user_id` relationship.
+* Defining task constraints.
+
+### Migration Execution
+
+Migrations are executed using the project's migration script.
+
+Example:
+
+```bash
+npm run migrate
+```
+
+Migrations allow the database schema to be created consistently across development environments.
+
+---
+
+# 13. Database Queries
+
+Database access is performed through parameterized SQL queries.
+
+The application separates database operations from HTTP request handling.
+
+## Create User
+
+Used during registration.
+
+Conceptually:
+
+```sql
+INSERT INTO users (
+    name,
+    email,
+    password_hash
+)
+VALUES (?, ?, ?);
+```
+
+The password value passed to the database is the generated password hash, not the plaintext password.
+
+---
+
+## Find User
+
+Used during login and authentication.
+
+Example:
+
+```sql
+SELECT
+    id,
+    name,
+    email,
+    password_hash,
+    created_at,
+    updated_at
+FROM users
+WHERE email = ?;
+```
+
+---
+
+## Create Task
+
+Creates a task for the authenticated user.
+
+Example:
 
 ```sql
 INSERT INTO tasks (
     user_id,
     title,
     description,
-    status
+    status,
+    priority,
+    due_date
 )
-VALUES (?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?);
 ```
 
-## Update task
+The `user_id` comes from the authenticated user rather than from untrusted client input.
+
+---
+
+## Get Tasks
+
+Retrieves tasks belonging to a user.
+
+Conceptually:
+
+```sql
+SELECT *
+FROM tasks
+WHERE user_id = ?
+ORDER BY created_at DESC;
+```
+
+Pagination and filtering can add additional conditions.
+
+Example:
+
+```sql
+SELECT *
+FROM tasks
+WHERE user_id = ?
+  AND status = ?
+ORDER BY created_at DESC
+LIMIT ? OFFSET ?;
+```
+
+---
+
+## Get Task
+
+Retrieves one task belonging to the authenticated user.
+
+```sql
+SELECT *
+FROM tasks
+WHERE id = ?
+  AND user_id = ?;
+```
+
+The `user_id` condition is important for authorization.
+
+---
+
+## Update Task
+
+Updates an owned task.
+
+Example:
 
 ```sql
 UPDATE tasks
@@ -393,380 +662,438 @@ SET
     title = ?,
     description = ?,
     status = ?,
+    priority = ?,
+    due_date = ?,
     updated_at = CURRENT_TIMESTAMP
 WHERE id = ?
-AND user_id = ?;
-```
-
-## Delete task
-
-```sql
-DELETE FROM tasks
-WHERE id = ?
-AND user_id = ?;
+  AND user_id = ?;
 ```
 
 ---
 
-# 17. Indexes
+## Delete Task
 
-Indexes improve database query performance.
+Deletes an owned task.
 
-The primary keys automatically create indexes:
+```sql
+DELETE FROM tasks
+WHERE id = ?
+  AND user_id = ?;
+```
+
+This prevents a user from deleting another user's task.
+
+---
+
+# 14. Data Integrity
+
+The database maintains data integrity through:
+
+### Primary Keys
+
+Every user and task has a unique identifier.
 
 ```text
 users.id
 tasks.id
 ```
 
-The foreign key should also be indexed for efficient user-task queries.
+### Foreign Keys
 
-Example:
+Tasks reference valid users.
 
-```sql
-CREATE INDEX idx_tasks_user_id
-ON tasks(user_id);
+```text
+tasks.user_id → users.id
 ```
 
-For larger datasets, additional indexes can be added based on actual query patterns.
+### Unique Email
+
+User emails must be unique.
+
+### Required Fields
+
+Required user and task fields cannot be omitted.
+
+### Valid Task Values
+
+Task status and priority values must conform to the application's supported values.
+
+### Ownership
+
+Every task must have an associated user.
 
 ---
 
-# 18. Database Connection
+# 15. Password Storage
 
-The Node.js server connects to MySQL using database configuration.
+User passwords must never be stored as plaintext.
 
-Example environment variables:
+During registration:
 
 ```text
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=task_manager
+Plaintext Password
+        │
+        ▼
+     bcrypt
+        │
+        ▼
+ Password Hash
+        │
+        ▼
+     Database
 ```
 
-These values must not be hard-coded into the application.
+The database stores:
+
+```text
+password_hash
+```
+
+not:
+
+```text
+password
+```
+
+During login:
+
+```text
+User Password
+      │
+      ▼
+bcrypt.compare()
+      │
+      ▼
+Stored Password Hash
+      │
+      ├── Match ──► Authentication succeeds
+      │
+      └── No Match ► Authentication fails
+```
+
+Password hashes are never returned to the frontend.
 
 ---
 
-# 19. Database Layer
+# 16. SQL Injection Protection
 
-The backend should isolate database operations from controllers.
+The application uses parameterized SQL queries.
 
-Example structure:
-
-```text
-server/
-├── models/
-│   ├── userModel.js
-│   └── taskModel.js
-│
-├── services/
-│   ├── authService.js
-│   └── taskService.js
-│
-└── controllers/
-    ├── authController.js
-    └── taskController.js
-```
-
-The flow is:
-
-```text
-Controller
-    │
-    ▼
-Service
-    │
-    ▼
-Model
-    │
-    ▼
-MySQL
-```
-
----
-
-# 20. Database Migration
-
-Database schema changes should be managed through migration scripts rather than manually modifying the production database.
-
-Example:
-
-```text
-server/
-└── scripts/
-    └── migrate.js
-```
-
-The migration process can:
-
-1. Create the database.
-2. Create the users table.
-3. Create the tasks table.
-4. Create constraints.
-5. Create indexes.
-
-Example command:
-
-```bash
-npm run migrate
-```
-
----
-
-# 21. Data Integrity
-
-The database uses constraints to maintain valid data.
-
-Important constraints include:
-
-```text
-PRIMARY KEY
-FOREIGN KEY
-NOT NULL
-UNIQUE
-DEFAULT
-```
-
-Examples:
-
-```text
-users.id
-    → PRIMARY KEY
-
-users.email
-    → UNIQUE
-
-tasks.user_id
-    → FOREIGN KEY
-
-tasks.title
-    → NOT NULL
-```
-
----
-
-# 22. Transactions
-
-Transactions should be used when multiple database operations must succeed or fail together.
-
-Example:
-
-```text
-Operation A
-    │
-    ▼
-Operation B
-    │
-    ▼
-Operation C
-```
-
-If one operation fails:
-
-```text
-ROLLBACK
-```
-
-If all operations succeed:
-
-```text
-COMMIT
-```
-
-V1 may not require many complex transactions, but the architecture supports them when needed.
-
----
-
-# 23. Database Security
-
-The application should follow these rules:
-
-* Never expose database credentials.
-* Store credentials in environment variables.
-* Never store plain-text passwords.
-* Use parameterized queries.
-* Validate user input.
-* Enforce ownership at the database query level.
-* Use foreign keys.
-* Limit database permissions in production.
-* Do not expose raw database errors to users.
-
----
-
-# 24. SQL Injection Protection
-
-Queries should use parameterized values.
-
-Unsafe:
+Instead of constructing SQL using string concatenation:
 
 ```javascript
+// Unsafe approach
 const query = `SELECT * FROM users WHERE email = '${email}'`;
 ```
 
-Preferred:
+the application uses placeholders:
 
 ```javascript
 const query = `
-    SELECT *
-    FROM users
-    WHERE email = ?
+  SELECT *
+  FROM users
+  WHERE email = ?
 `;
 
-const [rows] = await db.execute(query, [email]);
+const [rows] = await db.query(query, [email]);
 ```
 
-Parameterized queries prevent user input from being interpreted as SQL code.
+The values are supplied separately from the SQL statement.
+
+This reduces the risk of SQL injection attacks.
 
 ---
 
-# 25. Database Backup
+# 17. Database Security
 
-Production databases should have regular backups.
+Database security is implemented through multiple layers.
 
-A backup strategy should include:
+### Environment Variables
+
+Database credentials are stored in environment configuration.
+
+Sensitive values are not hardcoded in source code.
+
+### Restricted Database Access
+
+The frontend does not communicate directly with MySQL.
+
+The architecture is:
 
 ```text
-Regular automated backups
-+
-Secure backup storage
-+
-Recovery testing
+Browser
+   │
+   ▼
+REST API
+   │
+   ▼
+Backend
+   │
+   ▼
+MySQL
 ```
 
-Backup frequency should be based on the production application's requirements.
+### Password Hashing
+
+Passwords are hashed before storage.
+
+### Parameterized Queries
+
+Database queries use parameters rather than dynamically constructed SQL.
+
+### Authentication
+
+Only authenticated users can perform protected task operations.
+
+### Authorization
+
+Task operations are restricted to the task owner.
 
 ---
 
-# 26. V1 Entity Relationship Diagram
+# 18. Cascade Delete
+
+The user-task relationship must define the expected behavior when a user is deleted.
+
+If the V1 schema uses:
+
+```sql
+ON DELETE CASCADE
+```
+
+then deleting a user automatically deletes all tasks belonging to that user.
+
+The relationship becomes:
 
 ```text
-┌─────────────────────┐
-│       USERS         │
-├─────────────────────┤
-│ PK id               │
-│ name                │
-│ email               │
-│ password_hash       │
-│ created_at          │
-│ updated_at          │
-└──────────┬──────────┘
-           │
-           │ 1
-           │
-           │
-           │ N
-           ▼
-┌─────────────────────┐
-│       TASKS         │
-├─────────────────────┤
-│ PK id               │
-│ FK user_id          │
-│ title               │
-│ description         │
-│ status              │
-│ created_at          │
-│ updated_at          │
-└─────────────────────┘
+Delete User
+    │
+    ▼
+Delete User's Tasks
 ```
+
+This prevents orphaned task records.
+
+### Important
+
+The exact cascade behavior must match the actual foreign-key definition in the migration.
+
+If `ON DELETE CASCADE` is not currently defined, it should not be documented as an implemented V1 feature.
+
+Instead, it can be listed as a future database improvement.
 
 ---
 
-# 27. Future Database Evolution
+# 19. Backup Strategy
 
-V2 may introduce additional entities:
+For a development V1 environment, database backups should be performed before:
+
+* Major schema changes.
+* Migration changes.
+* Production deployment.
+* Destructive database operations.
+
+A production deployment should introduce a proper automated backup strategy.
+
+A future production backup system may include:
+
+```text
+MySQL Database
+      │
+      ▼
+Automated Backup
+      │
+      ▼
+Secure Backup Storage
+      │
+      ▼
+Retention Policy
+```
+
+Production backup requirements should include:
+
+* Automated backups.
+* Backup retention.
+* Secure backup storage.
+* Restore testing.
+* Disaster recovery procedures.
+
+---
+
+# 20. V1 Database Design
+
+The V1 database intentionally uses a small number of entities.
+
+```text
+┌──────────────┐
+│    users     │
+├──────────────┤
+│ id           │
+│ name         │
+│ email        │
+│ password_hash│
+│ created_at   │
+│ updated_at   │
+└───────┬──────┘
+        │
+        │ 1:N
+        │
+┌───────▼──────┐
+│    tasks     │
+├──────────────┤
+│ id           │
+│ user_id      │
+│ title        │
+│ description  │
+│ status       │
+│ priority     │
+│ due_date     │
+│ created_at   │
+│ updated_at   │
+└──────────────┘
+```
+
+### V1 Design Principles
+
+The database prioritizes:
+
+* Simplicity.
+* Data integrity.
+* Clear relationships.
+* Secure authentication.
+* User ownership.
+* Maintainability.
+* Easy migration.
+* Future extensibility.
+
+The database does not currently require separate entities for:
+
+* Projects.
+* Teams.
+* Comments.
+* Notifications.
+* Attachments.
+* Activity logs.
+
+These can be introduced in future versions if the product requirements expand.
+
+---
+
+# 21. Future Database Evolution
+
+Future versions can extend the database as new product requirements are introduced.
+
+## V2
+
+Potential entities:
 
 ```text
 projects
-project_members
-task_comments
-task_labels
 notifications
+task_tags
+tags
 ```
 
-Potential relationship:
+Possible relationship:
+
+```text
+users
+  │
+  ├── tasks
+  │
+  └── projects
+        │
+        └── tasks
+```
+
+Potential additions include:
+
+* Task categories.
+* Tags.
+* Advanced task filtering.
+* Notifications.
+* Projects.
+* Task ordering.
+* Recurring tasks.
+
+---
+
+## V3
+
+A collaborative version could introduce:
 
 ```text
 users
   │
   ├── projects
   │      │
-  │      ├── tasks
-  │      └── project_members
+  │      ├── project_members
+  │      │
+  │      └── tasks
+  │             │
+  │             └── comments
   │
   └── notifications
 ```
 
-V3 could introduce more advanced database requirements such as:
+Potential entities:
 
 ```text
-Audit logs
-Soft deletes
-Advanced indexing
-Full-text search
-Reporting tables
-Analytics data
+projects
+project_members
+comments
+attachments
+notifications
+activity_logs
+roles
+permissions
 ```
 
-These should be introduced based on actual product requirements.
+This would allow the system to support:
+
+* Team collaboration.
+* Project workspaces.
+* Role-based access control.
+* Task comments.
+* File attachments.
+* Notifications.
+* Activity history.
+* Team permissions.
 
 ---
 
-# 28. Database Design Principles
+# Database Design Summary
 
-The database follows these principles:
-
-### Data Integrity
-
-Use constraints to keep data valid.
-
-### Referential Integrity
-
-Use foreign keys to maintain relationships.
-
-### Security
-
-Protect credentials and passwords.
-
-### Normalization
-
-Avoid unnecessary duplication of data.
-
-### Performance
-
-Use indexes for frequently queried fields.
-
-### Scalability
-
-Design tables so additional features can be added without breaking existing data.
-
----
-
-# 29. Database Summary
-
-V1 contains two core entities:
+The V1 database follows a simple relational model:
 
 ```text
-users
-tasks
+                    ┌──────────────┐
+                    │    USERS     │
+                    │──────────────│
+                    │ id           │
+                    │ name         │
+                    │ email        │
+                    │ password_hash│
+                    └──────┬───────┘
+                           │
+                         1 │
+                           │
+                         N │
+                    ┌──────▼───────┐
+                    │    TASKS     │
+                    │──────────────│
+                    │ id           │
+                    │ user_id      │
+                    │ title        │
+                    │ description  │
+                    │ status       │
+                    │ priority     │
+                    │ due_date     │
+                    └──────────────┘
 ```
 
-Relationship:
+The key database principle is:
 
-```text
-User 1 ─────────── N Tasks
-```
+> **Every task belongs to a user, and every task operation is scoped to the authenticated user's ownership.**
 
-The database provides:
-
-* Secure user storage
-* Password hash storage
-* Task ownership
-* Referential integrity
-* Timestamps
-* Query performance through indexes
-* A foundation for future features
-
-The database architecture is intentionally simple for V1 while providing a clean foundation for V2 and V3.
+This relationship provides the foundation for V1 authentication, authorization, task management, and data integrity.

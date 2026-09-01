@@ -6,171 +6,196 @@
 
 This document defines the functional and non-functional requirements for the Task Management SaaS application.
 
-The purpose of the system is to provide authenticated users with a simple and reliable platform for creating, organizing, viewing, updating, searching, filtering, and deleting tasks.
+It establishes the expected behavior, capabilities, constraints, and acceptance criteria for Version 1 (V1) of the system.
 
-The V1 application is designed as a complete full-stack web application consisting of:
+The requirements serve as a reference for development, testing, documentation, and future feature planning.
 
-- React frontend
-- Node.js/Express backend
-- MySQL database
-- REST API
-- JWT-based authentication
+### 1.2 Scope
+
+The V1 application provides authenticated users with a centralized platform for managing personal tasks.
+
+The system includes:
+
+* User registration
+* User authentication
+* JWT-based authorization
+* Protected routes
+* Task creation
+* Task retrieval
+* Task updating
+* Task deletion
+* Task status management
+* Task priority management
+* Task due dates
+* Task search
+* Task filtering
+* Pagination
+* Task statistics
+* Input validation
+* Error handling
+* Database persistence
+* Automated testing
+* Security controls
+
+V1 is focused on individual task management. Team collaboration, projects, real-time communication, and other advanced SaaS capabilities are outside the primary V1 scope.
+
+### 1.3 V1 Definition
+
+V1 is considered the first complete version of the application that provides the core functionality required for a user to securely create, manage, organize, and track personal tasks.
+
+The V1 implementation should provide a stable foundation that can be extended in future versions without requiring a complete architectural redesign.
 
 ---
 
 ## 2. Product Overview
 
-Task Management SaaS allows users to manage their personal tasks through a web application.
+Task Management SaaS is a web-based application that allows users to manage their personal tasks from a centralized dashboard.
 
-Users can:
+A user can create tasks containing information such as a title, description, status, priority, and due date.
 
-- Create an account
-- Log in
-- Access a protected dashboard
-- Create tasks
-- View tasks
-- View individual tasks
-- Update tasks
-- Delete tasks
-- Search tasks
-- Filter tasks
-- Navigate through paginated task results
-- View task statistics
-- Log out
+Users can then view, search, filter, update, and delete their own tasks.
 
-Each task belongs to the authenticated user who created it.
+The system must ensure that users can only access resources that belong to their authenticated account.
+
+The application consists of:
+
+* A web-based frontend
+* A backend REST API
+* A relational database
+* Authentication and authorization mechanisms
+* Validation and error handling
+* Automated tests
 
 ---
 
-# 3. Goals
+## 3. Goals
 
 The primary goals of V1 are:
 
-1. Provide secure user authentication.
-2. Allow users to manage their own tasks.
-3. Provide a clean and usable dashboard.
-4. Provide a RESTful backend API.
-5. Persist application data in MySQL.
-6. Enforce task ownership and authorization.
-7. Validate user input.
-8. Handle loading, error, and empty states.
-9. Support task search and filtering.
-10. Support pagination.
-11. Provide dashboard statistics.
-12. Maintain a clear and scalable project structure.
-13. Provide professional technical documentation.
+1. Provide a simple and reliable task management experience.
+2. Allow users to securely create and manage accounts.
+3. Protect user-specific resources through authentication and authorization.
+4. Provide complete task CRUD functionality.
+5. Allow users to organize tasks by status and priority.
+6. Allow users to track task due dates.
+7. Make tasks easy to find through search and filtering.
+8. Support pagination for task collections.
+9. Provide useful task statistics.
+10. Validate user input before processing requests.
+11. Provide consistent error handling.
+12. Persist application data reliably.
+13. Protect sensitive application resources.
+14. Provide automated tests for important application behavior.
+15. Establish a maintainable foundation for future development.
 
 ---
 
-# 4. Users
+## 4. User Roles
 
-## 4.1 Standard User
+### 4.1 Standard User
 
-V1 contains one primary user type:
+V1 contains one primary application role: the standard user.
 
-**Authenticated User**
+A standard user can:
 
-An authenticated user can:
+* Register an account.
+* Log in.
+* Access their authenticated session.
+* View their own tasks.
+* Create tasks.
+* Update their own tasks.
+* Delete their own tasks.
+* Search their tasks.
+* Filter their tasks.
+* View task statistics.
+* Log out.
 
-- Register
-- Log in
-- View their dashboard
-- Create tasks
-- View their tasks
-- Update their tasks
-- Delete their tasks
-- Search their tasks
-- Filter their tasks
-- View their task statistics
-- Log out
+A standard user cannot:
 
-Users cannot access or modify tasks belonging to other users.
+* Access another user's tasks.
+* Modify another user's tasks.
+* Delete another user's tasks.
+* Access administrative functionality.
+* Manage other users.
+
+Administrative and collaborative roles are outside the V1 scope.
 
 ---
 
-# 5. Functional Requirements
+## 5. Functional Requirements
 
-## FR-001 — User Registration
+### FR-001 User Registration
 
 The system shall allow a new user to create an account.
 
-The registration form shall collect the required user information.
+The registration process shall:
 
-The system shall:
+* Accept the required user information.
+* Validate the submitted information.
+* Ensure the email address is valid.
+* Ensure required fields are provided.
+* Reject invalid input.
+* Prevent duplicate accounts using the same email address.
+* Securely hash the user's password before storage.
+* Return an appropriate response when registration succeeds.
+* Return an appropriate error response when registration fails.
 
-1. Validate the registration data.
-2. Check whether the email is already registered.
-3. Hash the user's password.
-4. Store the user in the database.
-5. Generate an authentication token.
-6. Return the appropriate user information and authentication data.
+### FR-002 User Login
 
-Passwords must never be stored in plaintext.
+The system shall allow an existing user to authenticate.
 
----
+The login process shall:
 
-## FR-002 — User Login
+* Accept the user's email and password.
+* Validate the submitted credentials.
+* Verify that the user exists.
+* Verify the password against the stored password hash.
+* Reject invalid credentials.
+* Generate an authentication token after successful authentication.
+* Return the authenticated user's relevant information.
+* Return an appropriate error response when authentication fails.
 
-The system shall allow registered users to log in.
+### FR-003 Current User
 
-The system shall:
+The system shall provide a way for an authenticated user to retrieve their current account information.
 
-1. Validate the login input.
-2. Find the user by email.
-3. Compare the supplied password with the stored password hash.
-4. Reject invalid credentials.
-5. Generate a JWT for valid credentials.
-6. Return the authenticated user information and token.
+The current-user functionality shall:
 
----
+* Require authentication.
+* Validate the authentication token.
+* Identify the authenticated user.
+* Return the user's permitted account information.
+* Reject unauthenticated requests.
 
-## FR-003 — Current User
+### FR-004 Authentication
 
-The system shall provide an endpoint for retrieving the currently authenticated user.
+The system shall authenticate users before granting access to protected application resources.
 
-Endpoint:
+Authentication shall:
 
-```text
-GET /api/auth/me
-````
+* Use a secure authentication token.
+* Validate tokens before allowing protected operations.
+* Reject missing authentication credentials.
+* Reject invalid authentication credentials.
+* Reject expired or otherwise invalid tokens when applicable.
 
-The endpoint shall require valid authentication.
+### FR-005 Protected Routes
 
-The server shall determine the user from the authenticated JWT rather than trusting a user ID supplied by the client.
+The system shall protect frontend and backend resources that require authentication.
 
----
+Unauthenticated users shall not be able to access protected application functionality.
 
-## FR-004 — User Logout
-
-The frontend shall provide a logout action.
-
-When the user logs out, the client shall:
-
-1. Clear the authentication state.
-2. Remove the stored authentication information according to the application's implementation.
-3. Redirect the user to the login page or appropriate public page.
-
----
-
-## FR-005 — Protected Routes
-
-Authenticated application pages shall be protected from unauthenticated access.
-
-Unauthenticated users attempting to access protected pages shall be redirected to the appropriate authentication page.
-
-Frontend route protection improves user experience.
-
-Backend authentication remains the actual security boundary.
+Protected resources shall redirect or reject unauthenticated access appropriately.
 
 ---
 
-# 6. Task Requirements
+## 6. Task Management Requirements
 
-## FR-006 — Create Task
+### FR-006 Create Task
 
-Authenticated users shall be able to create tasks.
+The system shall allow an authenticated user to create a task.
 
-A task may contain:
+A task creation request shall support the task information required by the application, including:
 
 * Title
 * Description
@@ -178,109 +203,106 @@ A task may contain:
 * Priority
 * Due date
 
-The server shall associate the task with the authenticated user.
+The system shall associate the newly created task with the authenticated user.
 
-The client shall validate appropriate input before submitting the request.
+The system shall reject invalid task data.
 
-The server shall perform authoritative validation.
+### FR-007 View Tasks
 
----
+The system shall allow an authenticated user to retrieve their tasks.
 
-## FR-007 — View Tasks
+The task listing functionality shall support:
 
-Authenticated users shall be able to retrieve their tasks.
+* Retrieving the user's tasks.
+* Pagination.
+* Searching tasks.
+* Filtering tasks by status.
+* Filtering tasks by priority.
+* Returning appropriate task information.
+* Returning an appropriate response when no tasks exist.
 
-The API shall return only tasks belonging to the authenticated user.
+The system shall not return tasks belonging to other users.
 
-Users shall not receive another user's tasks.
+### FR-008 View Single Task
 
----
+The system shall allow an authenticated user to retrieve a specific task.
 
-## FR-008 — View Individual Task
+The system shall:
 
-Authenticated users shall be able to retrieve an individual task.
+* Require authentication.
+* Validate the task identifier.
+* Verify task ownership.
+* Return the requested task when the user owns it.
+* Reject access when the task does not belong to the authenticated user.
+* Return an appropriate response when the task does not exist.
 
-Endpoint:
+### FR-009 Update Task
 
-```text
-GET /api/tasks/:taskId
-```
+The system shall allow an authenticated user to update their own tasks.
 
-The server shall verify that the requested task belongs to the authenticated user.
+The update functionality shall allow supported task fields to be modified, including:
 
-If the task does not exist or does not belong to the user, the appropriate error response shall be returned.
+* Title
+* Description
+* Status
+* Priority
+* Due date
 
----
+The system shall:
 
-## FR-009 — Update Task
+* Require authentication.
+* Validate the task identifier.
+* Verify task ownership.
+* Validate updated data.
+* Persist the changes.
+* Return the updated task or appropriate success response.
 
-Authenticated users shall be able to update their tasks.
+Users shall not be able to update tasks belonging to another user.
 
-Endpoint:
+### FR-010 Delete Task
 
-```text
-PATCH /api/tasks/:taskId
-```
+The system shall allow an authenticated user to delete their own tasks.
 
-The update operation shall support partial updates.
+The system shall:
 
-For example:
-
-```json
-{
-  "status": "completed"
-}
-```
-
-Only the supplied field should be changed.
-
----
-
-## FR-010 — Delete Task
-
-Authenticated users shall be able to delete their own tasks.
-
-Endpoint:
-
-```text
-DELETE /api/tasks/:taskId
-```
-
-The server shall verify task ownership before deletion.
+* Require authentication.
+* Validate the task identifier.
+* Verify task ownership.
+* Delete the requested task.
+* Return an appropriate success response.
 
 Users shall not be able to delete tasks belonging to another user.
 
 ---
 
-# 7. Task Data Requirements
+## 7. Task Data Requirements
 
-## FR-011 — Task Title
+### FR-011 Task Title
 
-Every task shall have a title.
+Every task shall contain a title.
 
-The server shall validate that the title satisfies the application's requirements.
+The title shall:
 
----
+* Be required when creating a task.
+* Contain valid text.
+* Respect the application's configured length restrictions.
+* Be validated before being stored.
 
-## FR-012 — Task Description
+### FR-012 Task Description
 
 A task may contain a description.
 
-The description may be nullable if the user intentionally clears it.
+The description shall:
 
-Example:
+* Support additional information about the task.
+* Be validated when provided.
+* Be safely stored and returned by the application.
 
-```json
-{
-  "description": null
-}
-```
+### FR-013 Task Status
 
----
+Each task shall have a status.
 
-## FR-013 — Task Status
-
-Tasks shall support the following statuses:
+V1 shall support the following statuses:
 
 ```text
 todo
@@ -288,13 +310,13 @@ in_progress
 completed
 ```
 
-The server shall reject unsupported status values.
+The system shall reject unsupported status values.
 
----
+### FR-014 Task Priority
 
-## FR-014 — Task Priority
+Each task shall have a priority.
 
-Tasks shall support the following priorities:
+V1 shall support:
 
 ```text
 low
@@ -302,748 +324,435 @@ medium
 high
 ```
 
-The server shall reject unsupported priority values.
+The system shall reject unsupported priority values.
 
----
-
-## FR-015 — Due Date
+### FR-015 Task Due Date
 
 A task may contain a due date.
 
-The due date may be cleared when supported by the application.
+The system shall:
 
-Example:
+* Accept a valid due-date value.
+* Validate the supplied date.
+* Store the due date with the task.
+* Return the due date when retrieving the task.
 
-```json
-{
-  "dueDate": null
-}
-```
-
----
-
-# 8. Task Search Requirements
-
-## FR-016 — Search Tasks
-
-Authenticated users shall be able to search their tasks.
-
-Search results shall only include tasks belonging to the authenticated user.
-
-The system shall display an appropriate empty state when no matching tasks are found.
-
----
-
-# 9. Task Filtering Requirements
-
-## FR-017 — Filter by Status
-
-Users shall be able to filter tasks by supported status values.
-
-Example:
-
-```text
-todo
-in_progress
-completed
-```
-
----
-
-## FR-018 — Filter by Priority
-
-Users shall be able to filter tasks by supported priority values.
-
-Example:
-
-```text
-low
-medium
-high
-```
-
----
-
-# 10. Pagination Requirements
-
-## FR-019 — Paginated Task Results
-
-The task list shall support pagination.
-
-Typical parameters include:
-
-```text
-page
-limit
-```
-
-The API shall provide sufficient pagination metadata for the frontend.
-
-Example metadata:
-
-```text
-page
-limit
-total
-totalPages
-```
-
-Pagination shall prevent the client from loading an unnecessarily large number of tasks in a single response.
-
----
-
-# 11. Dashboard Requirements
-
-## FR-020 — Dashboard
-
-Authenticated users shall have access to a dashboard.
-
-The dashboard shall provide an overview of the user's tasks.
-
-The dashboard may contain:
-
-* Total tasks
-* To-do tasks
-* In-progress tasks
-* Completed tasks
-* Low-priority tasks
-* Medium-priority tasks
-* High-priority tasks
-
----
-
-## FR-021 — Task Statistics
-
-The backend shall provide a statistics endpoint:
-
-```text
-GET /api/tasks/stats
-```
-
-Statistics shall be calculated independently from the current paginated task list.
-
-For example, if a user has 47 total tasks and the current page contains 20 tasks:
-
-```text
-Current page: 20
-Total tasks: 47
-```
-
-The dashboard shall display the global total rather than using:
-
-```javascript
-tasks.length
-```
-
-as the total.
-
----
-
-# 12. Authentication and Authorization Requirements
-
-## FR-022 — JWT Authentication
-
-The application shall use JWT-based authentication for protected API requests.
-
-Authenticated requests shall include:
-
-```http
-Authorization: Bearer <token>
-```
-
----
-
-## FR-023 — Authentication Middleware
-
-The backend shall provide authentication middleware that:
-
-1. Reads the Authorization header.
-2. Extracts the Bearer token.
-3. Verifies the JWT.
-4. Identifies the authenticated user.
-5. Makes the authenticated user available to downstream request handlers.
-
----
-
-## FR-024 — Task Ownership
+### FR-016 Task Ownership
 
 Every task shall belong to a user.
 
-The backend shall enforce task ownership for:
+The system shall:
+
+* Associate a task with the authenticated user when it is created.
+* Preserve the ownership relationship.
+* Use ownership when retrieving tasks.
+* Use ownership when updating tasks.
+* Use ownership when deleting tasks.
+* Prevent users from accessing another user's tasks.
+
+---
+
+## 8. Validation Requirements
+
+### FR-017 Request Validation
+
+The system shall validate incoming API requests before processing them.
+
+Validation shall cover applicable:
+
+* Request body fields
+* URL parameters
+* Query parameters
+* Data types
+* Required fields
+* Allowed values
+* Input formats
+* Length restrictions
+
+Invalid requests shall be rejected with an appropriate client error response.
+
+### FR-018 Authentication Validation
+
+Authentication-related requests shall be validated.
+
+The system shall validate:
+
+* Required registration fields.
+* Email format.
+* Password requirements.
+* Login credentials.
+* Authentication headers.
+* JWT format and validity.
+
+### FR-019 Task Validation
+
+Task requests shall be validated before database operations.
+
+Validation shall include applicable:
+
+* Title requirements
+* Description requirements
+* Status values
+* Priority values
+* Due-date format
+* Task identifier format
+* Search parameters
+* Pagination parameters
+* Filter values
+
+Invalid task data shall not be persisted.
+
+---
+
+## 9. Authorization Requirements
+
+### FR-020 JWT Authentication
+
+The system shall use JWT-based authentication for protected resources.
+
+The authentication process shall:
+
+1. Receive the authentication token.
+2. Validate the token.
+3. Extract the authenticated user's identity.
+4. Attach the authenticated user information to the request.
+5. Allow protected operations to continue when authentication succeeds.
+6. Reject the request when authentication fails.
+
+### FR-021 Protected Endpoints
+
+Protected API endpoints shall require valid authentication.
+
+Unauthenticated requests to protected endpoints shall be rejected.
+
+Authentication shall be enforced consistently across all protected task operations.
+
+### FR-022 Task Ownership
+
+The system shall enforce ownership authorization for task resources.
+
+For every task operation, the system shall verify that the requested task belongs to the authenticated user.
+
+This requirement applies to:
 
 * Viewing individual tasks
 * Updating tasks
 * Deleting tasks
 
-Conceptually:
-
-```sql
-WHERE id = ?
-AND user_id = ?
-```
-
-This prevents users from accessing another user's data.
+A user attempting to access another user's task shall not receive unauthorized access to that task.
 
 ---
 
-# 13. Validation Requirements
+## 10. Error Handling Requirements
 
-## FR-025 — Request Validation
+The system shall provide consistent error handling across the application.
 
-The backend shall validate incoming requests.
+The backend shall:
 
-Validation shall include appropriate checks for:
+* Validate requests.
+* Return appropriate HTTP status codes.
+* Return structured error responses.
+* Handle authentication errors.
+* Handle authorization errors.
+* Handle validation errors.
+* Handle resource-not-found errors.
+* Handle database errors.
+* Handle unexpected server errors.
 
-* Required fields
-* Email
-* Password
-* Task title
-* Task status
-* Task priority
-* Due date
-* PATCH fields
+The frontend shall provide appropriate feedback for failed operations.
 
----
+Errors shall not expose sensitive implementation details such as:
 
-## FR-026 — Partial Update Validation
-
-PATCH requests shall support partial updates.
-
-The server shall distinguish between:
-
-### Field omitted
-
-```json
-{}
-```
-
-Meaning:
-
-```text
-Do not change the existing value.
-```
-
-### Field provided
-
-```json
-{
-  "description": "New description"
-}
-```
-
-Meaning:
-
-```text
-Replace the existing value.
-```
-
-### Field set to null
-
-```json
-{
-  "description": null
-}
-```
-
-Meaning:
-
-```text
-Clear the existing value.
-```
+* Passwords
+* JWT secrets
+* Database credentials
+* Internal security information
+* Unnecessary database details
 
 ---
 
-# 14. Error Handling Requirements
+## 11. Non-Functional Requirements
 
-## FR-027 — API Errors
+### Performance
 
-The API shall return appropriate HTTP status codes for errors.
-
-Common status codes include:
-
-```text
-400 Bad Request
-401 Unauthorized
-403 Forbidden
-404 Not Found
-409 Conflict
-500 Internal Server Error
-```
-
----
-
-## FR-028 — Error Response Format
-
-API errors should use a consistent response structure.
-
-Example:
-
-```json
-{
-  "success": false,
-  "message": "Task not found."
-}
-```
-
-The exact response structure shall follow the implemented API contract.
-
----
-
-## FR-029 — Frontend Error Display
-
-The frontend shall provide meaningful feedback when an API request fails.
-
-Examples:
-
-```text
-Invalid email or password.
-Task could not be created.
-Task could not be updated.
-Task not found.
-Something went wrong.
-```
-
-Sensitive backend information shall not be exposed to users.
-
----
-
-# 15. User Interface Requirements
-
-## FR-030 — Loading States
-
-The frontend shall provide loading feedback during asynchronous operations.
-
-Examples:
-
-```text
-Loading tasks...
-Loading dashboard...
-Creating task...
-Updating task...
-Deleting task...
-```
-
----
-
-## FR-031 — Empty States
-
-The frontend shall provide appropriate empty states.
-
-### No Tasks
-
-```text
-No tasks yet.
-Create your first task to get started.
-```
-
-### No Search or Filter Results
-
-```text
-No tasks match your filters.
-Try changing your search or filters.
-```
-
----
-
-## FR-032 — Form Feedback
-
-Forms shall provide appropriate feedback for invalid input.
-
-Users should understand:
-
-* Which field is invalid.
-* What needs to be corrected.
-* Whether the request is being processed.
-
----
-
-# 16. Non-Functional Requirements
-
-## NFR-001 — Security
-
-The application shall:
-
-* Hash passwords using bcrypt.
-* Use JWT authentication.
-* Protect private API endpoints.
-* Enforce task ownership.
-* Validate incoming data.
-* Use parameterized database queries.
-* Keep secrets in environment variables.
-* Avoid exposing sensitive internal information.
-
----
-
-## NFR-002 — Performance
-
-The application should provide responsive API and UI interactions.
+The application should provide responsive interactions for normal V1 workloads.
 
 The system should:
 
-* Use pagination for task lists.
-* Avoid unnecessary database queries.
-* Avoid loading unnecessary data.
-* Keep API responses focused on required data.
+* Use pagination for task collections.
+* Avoid unnecessarily large API responses.
+* Use appropriate database queries.
+* Return API responses within a reasonable time under normal conditions.
 
----
+### Security
 
-## NFR-003 — Maintainability
+The application shall:
 
-The codebase shall maintain clear separation of responsibilities.
+* Hash user passwords.
+* Protect authentication credentials.
+* Validate incoming requests.
+* Require authentication for protected resources.
+* Enforce task ownership.
+* Protect against unauthorized resource access.
+* Protect sensitive configuration using environment variables.
+* Apply appropriate HTTP security controls.
+* Apply rate limiting where configured.
 
-Frontend responsibilities should be separated into:
+### Maintainability
 
-* Pages
-* Components
-* Hooks
-* Context
-* Services
+The application should maintain a clear separation of concerns.
 
-Backend responsibilities should be separated into:
+Code should be organized into appropriate layers and responsibilities.
 
-* Routes
-* Middleware
-* Controllers
-* Services
-* Models
+The system should:
 
----
+* Use modular components.
+* Keep business logic organized.
+* Avoid unnecessary duplication.
+* Use consistent naming conventions.
+* Provide documentation for important system behavior.
+* Include automated tests for important functionality.
 
-## NFR-004 — Scalability
+### Reliability
 
-The architecture should allow future features to be added without requiring a complete rewrite.
+The system should behave consistently under normal operating conditions.
 
-Potential future features include:
+The application should:
 
-* Team workspaces
-* Task assignment
-* Roles
+* Validate data before persistence.
+* Handle expected errors gracefully.
+* Maintain database relationships and constraints.
+* Prevent unauthorized resource modifications.
+* Provide health-check functionality.
+* Maintain automated tests for critical functionality.
+
+### Scalability
+
+V1 should provide a foundation that can be extended as the application grows.
+
+The architecture should allow future improvements such as:
+
+* Additional user roles
+* Projects
+* Teams
 * Notifications
-* Comments
-* Activity history
-* Real-time updates
+* Real-time functionality
+* Caching
+* Background jobs
+* Advanced search
+* Additional services
+
+V1 does not require large-scale distributed infrastructure.
 
 ---
 
-## NFR-005 — Reliability
+## 12. Testing Requirements
 
-The application should handle expected failures gracefully.
+The application shall include automated tests for critical functionality.
 
-Examples include:
-
-* Invalid credentials
-* Invalid request data
-* Missing resources
-* Unauthorized requests
-* Database errors
-* Network failures
-
----
-
-## NFR-006 — Usability
-
-The application should provide:
-
-* Clear navigation
-* Understandable forms
-* Meaningful error messages
-* Loading feedback
-* Empty states
-* Consistent UI behavior
-
----
-
-## NFR-007 — Testability
-
-Important application behavior should be testable independently.
-
-Tests should cover critical functionality such as:
-
-* Authentication
-* Authorization
-* Task CRUD
-* Validation
-* Search
-* Filtering
-* Pagination
-* Statistics
-* Error handling
-
----
-
-## NFR-008 — Documentation
-
-The project shall maintain documentation covering:
-
-* Requirements
-* Architecture
-* API
-* Database
-* Client
-* Server
-
----
-
-# 17. API Requirements
-
-The main authentication endpoints are:
-
-```text
-POST /api/auth/register
-POST /api/auth/login
-GET  /api/auth/me
-```
-
-The main task endpoints are:
-
-```text
-GET    /api/tasks
-POST   /api/tasks
-GET    /api/tasks/:taskId
-PATCH  /api/tasks/:taskId
-DELETE /api/tasks/:taskId
-GET    /api/tasks/stats
-```
-
-The complete API contract is documented in:
-
-```text
-docs/api.md
-```
-
----
-
-# 18. Database Requirements
-
-The database shall use MySQL.
-
-The primary entities are:
-
-```text
-users
-tasks
-```
-
-Relationship:
-
-```text
-User
- |
- | 1
- |
- | N
- v
-Tasks
-```
-
-Each task shall reference its owner.
-
-The detailed database specification is documented in:
-
-```text
-docs/database.md
-```
-
----
-
-# 19. V1 Scope
-
-## Included in V1
+Testing shall cover, where applicable:
 
 ### Authentication
 
 * User registration
+* Duplicate registration
 * User login
-* JWT authentication
-* Current user
-* Logout
-* Protected routes
+* Invalid credentials
+* Authentication token validation
+* Current-user access
 
 ### Task Management
 
-* Create task
-* View tasks
-* View individual task
-* Update task
-* Delete task
+* Task creation
+* Task retrieval
+* Single-task retrieval
+* Task updating
+* Task deletion
+* Task status
+* Task priority
+* Task due date
 
-### Organization
+### Authorization
 
-* Search
-* Status filtering
-* Priority filtering
-* Pagination
+* Access to owned tasks
+* Rejection of unauthorized task access
+* Rejection of unauthorized task updates
+* Rejection of unauthorized task deletion
 
-### Dashboard
+### Validation
 
-* Task statistics
-* Task overview
+* Invalid request data
+* Missing required fields
+* Invalid status
+* Invalid priority
+* Invalid task identifiers
+* Invalid query parameters
 
-### Application Quality
+### Error Handling
 
-* Validation
-* Authorization
-* Error handling
-* Loading states
-* Empty states
-* Database migrations
-* Automated tests
-* Documentation
+* Not-found responses
+* Validation errors
+* Authentication errors
+* Authorization errors
+* Server/database error handling
 
----
+### Frontend
 
-# 20. Out of Scope for V1
+Frontend tests should cover important user-interface behavior and reusable application functionality.
 
-The following features are not required for V1 unless implemented separately:
-
-* Team workspaces
-* Multiple organizations
-* Task assignment
-* Role-based permissions
-* Comments
-* File attachments
-* Notifications
-* Real-time collaboration
-* Activity history
-* Calendar integration
-* Advanced analytics
-* Audit logging
-* Third-party integrations
-
-These features can be considered for future versions.
+The test suite should be runnable through the project's documented test commands.
 
 ---
 
-# 21. Acceptance Criteria
+## 13. V1 Acceptance Criteria
 
-V1 is considered complete when:
+V1 is considered complete when the following criteria are satisfied:
 
 ### Authentication
 
-* [ ] A user can register.
-* [ ] Duplicate email registration is rejected.
-* [ ] A user can log in.
+* [ ] A new user can register successfully.
+* [ ] Duplicate accounts are rejected.
+* [ ] A registered user can log in.
 * [ ] Invalid credentials are rejected.
-* [ ] Passwords are securely hashed.
-* [ ] JWT authentication works.
-* [ ] Protected endpoints reject unauthenticated requests.
-* [ ] The current user can be retrieved.
-* [ ] A user can log out.
+* [ ] Passwords are securely stored.
+* [ ] Authentication tokens are generated after successful login.
+* [ ] Protected resources require authentication.
 
-### Tasks
+### Task Management
 
 * [ ] An authenticated user can create a task.
 * [ ] A user can view their tasks.
 * [ ] A user can view an individual task.
 * [ ] A user can update their task.
-* [ ] A user can partially update a task.
-* [ ] Nullable fields can be cleared.
 * [ ] A user can delete their task.
-* [ ] Users cannot access another user's tasks.
+* [ ] Tasks support status.
+* [ ] Tasks support priority.
+* [ ] Tasks support due dates.
+* [ ] Users can search their tasks.
+* [ ] Users can filter their tasks.
+* [ ] Task results support pagination.
+* [ ] Task statistics are available.
 
-### Organization
+### Authorization
 
-* [ ] Task search works.
-* [ ] Status filtering works.
-* [ ] Priority filtering works.
-* [ ] Pagination works.
-* [ ] Pagination metadata is returned correctly.
+* [ ] Users can only access their own tasks.
+* [ ] Users cannot update another user's tasks.
+* [ ] Users cannot delete another user's tasks.
+* [ ] Unauthorized requests are rejected.
 
-### Dashboard
+### Validation
 
-* [ ] Total task statistics are correct.
-* [ ] Status statistics are correct.
-* [ ] Priority statistics are correct.
-* [ ] Statistics are independent of the current task page.
+* [ ] Authentication input is validated.
+* [ ] Task input is validated.
+* [ ] Invalid task statuses are rejected.
+* [ ] Invalid priorities are rejected.
+* [ ] Invalid identifiers are rejected.
+* [ ] Invalid query parameters are rejected.
 
-### Frontend
+### Database
 
-* [ ] Loading states are displayed.
-* [ ] Errors are displayed clearly.
-* [ ] Empty states are handled.
-* [ ] Protected routes work.
-* [ ] Forms provide useful validation feedback.
+* [ ] The database can be created successfully.
+* [ ] Database migrations execute successfully.
+* [ ] User data is persisted.
+* [ ] Task data is persisted.
+* [ ] User-task relationships are enforced.
 
-### Backend
+### Testing
 
-* [ ] Input validation works.
-* [ ] Authentication middleware works.
-* [ ] Authorization works.
-* [ ] Database queries are parameterized.
-* [ ] Errors are handled consistently.
+* [ ] Backend tests pass.
+* [ ] Frontend tests pass.
+* [ ] Critical authentication behavior is tested.
+* [ ] Critical task behavior is tested.
+* [ ] Authorization behavior is tested.
+
+### Security
+
+* [ ] Passwords are not stored as plaintext.
+* [ ] JWT authentication is enforced.
+* [ ] Protected endpoints require authentication.
+* [ ] Task ownership is enforced.
+* [ ] Secrets are stored outside source code.
+* [ ] Security middleware is configured.
 
 ### Documentation
 
-* [ ] Root README exists.
-* [ ] Client README exists.
-* [ ] Server README exists.
-* [ ] Architecture documentation exists.
-* [ ] API documentation exists.
-* [ ] Database documentation exists.
-* [ ] Requirements documentation exists.
+* [ ] README documentation is available.
+* [ ] Requirements documentation is available.
+* [ ] Architecture documentation is available.
+* [ ] API documentation is available.
+* [ ] Database documentation is available.
+* [ ] Testing documentation is available.
+* [ ] Security documentation is available.
 
 ---
 
-# 22. Future Requirements
+## 14. Future Requirements
 
-Future versions may introduce:
+Future versions may extend the application beyond individual task management.
 
-## V2
+### V2
 
-* Team workspaces
-* Task assignment
-* Role-based access
-* Improved filtering
-* Improved search
+Potential requirements include:
+
+* Advanced task sorting
+* Improved dashboard experience
 * Notifications
-* Comments
+* Improved task organization
+* More advanced filtering
+* Better responsive behavior
+* Production deployment improvements
+* Enhanced test coverage
 
-## V3
+### V3
 
-* Real-time collaboration
-* Activity history
-* Advanced analytics
+Potential requirements include:
+
+* Project management
+* Team workspaces
+* Team members
+* Role-based access control
+* Task comments
 * File attachments
-* Audit logging
-* Integrations
-* Advanced workspace management
+* Task collaboration
+* Real-time updates
+* Background processing
+* Caching
+* CI/CD
+* Advanced monitoring
+* Production observability
 
-These are future considerations and are not part of the V1 acceptance criteria.
+These features are intentionally outside the V1 requirements so that the initial system remains focused, maintainable, and appropriately scoped.
 
 ---
 
-# 23. Requirement Summary
+## Requirements Summary
 
-The V1 system provides a complete task management workflow:
+V1 provides the core functionality required for a secure personal task management system.
+
+The system must allow an authenticated user to:
 
 ```text
 Register
-   |
-   v
+   ↓
 Login
-   |
-   v
-Dashboard
-   |
-   +----> Create Task
-   |
-   +----> View Tasks
-   |
-   +----> Search
-   |
-   +----> Filter
-   |
-   +----> Update Task
-   |
-   +----> Delete Task
-   |
-   +----> View Statistics
-   |
-   v
-Logout
+   ↓
+Authenticate
+   ↓
+Access Dashboard
+   ↓
+Create Tasks
+   ↓
+View Tasks
+   ↓
+Search / Filter / Paginate
+   ↓
+Update Tasks
+   ↓
+Track Status / Priority / Due Date
+   ↓
+View Statistics
+   ↓
+Delete Tasks
 ```
 
-The core requirement of V1 is to provide a secure, maintainable, and functional full-stack task management application for authenticated users.
-
-````
-
+The requirements defined in this document provide the baseline for the V1 architecture, API design, database design, implementation, testing, and acceptance process.
