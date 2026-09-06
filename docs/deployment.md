@@ -105,14 +105,14 @@ User
 
 The production environment should provide:
 
-* HTTPS.
-* Secure environment variables.
-* Production database credentials.
-* Restricted CORS.
-* Database backups.
-* Health checks.
-* Application logging.
-* Secure authentication configuration.
+- HTTPS.
+- Secure environment variables.
+- Production database credentials.
+- Restricted CORS.
+- Database backups.
+- Health checks.
+- Application logging.
+- Secure authentication configuration.
 
 ---
 
@@ -122,11 +122,11 @@ The frontend is a React application.
 
 The frontend is responsible for:
 
-* Rendering the user interface.
-* Managing client-side application state.
-* Sending requests to the backend API.
-* Handling authentication state.
-* Displaying tasks and user information.
+- Rendering the user interface.
+- Managing client-side application state.
+- Sending requests to the backend API.
+- Handling authentication state.
+- Displaying tasks and user information.
 
 The frontend can be deployed using a static hosting platform such as Vercel.
 
@@ -166,11 +166,11 @@ The build should complete successfully before deployment.
 
 Before deploying, verify:
 
-* No build errors.
-* No unresolved imports.
-* No missing environment variables.
-* API URL points to the production backend.
-* Production assets are generated correctly.
+- No build errors.
+- No unresolved imports.
+- No missing environment variables.
+- API URL points to the production backend.
+- Production assets are generated correctly.
 
 ---
 
@@ -196,7 +196,7 @@ Therefore, never expose:
 
 ```text
 JWT_SECRET
-DB_PASSWORD
+DATABASE_PASSWORD
 Database credentials
 Private API keys
 ```
@@ -251,13 +251,13 @@ The backend is a Node.js / Express application.
 
 The backend provides:
 
-* Authentication.
-* Authorization.
-* Task management.
-* Validation.
-* Database access.
-* Health checks.
-* Error handling.
+- Authentication.
+- Authorization.
+- Task management.
+- Validation.
+- Database access.
+- Health checks.
+- Error handling.
 
 The backend must run in a server environment capable of running Node.js.
 
@@ -274,11 +274,11 @@ NODE_ENV=production
 
 PORT=5000
 
-DB_HOST=production-db-host
-DB_PORT=3306
-DB_NAME=task_manager
-DB_USER=task_manager_user
-DB_PASSWORD=********
+DATABASE_HOST=production-db-host
+DATABASE_PORT=3306
+DATABASE_NAME=task_manager
+DATABASE_USER=task_manager_user
+DATABASE_PASSWORD=********
 
 JWT_SECRET=********
 JWT_EXPIRES_IN=7d
@@ -396,13 +396,13 @@ Production credentials must not be reused for development or testing.
 
 The production MySQL instance should be configured with:
 
-* A dedicated database.
-* A dedicated application database user.
-* A strong database password.
-* Restricted network access.
-* Appropriate connection limits.
-* Automated backups where supported.
-* Appropriate database permissions.
+- A dedicated database.
+- A dedicated application database user.
+- A strong database password.
+- Restricted network access.
+- Appropriate connection limits.
+- Automated backups where supported.
+- Appropriate database permissions.
 
 The backend should connect using the production database credentials.
 
@@ -553,10 +553,10 @@ Production secrets must be stored securely.
 
 The JWT secret must be:
 
-* Strong.
-* Random.
-* Stored only on the backend.
-* Different from development secrets.
+- Strong.
+- Random.
+- Stored only on the backend.
+- Different from development secrets.
 
 ### Password Hashing
 
@@ -620,7 +620,7 @@ Unsafe:
 
 ```text
 [INFO] JWT: eyJhbGciOi...
-[INFO] DB_PASSWORD: password123
+[INFO] DATABASE_PASSWORD: password123
 ```
 
 Production logs should also be retained according to the hosting environment's logging policy.
@@ -703,17 +703,17 @@ Example:
 
 ```env
 NODE_ENV=development
-DB_NAME=task_manager_dev
+DATABASE_NAME=task_manager_dev
 CORS_ORIGIN=http://localhost:3000
 ```
 
 Characteristics:
 
-* Local database.
-* Development API.
-* Debug logging.
-* Local frontend.
-* Development secrets.
+- Local database.
+- Development API.
+- Debug logging.
+- Local frontend.
+- Development secrets.
 
 ---
 
@@ -725,15 +725,15 @@ Example:
 
 ```env
 NODE_ENV=test
-DB_NAME=task_manager_test
+DATABASE_NAME=task_manager_test
 ```
 
 Characteristics:
 
-* Separate test database.
-* Test-specific configuration.
-* Isolated test data.
-* No production credentials.
+- Separate test database.
+- Test-specific configuration.
+- Isolated test data.
+- No production credentials.
 
 ---
 
@@ -745,19 +745,19 @@ Example:
 
 ```env
 NODE_ENV=production
-DB_NAME=task_manager
+DATABASE_NAME=task_manager
 CORS_ORIGIN=https://app.example.com
 ```
 
 Characteristics:
 
-* Production database.
-* Production secrets.
-* HTTPS.
-* Restricted CORS.
-* Production logging.
-* Monitoring.
-* Backups.
+- Production database.
+- Production secrets.
+- HTTPS.
+- Restricted CORS.
+- Production logging.
+- Monitoring.
+- Backups.
 
 ### Environment Separation
 
@@ -781,62 +781,62 @@ Use the following checklist before considering V1 production-ready.
 
 ## Frontend
 
-* [ ] Production build succeeds.
-* [ ] Production API URL configured.
-* [ ] No development API URLs remain.
-* [ ] No secrets are included in frontend variables.
-* [ ] Frontend deployment succeeds.
-* [ ] Login works.
-* [ ] Registration works.
-* [ ] Dashboard works.
-* [ ] Task CRUD works.
+- [ ] Production build succeeds.
+- [ ] Production API URL configured.
+- [ ] No development API URLs remain.
+- [ ] No secrets are included in frontend variables.
+- [ ] Frontend deployment succeeds.
+- [ ] Login works.
+- [ ] Registration works.
+- [ ] Dashboard works.
+- [ ] Task CRUD works.
 
 ## Backend
 
-* [ ] Production dependencies installed.
-* [ ] Production environment variables configured.
-* [ ] Strong JWT secret configured.
-* [ ] Database credentials configured.
-* [ ] CORS configured.
-* [ ] Security middleware configured.
-* [ ] Production start command works.
-* [ ] `/health/live` works.
-* [ ] `/health/ready` works.
-* [ ] Logs do not expose secrets.
+- [ ] Production dependencies installed.
+- [ ] Production environment variables configured.
+- [ ] Strong JWT secret configured.
+- [ ] Database credentials configured.
+- [ ] CORS configured.
+- [ ] Security middleware configured.
+- [ ] Production start command works.
+- [ ] `/health/live` works.
+- [ ] `/health/ready` works.
+- [ ] Logs do not expose secrets.
 
 ## Database
 
-* [ ] Production database created.
-* [ ] Dedicated database user created.
-* [ ] Database permissions configured.
-* [ ] Migrations executed.
-* [ ] Tables verified.
-* [ ] Foreign keys verified.
-* [ ] Database backup strategy configured.
+- [ ] Production database created.
+- [ ] Dedicated database user created.
+- [ ] Database permissions configured.
+- [ ] Migrations executed.
+- [ ] Tables verified.
+- [ ] Foreign keys verified.
+- [ ] Database backup strategy configured.
 
 ## Security
 
-* [ ] HTTPS enabled.
-* [ ] JWT secret secured.
-* [ ] Password hashing enabled.
-* [ ] Parameterized SQL queries used.
-* [ ] CORS restricted.
-* [ ] Sensitive errors sanitized.
-* [ ] Production secrets excluded from Git.
+- [ ] HTTPS enabled.
+- [ ] JWT secret secured.
+- [ ] Password hashing enabled.
+- [ ] Parameterized SQL queries used.
+- [ ] CORS restricted.
+- [ ] Sensitive errors sanitized.
+- [ ] Production secrets excluded from Git.
 
 ## Final Verification
 
-* [ ] Register user.
-* [ ] Login user.
-* [ ] Access `/api/auth/me`.
-* [ ] Create task.
-* [ ] View tasks.
-* [ ] Update task.
-* [ ] Delete task.
-* [ ] Verify task ownership.
-* [ ] Verify another user cannot access the task.
-* [ ] Logout.
-* [ ] Verify health endpoints.
+- [ ] Register user.
+- [ ] Login user.
+- [ ] Access `/api/auth/me`.
+- [ ] Create task.
+- [ ] View tasks.
+- [ ] Update task.
+- [ ] Delete task.
+- [ ] Verify task ownership.
+- [ ] Verify another user cannot access the task.
+- [ ] Logout.
+- [ ] Verify health endpoints.
 
 ---
 
@@ -890,21 +890,21 @@ These must match.
 Check:
 
 ```text
-DB_HOST
-DB_PORT
-DB_NAME
-DB_USER
-DB_PASSWORD
+DATABASE_HOST
+DATABASE_PORT
+DATABASE_NAME
+DATABASE_USER
+DATABASE_PASSWORD
 ```
 
 Also verify:
 
-* MySQL is running.
-* Database exists.
-* Database user exists.
-* Network access is allowed.
-* Database credentials are correct.
-* The database accepts connections from the backend.
+- MySQL is running.
+- Database exists.
+- Database user exists.
+- Network access is allowed.
+- Database credentials are correct.
+- The database accepts connections from the backend.
 
 ---
 
@@ -967,16 +967,16 @@ Future versions can introduce more advanced infrastructure.
 
 Potential improvements:
 
-* Managed MySQL database.
-* Automated database backups.
-* CI/CD pipeline.
-* Automated tests during deployment.
-* Automated database migrations.
-* Monitoring.
-* Centralized logging.
-* Custom domains.
-* CDN configuration.
-* Staging environment.
+- Managed MySQL database.
+- Automated database backups.
+- CI/CD pipeline.
+- Automated tests during deployment.
+- Automated database migrations.
+- Monitoring.
+- Centralized logging.
+- Custom domains.
+- CDN configuration.
+- Staging environment.
 
 Example:
 
@@ -1019,18 +1019,18 @@ For a larger SaaS application:
 
 Potential improvements include:
 
-* Multiple backend instances.
-* Load balancing.
-* Redis caching.
-* Database read replicas.
-* Object storage.
-* CDN.
-* Automated scaling.
-* Containerization.
-* Infrastructure as Code.
-* Advanced monitoring.
-* Disaster recovery.
-* Blue-green deployments.
+- Multiple backend instances.
+- Load balancing.
+- Redis caching.
+- Database read replicas.
+- Object storage.
+- CDN.
+- Automated scaling.
+- Containerization.
+- Infrastructure as Code.
+- Advanced monitoring.
+- Disaster recovery.
+- Blue-green deployments.
 
 ---
 

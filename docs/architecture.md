@@ -8,20 +8,20 @@ The Task Management SaaS is a full-stack web application that allows authenticat
 
 The application follows a **client-server architecture** with a clear separation between:
 
-* Frontend — React.js
-* Backend — Node.js and Express.js
-* Database — MySQL
-* Authentication — JWT
-* Password Security — bcrypt
-* API Communication — REST API
+- Frontend — React.js
+- Backend — Node.js and Express.js
+- Database — MySQL
+- Authentication — JWT
+- Password Security — bcrypt
+- API Communication — REST API
 
 The architecture is designed to be:
 
-* Maintainable
-* Scalable
-* Secure
-* Testable
-* Easy to extend in future versions
+- Maintainable
+- Scalable
+- Secure
+- Testable
+- Easy to extend in future versions
 
 ---
 
@@ -107,13 +107,13 @@ The frontend is built with React.js.
 
 The frontend is responsible for:
 
-* Rendering the user interface
-* Handling user interactions
-* Managing application state
-* Managing authentication state
-* Sending API requests
-* Displaying API responses
-* Handling loading and error states
+- Rendering the user interface
+- Handling user interactions
+- Managing application state
+- Managing authentication state
+- Sending API requests
+- Displaying API responses
+- Handling loading and error states
 
 ## 4.1 Frontend Structure
 
@@ -391,11 +391,11 @@ Controllers handle HTTP requests and responses.
 
 Responsibilities include:
 
-* Reading request data
-* Validating basic request information
-* Calling the appropriate service
-* Returning HTTP responses
-* Handling controller-level errors
+- Reading request data
+- Validating basic request information
+- Calling the appropriate service
+- Returning HTTP responses
+- Handling controller-level errors
 
 Example flow:
 
@@ -560,16 +560,16 @@ The authentication middleware verifies the token and attaches the user informati
 
 ```javascript
 req.user = {
-    id,
-    name,
-    email
+  id,
+  name,
+  email,
 };
 ```
 
 Controllers can then use:
 
 ```javascript
-req.user.id
+req.user.id;
 ```
 
 to determine which user's data should be accessed.
@@ -699,10 +699,10 @@ Example:
 
 ```text
 JWT_SECRET
-DB_HOST
-DB_USER
-DB_PASSWORD
-DB_NAME
+DATABASE_HOST
+DATABASE_USER
+DATABASE_PASSWORD
+DATABASE_NAME
 PORT
 ```
 
@@ -974,14 +974,14 @@ The architecture should support adding features without requiring a complete rew
 
 The main goals of the V1 architecture are:
 
-* Build a clean full-stack application.
-* Separate frontend and backend responsibilities.
-* Implement secure authentication.
-* Protect user-specific resources.
-* Use a relational database correctly.
-* Provide a consistent REST API.
-* Keep business logic organized.
-* Create a foundation for V2 and V3 development.
+- Build a clean full-stack application.
+- Separate frontend and backend responsibilities.
+- Implement secure authentication.
+- Protect user-specific resources.
+- Use a relational database correctly.
+- Provide a consistent REST API.
+- Keep business logic organized.
+- Create a foundation for V2 and V3 development.
 
 ---
 

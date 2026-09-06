@@ -837,7 +837,7 @@ The Task Details page displays the returned task.
 The Edit Task page submits updated task information.
 
 ```text
-PUT /api/tasks/:id
+PATCH /api/tasks/:id
 ```
 
 After a successful update, the frontend should update the displayed task or navigate back to the appropriate page.

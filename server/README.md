@@ -10,16 +10,16 @@ The backend communicates with the frontend through HTTP/JSON APIs.
 
 ### Main Goals
 
-* Provide a reliable REST API.
-* Authenticate users securely.
-* Hash user passwords before storing them.
-* Generate and validate JWT authentication tokens.
-* Authorize access to protected resources.
-* Provide task CRUD operations.
-* Validate incoming API requests.
-* Handle application and database errors.
-* Protect database operations from SQL injection.
-* Keep backend code modular and maintainable.
+- Provide a reliable REST API.
+- Authenticate users securely.
+- Hash user passwords before storing them.
+- Generate and validate JWT authentication tokens.
+- Authorize access to protected resources.
+- Provide task CRUD operations.
+- Validate incoming API requests.
+- Handle application and database errors.
+- Protect database operations from SQL injection.
+- Keep backend code modular and maintainable.
 
 ---
 
@@ -29,20 +29,20 @@ The backend is responsible for the application's server-side logic and data acce
 
 ### Responsibilities
 
-* Receive HTTP requests.
-* Validate incoming request data.
-* Authenticate users.
-* Hash and compare passwords.
-* Generate JWT tokens.
-* Verify JWT tokens.
-* Authorize authenticated requests.
-* Execute task business logic.
-* Communicate with MySQL.
-* Return consistent API responses.
-* Handle errors.
-* Configure CORS.
-* Protect sensitive configuration.
-* Maintain database migrations.
+- Receive HTTP requests.
+- Validate incoming request data.
+- Authenticate users.
+- Hash and compare passwords.
+- Generate JWT tokens.
+- Verify JWT tokens.
+- Authorize authenticated requests.
+- Execute task business logic.
+- Communicate with MySQL.
+- Return consistent API responses.
+- Handle errors.
+- Configure CORS.
+- Protect sensitive configuration.
+- Maintain database migrations.
 
 The backend is the final authority for authentication, authorization, validation, and data integrity.
 
@@ -58,10 +58,10 @@ Node.js provides the JavaScript runtime used to execute the backend application.
 
 It is responsible for:
 
-* Running the server.
-* Executing JavaScript on the server.
-* Managing asynchronous operations.
-* Providing the runtime environment for Express.js.
+- Running the server.
+- Executing JavaScript on the server.
+- Managing asynchronous operations.
+- Providing the runtime environment for Express.js.
 
 ---
 
@@ -71,11 +71,11 @@ Express.js is used as the HTTP server framework.
 
 It provides:
 
-* Routing.
-* Middleware.
-* Request handling.
-* Response handling.
-* Error handling.
+- Routing.
+- Middleware.
+- Request handling.
+- Response handling.
+- Error handling.
 
 The application organizes API endpoints using Express routes.
 
@@ -87,16 +87,16 @@ MySQL is the relational database used for persistent application data.
 
 The database stores information such as:
 
-* Users.
-* Tasks.
+- Users.
+- Tasks.
 
 MySQL provides:
 
-* Structured data storage.
-* Relationships.
-* Constraints.
-* Transactions.
-* SQL queries.
+- Structured data storage.
+- Relationships.
+- Constraints.
+- Transactions.
+- SQL queries.
 
 ---
 
@@ -436,11 +436,11 @@ The authentication controller handles HTTP-level authentication operations.
 
 Responsibilities include:
 
-* Receiving registration requests.
-* Receiving login requests.
-* Calling authentication services.
-* Returning appropriate HTTP responses.
-* Handling authentication-related errors.
+- Receiving registration requests.
+- Receiving login requests.
+- Calling authentication services.
+- Returning appropriate HTTP responses.
+- Handling authentication-related errors.
 
 The controller should avoid containing large amounts of business logic.
 
@@ -452,12 +452,12 @@ The task controller handles task-related HTTP requests.
 
 Responsibilities include:
 
-* Creating tasks.
-* Retrieving tasks.
-* Retrieving individual tasks.
-* Updating tasks.
-* Deleting tasks.
-* Returning appropriate HTTP responses.
+- Creating tasks.
+- Retrieving tasks.
+- Retrieving individual tasks.
+- Updating tasks.
+- Deleting tasks.
+- Returning appropriate HTTP responses.
 
 Business logic should remain in services where practical.
 
@@ -502,10 +502,10 @@ Centralized error handling provides consistent API responses.
 
 It should:
 
-* Catch unhandled errors.
-* Log appropriate server-side information.
-* Return safe client-facing messages.
-* Set appropriate HTTP status codes.
+- Catch unhandled errors.
+- Log appropriate server-side information.
+- Return safe client-facing messages.
+- Set appropriate HTTP status codes.
 
 Sensitive implementation details should not be returned to clients in production.
 
@@ -537,12 +537,12 @@ The authentication service contains authentication-related business logic.
 
 Responsibilities include:
 
-* Creating users.
-* Finding users.
-* Hashing passwords.
-* Comparing passwords.
-* Generating JWT tokens.
-* Retrieving authenticated users.
+- Creating users.
+- Finding users.
+- Hashing passwords.
+- Comparing passwords.
+- Generating JWT tokens.
+- Retrieving authenticated users.
 
 ---
 
@@ -552,12 +552,12 @@ The task service contains task-related business logic.
 
 Responsibilities include:
 
-* Creating tasks.
-* Retrieving tasks.
-* Retrieving individual tasks.
-* Updating tasks.
-* Deleting tasks.
-* Ensuring task ownership where required.
+- Creating tasks.
+- Retrieving tasks.
+- Retrieving individual tasks.
+- Updating tasks.
+- Deleting tasks.
+- Ensuring task ownership where required.
 
 ---
 
@@ -572,11 +572,11 @@ Database configuration should be loaded from environment variables rather than h
 Typical configuration values include:
 
 ```text
-DB_HOST
-DB_PORT
-DB_NAME
-DB_USER
-DB_PASSWORD
+DATABASE_HOST
+DATABASE_PORT
+DATABASE_NAME
+DATABASE_USER
+DATABASE_PASSWORD
 ```
 
 ---
@@ -645,10 +645,10 @@ migrations/
 
 Migrations should be:
 
-* Ordered.
-* Reproducible.
-* Committed to Git.
-* Safe to execute in a predictable environment.
+- Ordered.
+- Reproducible.
+- Committed to Git.
+- Safe to execute in a predictable environment.
 
 ---
 
@@ -659,10 +659,7 @@ Database queries should use parameterized values.
 Example:
 
 ```javascript
-const [rows] = await db.execute(
-  "SELECT * FROM users WHERE email = ?",
-  [email]
-);
+const [rows] = await db.execute("SELECT * FROM users WHERE email = ?", [email]);
 ```
 
 Parameterized queries reduce the risk of SQL injection.
@@ -839,7 +836,7 @@ The backend must verify that the authenticated user has permission to access the
 A task can be updated using:
 
 ```text
-PUT /api/tasks/:id
+PATCH /api/tasks/:id
 ```
 
 The backend should:
@@ -871,10 +868,10 @@ The backend must verify that the authenticated user is authorized to delete the 
 
 Authentication requests should validate:
 
-* Required fields.
-* Email format.
-* Password requirements.
-* Name requirements where applicable.
+- Required fields.
+- Email format.
+- Password requirements.
+- Name requirements where applicable.
 
 Validation should occur before database operations.
 
@@ -884,11 +881,11 @@ Validation should occur before database operations.
 
 Task requests should validate:
 
-* Title.
-* Description.
-* Status.
-* Priority.
-* Task ID.
+- Title.
+- Description.
+- Status.
+- Priority.
+- Task ID.
 
 The backend must validate all task data even if the frontend already performs client-side validation.
 
@@ -953,10 +950,10 @@ Authentication failures should return an appropriate `401 Unauthorized` response
 
 Examples:
 
-* Missing token.
-* Invalid token.
-* Expired token.
-* Invalid credentials.
+- Missing token.
+- Invalid token.
+- Expired token.
+- Invalid credentials.
 
 ---
 
@@ -976,10 +973,10 @@ Server-side logs may contain additional diagnostic information.
 
 Passwords must:
 
-* Never be stored as plaintext.
-* Be hashed using bcrypt.
-* Never be returned through API responses.
-* Never be logged.
+- Never be stored as plaintext.
+- Be hashed using bcrypt.
+- Never be returned through API responses.
+- Never be logged.
 
 ---
 
@@ -987,12 +984,12 @@ Passwords must:
 
 JWT security requirements include:
 
-* Keep the JWT secret on the server.
-* Never commit secrets to Git.
-* Use a strong secret in production.
-* Validate token signatures.
-* Validate token expiration where configured.
-* Avoid putting unnecessary sensitive information inside tokens.
+- Keep the JWT secret on the server.
+- Never commit secrets to Git.
+- Use a strong secret in production.
+- Validate token signatures.
+- Validate token expiration where configured.
+- Avoid putting unnecessary sensitive information inside tokens.
 
 ---
 
@@ -1034,10 +1031,10 @@ Examples:
 
 ```text
 JWT_SECRET
-DB_PASSWORD
-DB_USER
-DB_HOST
-DB_NAME
+DATABASE_PASSWORD
+DATABASE_USER
+DATABASE_HOST
+DATABASE_NAME
 ```
 
 The `.env` file should not be committed to Git.
@@ -1067,12 +1064,12 @@ const [rows] = await db.execute(query, [email]);
 
 The API should never expose:
 
-* Password hashes.
-* JWT secrets.
-* Database credentials.
-* Internal server configuration.
-* Private API keys.
-* Unnecessary database information.
+- Password hashes.
+- JWT secrets.
+- Database credentials.
+- Internal server configuration.
+- Private API keys.
+- Unnecessary database information.
 
 ---
 
@@ -1085,11 +1082,11 @@ Example:
 ```env
 PORT=5000
 
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=task_manager
-DB_USER=root
-DB_PASSWORD=your_password
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_NAME=task_manager
+DATABASE_USER=root
+DATABASE_PASSWORD=your_password
 
 JWT_SECRET=your_jwt_secret
 
@@ -1118,11 +1115,11 @@ Example:
 
 ```env
 PORT=
-DB_HOST=
-DB_PORT=
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
+DATABASE_HOST=
+DATABASE_PORT=
+DATABASE_NAME=
+DATABASE_USER=
+DATABASE_PASSWORD=
 JWT_SECRET=
 CLIENT_URL=
 ```
@@ -1135,10 +1132,10 @@ CLIENT_URL=
 
 Install the following:
 
-* Node.js.
-* npm.
-* MySQL.
-* Git.
+- Node.js.
+- npm.
+- MySQL.
+- Git.
 
 The required versions should follow the project's supported development environment.
 
@@ -1226,13 +1223,13 @@ The actual URL depends on the environment configuration.
 
 Production configuration should use:
 
-* Production database.
-* Strong JWT secret.
-* HTTPS.
-* Restricted CORS.
-* Production environment variables.
-* Secure database credentials.
-* Appropriate logging.
+- Production database.
+- Strong JWT secret.
+- HTTPS.
+- Restricted CORS.
+- Production environment variables.
+- Secure database credentials.
+- Appropriate logging.
 
 Secrets should be provided through the production environment rather than committed to the repository.
 
@@ -1290,10 +1287,10 @@ Unit tests verify individual functions or modules.
 
 Potential targets include:
 
-* Validators.
-* Authentication utilities.
-* Services.
-* Helper functions.
+- Validators.
+- Authentication utilities.
+- Services.
+- Helper functions.
 
 ---
 
@@ -1303,9 +1300,9 @@ Integration tests verify multiple backend components working together.
 
 Examples:
 
-* Controller + service + database.
-* Authentication middleware + protected route.
-* Task service + database.
+- Controller + service + database.
+- Authentication middleware + protected route.
+- Task service + database.
 
 ---
 
@@ -1317,23 +1314,23 @@ Important scenarios include:
 
 ### Authentication
 
-* Successful registration.
-* Duplicate email.
-* Successful login.
-* Invalid credentials.
-* Missing authentication token.
-* Invalid authentication token.
+- Successful registration.
+- Duplicate email.
+- Successful login.
+- Invalid credentials.
+- Missing authentication token.
+- Invalid authentication token.
 
 ### Tasks
 
-* Create task.
-* Retrieve tasks.
-* Retrieve single task.
-* Update task.
-* Delete task.
-* Access another user's task.
-* Invalid task ID.
-* Invalid task data.
+- Create task.
+- Retrieve tasks.
+- Retrieve single task.
+- Update task.
+- Delete task.
+- Access another user's task.
+- Invalid task ID.
+- Invalid task data.
 
 ---
 
@@ -1458,10 +1455,10 @@ Common logic should be reused rather than duplicated.
 
 Examples:
 
-* Authentication utilities.
-* Validation functions.
-* Database helpers.
-* Error handling.
+- Authentication utilities.
+- Validation functions.
+- Database helpers.
+- Error handling.
 
 ---
 
@@ -1486,10 +1483,10 @@ taskRoutes.js
 
 Similar endpoints should use consistent:
 
-* Status codes.
-* Response structures.
-* Error structures.
-* Authentication requirements.
+- Status codes.
+- Response structures.
+- Error structures.
+- Authentication requirements.
 
 ---
 
@@ -1510,10 +1507,10 @@ Unexpected server error
 
 Production logging should avoid sensitive values such as:
 
-* Passwords.
-* JWT tokens.
-* Database passwords.
-* Private API keys.
+- Passwords.
+- JWT tokens.
+- Database passwords.
+- Private API keys.
 
 Future versions can introduce structured logging and application monitoring.
 
@@ -1525,23 +1522,23 @@ The V1 backend intentionally provides a focused set of features.
 
 Current limitations may include:
 
-* Basic authentication.
-* Stateless JWT authentication.
-* Basic task CRUD.
-* No refresh-token system.
-* No server-side session management.
-* No email verification.
-* No password reset.
-* No multi-factor authentication.
-* No team/workspace system.
-* No task assignment.
-* No role-based access control.
-* No real-time communication.
-* Limited filtering and search.
-* Limited rate limiting.
-* Limited automated test coverage.
-* Basic logging.
-* No advanced audit logging.
+- Basic authentication.
+- Stateless JWT authentication.
+- Basic task CRUD.
+- No refresh-token system.
+- No server-side session management.
+- No email verification.
+- No password reset.
+- No multi-factor authentication.
+- No team/workspace system.
+- No task assignment.
+- No role-based access control.
+- No real-time communication.
+- Limited filtering and search.
+- Limited rate limiting.
+- Limited automated test coverage.
+- Basic logging.
+- No advanced audit logging.
 
 These limitations define the scope of V1 rather than representing permanent architectural restrictions.
 
@@ -1553,19 +1550,19 @@ These limitations define the scope of V1 rather than representing permanent arch
 
 Potential V2 backend improvements include:
 
-* Task filtering.
-* Task sorting.
-* Search.
-* Pagination.
-* Refresh tokens.
-* Password reset.
-* Email verification.
-* Better request validation.
-* Rate limiting.
-* Improved API error structure.
-* More comprehensive automated testing.
-* Improved logging.
-* API documentation improvements.
+- Task filtering.
+- Task sorting.
+- Search.
+- Pagination.
+- Refresh tokens.
+- Password reset.
+- Email verification.
+- Better request validation.
+- Rate limiting.
+- Improved API error structure.
+- More comprehensive automated testing.
+- Improved logging.
+- API documentation improvements.
 
 ---
 
@@ -1573,20 +1570,20 @@ Potential V2 backend improvements include:
 
 Potential V3 improvements include:
 
-* Team workspaces.
-* Task assignment.
-* Role-based access control.
-* Collaboration.
-* Real-time updates.
-* Notifications.
-* Activity history.
-* Audit logging.
-* Advanced search.
-* Background jobs.
-* Caching.
-* File attachments.
-* Advanced analytics.
-* Production monitoring and observability.
+- Team workspaces.
+- Task assignment.
+- Role-based access control.
+- Collaboration.
+- Real-time updates.
+- Notifications.
+- Activity history.
+- Audit logging.
+- Advanced search.
+- Background jobs.
+- Caching.
+- File attachments.
+- Advanced analytics.
+- Production monitoring and observability.
 
 Future features should be introduced without compromising authentication, authorization, data integrity, or maintainability.
 
@@ -1646,24 +1643,24 @@ Documents development prerequisites, repository structure, environment configura
 
 ### V1 Core Backend Features
 
-* User registration.
-* User login.
-* Password hashing with bcrypt.
-* JWT authentication.
-* Current-user endpoint.
-* Authentication middleware.
-* Protected task routes.
-* Task creation.
-* Task listing.
-* Single task retrieval.
-* Task updates.
-* Task deletion.
-* Request validation.
-* Centralized error handling.
-* MySQL persistence.
-* Database migrations.
-* CORS configuration.
-* Environment-based configuration.
+- User registration.
+- User login.
+- Password hashing with bcrypt.
+- JWT authentication.
+- Current-user endpoint.
+- Authentication middleware.
+- Protected task routes.
+- Task creation.
+- Task listing.
+- Single task retrieval.
+- Task updates.
+- Task deletion.
+- Request validation.
+- Centralized error handling.
+- MySQL persistence.
+- Database migrations.
+- CORS configuration.
+- Environment-based configuration.
 
 The backend provides the core API required by the V1 frontend.
 

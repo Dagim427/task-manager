@@ -21,12 +21,12 @@ export const createTaskValidator = [
     .withMessage("Description must not exceed 5000 characters."),
 
   body("status")
-    .optional({ nullable: true })
+    .optional()
     .isIn(["todo", "in_progress", "completed"])
     .withMessage("Status must be todo, in_progress, or completed."),
 
   body("priority")
-    .optional({ nullable: true })
+    .optional()
     .isIn(["low", "medium", "high"])
     .withMessage("Priority must be low, medium, or high."),
 
@@ -56,7 +56,7 @@ export const updateTaskValidator = [
     .trim()
     .notEmpty()
     .withMessage("Title cannot be empty.")
-    .isLength({ max: 255 })
+    .isLength({ max: 200 })
     .withMessage("Title must not exceed 255 characters."),
 
   body("description")

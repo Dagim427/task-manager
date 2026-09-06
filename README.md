@@ -14,22 +14,22 @@ Task Management SaaS is a personal task management application designed to demon
 
 Authenticated users can:
 
-* Create an account
-* Log in securely
-* Access a protected dashboard
-* Create tasks
-* View tasks
-* View individual tasks
-* Update tasks
-* Delete tasks
-* Change task status
-* Set task priority
-* Set task due dates
-* Search tasks
-* Filter tasks by status and priority
-* Navigate paginated task results
-* View task statistics
-* Log out
+- Create an account
+- Log in securely
+- Access a protected dashboard
+- Create tasks
+- View tasks
+- View individual tasks
+- Update tasks
+- Delete tasks
+- Change task status
+- Set task priority
+- Set task due dates
+- Search tasks
+- Filter tasks by status and priority
+- Navigate paginated task results
+- View task statistics
+- Log out
 
 Each task belongs to the authenticated user who created it.
 
@@ -45,12 +45,12 @@ The purpose of this project is to provide a simple centralized application where
 
 The application addresses the following problems:
 
-* Lack of centralized task management
-* Difficulty tracking task status
-* Difficulty organizing tasks by priority
-* Difficulty finding specific tasks
-* Lack of ownership and authorization controls
-* Lack of a structured full-stack architecture
+- Lack of centralized task management
+- Difficulty tracking task status
+- Difficulty organizing tasks by priority
+- Difficulty finding specific tasks
+- Lack of ownership and authorization controls
+- Lack of a structured full-stack architecture
 
 The project also serves as a practical demonstration of building and maintaining a production-oriented full-stack web application.
 
@@ -83,31 +83,31 @@ The main goals of V1 are to:
 
 ### Authentication
 
-* User registration
-* User login
-* Password hashing with bcrypt
-* JWT authentication
-* Protected API routes
-* Current authenticated-user endpoint
-* Protected frontend routes
-* Authentication state management
-* Logout functionality
+- User registration
+- User login
+- Password hashing with bcrypt
+- JWT authentication
+- Protected API routes
+- Current authenticated-user endpoint
+- Protected frontend routes
+- Authentication state management
+- Logout functionality
 
 ### Task Management
 
-* Create tasks
-* View tasks
-* View individual tasks
-* Update tasks
-* Delete tasks
-* Task status management
-* Task priority management
-* Task due dates
-* Task descriptions
-* Task search
-* Task filtering
-* Pagination
-* Task statistics
+- Create tasks
+- View tasks
+- View individual tasks
+- Update tasks
+- Delete tasks
+- Task status management
+- Task priority management
+- Task due dates
+- Task descriptions
+- Task search
+- Task filtering
+- Pagination
+- Task statistics
 
 Supported task statuses:
 
@@ -133,10 +133,10 @@ The backend uses the authenticated user's identity from the JWT when performing 
 
 Users can only:
 
-* View their own tasks
-* View their own task details
-* Update their own tasks
-* Delete their own tasks
+- View their own tasks
+- View their own task details
+- Update their own tasks
+- Delete their own tasks
 
 A user cannot access another user's tasks by changing a task ID in a request.
 
@@ -148,12 +148,12 @@ Validation is implemented on the backend using request validators and validation
 
 Examples include:
 
-* Registration validation
-* Login validation
-* Task creation validation
-* Task update validation
-* Task ID validation
-* Task list query validation
+- Registration validation
+- Login validation
+- Task creation validation
+- Task update validation
+- Task ID validation
+- Task list query validation
 
 ### Error Handling
 
@@ -161,11 +161,11 @@ The backend uses centralized error handling to provide consistent API responses.
 
 The frontend also handles:
 
-* Loading states
-* Error states
-* Empty states
-* Form errors
-* Failed API requests
+- Loading states
+- Error states
+- Empty states
+- Form errors
+- Failed API requests
 
 ---
 
@@ -173,64 +173,64 @@ The frontend also handles:
 
 ### Frontend
 
-* React 19
-* JavaScript
-* JSX
-* React Router
-* Axios
-* Tailwind CSS
-* Lucide React
-* Vite
+- React 19
+- JavaScript
+- JSX
+- React Router
+- Axios
+- Tailwind CSS
+- Lucide React
+- Vite
 
 ### Backend
 
-* Node.js
-* Express.js
-* JavaScript
-* JWT
-* bcrypt
-* Express Validator
-* Zod
+- Node.js
+- Express.js
+- JavaScript
+- JWT
+- bcrypt
+- Express Validator
+- Zod
 
 ### Database
 
-* MySQL
-* mysql2
-* SQL migrations
+- MySQL
+- mysql2
+- SQL migrations
 
 ### Testing
 
 Frontend:
 
-* Vitest
-* Testing Library
-* jsdom
-* User Event
+- Vitest
+- Testing Library
+- jsdom
+- User Event
 
 Backend:
 
-* Jest
-* Supertest
+- Jest
+- Supertest
 
 ### Development Tools
 
-* Git
-* GitHub
-* npm
-* ESLint
-* Prettier
-* Nodemon
-* VS Code
+- Git
+- GitHub
+- npm
+- ESLint
+- Prettier
+- Nodemon
+- VS Code
 
 ### Backend Security and Infrastructure
 
-* Helmet
-* CORS
-* Express Rate Limit
-* Compression
-* Pino logging
-* Morgan
-* Environment variables
+- Helmet
+- CORS
+- Express Rate Limit
+- Compression
+- Pino logging
+- Morgan
+- Environment variables
 
 ---
 
@@ -305,14 +305,14 @@ The frontend communicates with the backend through REST API endpoints.
 
 The backend contains separate layers for:
 
-* Routes
-* Controllers
-* Services
-* Models
-* Middleware
-* Validators
-* Configuration
-* Utilities
+- Routes
+- Controllers
+- Services
+- Models
+- Middleware
+- Validators
+- Configuration
+- Utilities
 
 ---
 
@@ -433,10 +433,10 @@ Screenshots should be added before publishing the final portfolio version of V1.
 
 Make sure the following are installed:
 
-* Node.js
-* npm
-* MySQL
-* Git
+- Node.js
+- npm
+- MySQL
+- Git
 
 Check the installed versions:
 
@@ -482,11 +482,11 @@ Example:
 ```env
 PORT=5000
 
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=task_manager
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_USER=root
+DATABASE_PASSWORD=your_password
+DATABASE_NAME=task_manager
 
 JWT_SECRET=your_jwt_secret
 JWT_EXPIRES_IN=7d
@@ -514,8 +514,8 @@ npm run migrate
 
 The migrations create:
 
-* `users`
-* `tasks`
+- `users`
+- `tasks`
 
 and configure their relationships, constraints, and indexes.
 
@@ -573,12 +573,12 @@ npm test
 
 Frontend tests cover areas such as:
 
-* Common UI components
-* Loading states
-* Error states
-* Empty states
-* Task forms
-* Task hooks
+- Common UI components
+- Loading states
+- Error states
+- Empty states
+- Task forms
+- Task hooks
 
 ### Backend Tests
 
@@ -594,12 +594,12 @@ Backend testing uses Jest and Supertest.
 
 Tests cover areas such as:
 
-* Authentication
-* API behavior
-* Task operations
-* Validation
-* Authorization
-* Error handling
+- Authentication
+- API behavior
+- Task operations
+- Validation
+- Authorization
+- Error handling
 
 ### Linting
 
@@ -699,19 +699,19 @@ Security is an important part of the V1 implementation.
 
 The application uses:
 
-* bcrypt password hashing
-* JWT authentication
-* Protected API routes
-* User-specific resource authorization
-* Input validation
-* Parameterized MySQL queries
-* Environment variables for secrets
-* Helmet security headers
-* CORS configuration
-* Rate limiting
-* Centralized error handling
-* Request logging
-* Compression
+- bcrypt password hashing
+- JWT authentication
+- Protected API routes
+- User-specific resource authorization
+- Input validation
+- Parameterized MySQL queries
+- Environment variables for secrets
+- Helmet security headers
+- CORS configuration
+- Rate limiting
+- Centralized error handling
+- Request logging
+- Compression
 
 ### Password Security
 
@@ -854,18 +854,18 @@ V2 can extend the V1 foundation with improved productivity and user experience f
 
 Potential features include:
 
-* Improved dashboard UI
-* Advanced task filtering
-* Better task search
-* Improved pagination controls
-* Task sorting
-* Improved task forms
-* Better responsive design
-* Notifications
-* Improved user experience
-* More comprehensive automated testing
-* Improved API documentation
-* Production deployment
+- Improved dashboard UI
+- Advanced task filtering
+- Better task search
+- Improved pagination controls
+- Task sorting
+- Improved task forms
+- Better responsive design
+- Notifications
+- Improved user experience
+- More comprehensive automated testing
+- Improved API documentation
+- Production deployment
 
 ### V3
 
@@ -873,21 +873,21 @@ V3 can introduce more advanced SaaS and collaboration capabilities.
 
 Potential features include:
 
-* Projects
-* Team workspaces
-* Team members
-* Task comments
-* File attachments
-* Task collaboration
-* Role-based access control
-* Real-time updates
-* Redis caching
-* Background jobs
-* Docker
-* CI/CD
-* Advanced monitoring
-* Production observability
-* Scalable infrastructure
+- Projects
+- Team workspaces
+- Team members
+- Task comments
+- File attachments
+- Task collaboration
+- Role-based access control
+- Real-time updates
+- Redis caching
+- Background jobs
+- Docker
+- CI/CD
+- Advanced monitoring
+- Production observability
+- Scalable infrastructure
 
 Future features will be introduced incrementally rather than adding unnecessary complexity to V1.
 
@@ -903,31 +903,31 @@ Focus: Core Task Management
 
 ### V1 Completion Checklist
 
-* [x] Authentication
-* [x] JWT authorization
-* [x] Protected routes
-* [x] Task creation
-* [x] Task listing
-* [x] Task details
-* [x] Task updating
-* [x] Task deletion
-* [x] Task status
-* [x] Task priority
-* [x] Task due date
-* [x] Search
-* [x] Filtering
-* [x] Pagination
-* [x] Task statistics
-* [x] MySQL database
-* [x] Database migrations
-* [x] Input validation
-* [x] Error handling
-* [x] Security middleware
-* [x] Frontend tests
-* [x] Backend tests
-* [ ] Final production deployment
-* [ ] Final screenshots
-* [ ] Final portfolio presentation
+- [x] Authentication
+- [x] JWT authorization
+- [x] Protected routes
+- [x] Task creation
+- [x] Task listing
+- [x] Task details
+- [x] Task updating
+- [x] Task deletion
+- [x] Task status
+- [x] Task priority
+- [x] Task due date
+- [x] Search
+- [x] Filtering
+- [x] Pagination
+- [x] Task statistics
+- [x] MySQL database
+- [x] Database migrations
+- [x] Input validation
+- [x] Error handling
+- [x] Security middleware
+- [x] Frontend tests
+- [x] Backend tests
+- [ ] Final production deployment
+- [ ] Final screenshots
+- [ ] Final portfolio presentation
 
 ---
 

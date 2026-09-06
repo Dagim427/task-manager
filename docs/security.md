@@ -10,15 +10,15 @@ The V1 application protects user accounts, authentication credentials, API endpo
 
 The primary security objectives are:
 
-* Protect user credentials.
-* Authenticate API requests.
-* Authorize access to protected resources.
-* Prevent cross-user task access.
-* Validate untrusted input.
-* Protect database queries from SQL injection.
-* Protect sensitive configuration.
-* Avoid exposing sensitive information through API responses and errors.
-* Apply appropriate HTTP and network-level protections.
+- Protect user credentials.
+- Authenticate API requests.
+- Authorize access to protected resources.
+- Prevent cross-user task access.
+- Validate untrusted input.
+- Protect database queries from SQL injection.
+- Protect sensitive configuration.
+- Avoid exposing sensitive information through API responses and errors.
+- Apply appropriate HTTP and network-level protections.
 
 ### V1 Security Layers
 
@@ -273,10 +273,7 @@ const passwordHash = await bcrypt.hash(password, saltRounds);
 During login:
 
 ```javascript
-const isValid = await bcrypt.compare(
-  password,
-  passwordHash
-);
+const isValid = await bcrypt.compare(password, passwordHash);
 ```
 
 The exact implementation should follow the project's current authentication service.
@@ -425,17 +422,17 @@ All client-provided data should be considered untrusted.
 
 The API validates:
 
-* Request bodies.
-* URL parameters.
-* Query parameters.
-* Email addresses.
-* Passwords.
-* Task titles.
-* Task descriptions.
-* Task status.
-* Task priority.
-* Due dates.
-* Pagination parameters.
+- Request bodies.
+- URL parameters.
+- Query parameters.
+- Email addresses.
+- Passwords.
+- Task titles.
+- Task descriptions.
+- Task status.
+- Task priority.
+- Due dates.
+- Pagination parameters.
 
 ### Example
 
@@ -483,8 +480,7 @@ The backend uses parameterized SQL queries instead of directly inserting user in
 ### Unsafe
 
 ```javascript
-const query =
-  `SELECT * FROM users WHERE email = '${email}'`;
+const query = `SELECT * FROM users WHERE email = '${email}'`;
 ```
 
 User input is directly inserted into the SQL statement.
@@ -515,10 +511,10 @@ The backend uses HTTP security headers to reduce common web security risks.
 
 Where configured, security headers can protect against issues such as:
 
-* Content injection.
-* Clickjacking.
-* MIME-type sniffing.
-* Other browser-level security risks.
+- Content injection.
+- Clickjacking.
+- MIME-type sniffing.
+- Other browser-level security risks.
 
 The application can use **Helmet** to configure security-related HTTP headers.
 
@@ -609,11 +605,11 @@ Sensitive configuration values are stored in environment variables rather than h
 Examples include:
 
 ```env
-DB_HOST=
-DB_PORT=
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
+DATABASE_HOST=
+DATABASE_PORT=
+DATABASE_NAME=
+DATABASE_USER=
+DATABASE_PASSWORD=
 
 JWT_SECRET=
 JWT_EXPIRES_IN=
@@ -634,11 +630,11 @@ with placeholder values.
 Example:
 
 ```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=task_manager
-DB_USER=root
-DB_PASSWORD=
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_NAME=task_manager
+DATABASE_USER=root
+DATABASE_PASSWORD=
 
 JWT_SECRET=
 JWT_EXPIRES_IN=
@@ -742,12 +738,12 @@ Logging is used to help developers monitor and troubleshoot the application.
 
 Useful information includes:
 
-* Application startup.
-* Database connection status.
-* Request failures.
-* Authentication failures where appropriate.
-* Unexpected server errors.
-* Migration failures.
+- Application startup.
+- Database connection status.
+- Request failures.
+- Authentication failures where appropriate.
+- Unexpected server errors.
+- Migration failures.
 
 However, sensitive information must not be logged.
 
@@ -918,11 +914,11 @@ V1 uses JWT access tokens. A full refresh-token and token-revocation system may 
 
 V1 may not include:
 
-* Email verification.
-* Password reset.
-* Multi-factor authentication.
-* Account lockout.
-* Device/session management.
+- Email verification.
+- Password reset.
+- Multi-factor authentication.
+- Account lockout.
+- Device/session management.
 
 ### Advanced Authorization
 
@@ -959,15 +955,15 @@ Future versions can introduce additional security capabilities.
 
 Potential improvements:
 
-* Refresh tokens.
-* Token revocation.
-* Email verification.
-* Password reset.
-* Account lockout.
-* Improved rate limiting.
-* Automated dependency scanning.
-* Security-focused CI checks.
-* More comprehensive API security tests.
+- Refresh tokens.
+- Token revocation.
+- Email verification.
+- Password reset.
+- Account lockout.
+- Improved rate limiting.
+- Automated dependency scanning.
+- Security-focused CI checks.
+- More comprehensive API security tests.
 
 Authentication could evolve into:
 

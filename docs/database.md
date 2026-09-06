@@ -12,21 +12,21 @@ The Task Management SaaS application uses a relational database to persist user 
 
 The V1 database is designed around two primary entities:
 
-* `users`
-* `tasks`
+- `users`
+- `tasks`
 
 The database maintains a relationship between users and their tasks so that every task belongs to a specific authenticated user.
 
 The database is responsible for:
 
-* Persisting user accounts.
-* Persisting task data.
-* Maintaining user-task relationships.
-* Enforcing data integrity.
-* Supporting task queries.
-* Supporting authentication.
-* Supporting task ownership.
-* Providing reliable data persistence.
+- Persisting user accounts.
+- Persisting task data.
+- Maintaining user-task relationships.
+- Enforcing data integrity.
+- Supporting task queries.
+- Supporting authentication.
+- Supporting task ownership.
+- Providing reliable data persistence.
 
 ### V1 Database Entities
 
@@ -124,11 +124,11 @@ Database configuration is provided through environment variables.
 Example:
 
 ```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=task_manager
-DB_USER=root
-DB_PASSWORD=your_password
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_NAME=task_manager
+DATABASE_USER=root
+DATABASE_PASSWORD=your_password
 ```
 
 The actual values must not be committed to source control.
@@ -139,10 +139,10 @@ The backend uses a database connection pool rather than creating a new database 
 
 The connection pool provides:
 
-* Connection reuse.
-* Better performance.
-* Controlled database connections.
-* Centralized database configuration.
+- Connection reuse.
+- Better performance.
+- Controlled database connections.
+- Centralized database configuration.
 
 ---
 
@@ -200,10 +200,10 @@ The `users` table stores application user accounts.
 
 It contains the information required to:
 
-* Identify users.
-* Authenticate users.
-* Associate users with tasks.
-* Track account creation and updates.
+- Identify users.
+- Authenticate users.
+- Associate users with tasks.
+- Track account creation and updates.
 
 ---
 
@@ -266,14 +266,14 @@ Each task belongs to exactly one user.
 
 The table stores:
 
-* Task title.
-* Task description.
-* Task status.
-* Task priority.
-* Task due date.
-* Task ownership.
-* Creation timestamp.
-* Update timestamp.
+- Task title.
+- Task description.
+- Task status.
+- Task priority.
+- Task due date.
+- Task ownership.
+- Creation timestamp.
+- Update timestamp.
 
 ---
 
@@ -284,10 +284,10 @@ The table stores:
 | `id`          | INT          |    No    | Primary key                |
 | `user_id`     | INT          |    No    | Owner of the task          |
 | `title`       | VARCHAR      |    No    | Task title                 |
-| `description` | TEXT         |    Yes   | Task description           |
+| `description` | TEXT         |   Yes    | Task description           |
 | `status`      | VARCHAR/ENUM |    No    | Current task status        |
 | `priority`    | VARCHAR/ENUM |    No    | Task priority              |
-| `due_date`    | DATETIME     |    Yes   | Optional task due date     |
+| `due_date`    | DATETIME     |   Yes    | Optional task due date     |
 | `created_at`  | DATETIME     |    No    | Task creation timestamp    |
 | `updated_at`  | DATETIME     |    No    | Last task update timestamp |
 
@@ -508,11 +508,11 @@ Creates the `users` table.
 
 Responsibilities include:
 
-* Creating the users table.
-* Defining user columns.
-* Defining the primary key.
-* Defining email uniqueness.
-* Defining timestamps.
+- Creating the users table.
+- Defining user columns.
+- Defining the primary key.
+- Defining email uniqueness.
+- Defining timestamps.
 
 ### Migration 002
 
@@ -520,11 +520,11 @@ Creates the `tasks` table.
 
 Responsibilities include:
 
-* Creating the tasks table.
-* Defining task columns.
-* Defining the primary key.
-* Defining the `user_id` relationship.
-* Defining task constraints.
+- Creating the tasks table.
+- Defining task columns.
+- Defining the primary key.
+- Defining the `user_id` relationship.
+- Defining task constraints.
 
 ### Migration Execution
 
@@ -888,10 +888,10 @@ Instead, it can be listed as a future database improvement.
 
 For a development V1 environment, database backups should be performed before:
 
-* Major schema changes.
-* Migration changes.
-* Production deployment.
-* Destructive database operations.
+- Major schema changes.
+- Migration changes.
+- Production deployment.
+- Destructive database operations.
 
 A production deployment should introduce a proper automated backup strategy.
 
@@ -912,11 +912,11 @@ Retention Policy
 
 Production backup requirements should include:
 
-* Automated backups.
-* Backup retention.
-* Secure backup storage.
-* Restore testing.
-* Disaster recovery procedures.
+- Automated backups.
+- Backup retention.
+- Secure backup storage.
+- Restore testing.
+- Disaster recovery procedures.
 
 ---
 
@@ -957,23 +957,23 @@ The V1 database intentionally uses a small number of entities.
 
 The database prioritizes:
 
-* Simplicity.
-* Data integrity.
-* Clear relationships.
-* Secure authentication.
-* User ownership.
-* Maintainability.
-* Easy migration.
-* Future extensibility.
+- Simplicity.
+- Data integrity.
+- Clear relationships.
+- Secure authentication.
+- User ownership.
+- Maintainability.
+- Easy migration.
+- Future extensibility.
 
 The database does not currently require separate entities for:
 
-* Projects.
-* Teams.
-* Comments.
-* Notifications.
-* Attachments.
-* Activity logs.
+- Projects.
+- Teams.
+- Comments.
+- Notifications.
+- Attachments.
+- Activity logs.
 
 These can be introduced in future versions if the product requirements expand.
 
@@ -1008,13 +1008,13 @@ users
 
 Potential additions include:
 
-* Task categories.
-* Tags.
-* Advanced task filtering.
-* Notifications.
-* Projects.
-* Task ordering.
-* Recurring tasks.
+- Task categories.
+- Tags.
+- Advanced task filtering.
+- Notifications.
+- Projects.
+- Task ordering.
+- Recurring tasks.
 
 ---
 
@@ -1051,14 +1051,14 @@ permissions
 
 This would allow the system to support:
 
-* Team collaboration.
-* Project workspaces.
-* Role-based access control.
-* Task comments.
-* File attachments.
-* Notifications.
-* Activity history.
-* Team permissions.
+- Team collaboration.
+- Project workspaces.
+- Role-based access control.
+- Task comments.
+- File attachments.
+- Notifications.
+- Activity history.
+- Team permissions.
 
 ---
 

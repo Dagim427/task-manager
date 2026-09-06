@@ -33,16 +33,16 @@ The development architecture is:
 
 The development guide explains how to:
 
-* Set up the project locally.
-* Configure the development environment.
-* Run the frontend and backend.
-* Work with the database.
-* Add API endpoints.
-* Add frontend features.
-* Create database migrations.
-* Follow Git conventions.
-* Run tests.
-* Maintain consistent code quality.
+- Set up the project locally.
+- Configure the development environment.
+- Run the frontend and backend.
+- Work with the database.
+- Add API endpoints.
+- Add frontend features.
+- Create database migrations.
+- Follow Git conventions.
+- Run tests.
+- Maintain consistent code quality.
 
 ---
 
@@ -246,11 +246,11 @@ NODE_ENV=development
 
 PORT=5000
 
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=task_manager
-DB_USER=root
-DB_PASSWORD=
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_NAME=task_manager
+DATABASE_USER=root
+DATABASE_PASSWORD=
 
 JWT_SECRET=
 JWT_EXPIRES_IN=
@@ -303,11 +303,11 @@ CREATE DATABASE task_manager;
 Configure the backend:
 
 ```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=task_manager
-DB_USER=root
-DB_PASSWORD=your_password
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_NAME=task_manager
+DATABASE_USER=root
+DATABASE_PASSWORD=your_password
 ```
 
 ### Run Migrations
@@ -639,12 +639,12 @@ final
 
 Code should prioritize:
 
-* Readability.
-* Consistency.
-* Maintainability.
-* Simple functions.
-* Clear naming.
-* Separation of responsibilities.
+- Readability.
+- Consistency.
+- Maintainability.
+- Simple functions.
+- Clear naming.
+- Separation of responsibilities.
 
 ### Naming
 
@@ -859,9 +859,9 @@ PATCH /api/tasks/:taskId/complete
 
 Define the required:
 
-* Parameters.
-* Request body.
-* Query parameters.
+- Parameters.
+- Request body.
+- Query parameters.
 
 ### Step 4 — Add Service Logic
 
@@ -987,11 +987,11 @@ Verify the complete user flow.
 
 Update relevant documentation if the feature changes:
 
-* Requirements.
-* API.
-* Architecture.
-* Testing.
-* Security.
+- Requirements.
+- API.
+- Architecture.
+- Testing.
+- Security.
 
 ---
 
@@ -1013,11 +1013,11 @@ Example:
 
 A migration should:
 
-* Make one logical schema change.
-* Be deterministic.
-* Be reviewable.
-* Avoid unnecessary destructive operations.
-* Maintain data integrity.
+- Make one logical schema change.
+- Be deterministic.
+- Be reviewable.
+- Avoid unnecessary destructive operations.
+- Maintain data integrity.
 
 Example:
 
@@ -1058,59 +1058,59 @@ Before merging a feature or bug fix, verify the following.
 
 ## Code
 
-* [ ] Code is readable.
-* [ ] Naming is clear.
-* [ ] No unnecessary duplication.
-* [ ] No debugging code remains.
-* [ ] No secrets are committed.
-* [ ] Changes follow the existing architecture.
+- [ ] Code is readable.
+- [ ] Naming is clear.
+- [ ] No unnecessary duplication.
+- [ ] No debugging code remains.
+- [ ] No secrets are committed.
+- [ ] Changes follow the existing architecture.
 
 ## Backend
 
-* [ ] Routes are correct.
-* [ ] Validation exists.
-* [ ] Authentication is handled.
-* [ ] Authorization is handled.
-* [ ] Database queries are parameterized.
-* [ ] Errors are handled correctly.
+- [ ] Routes are correct.
+- [ ] Validation exists.
+- [ ] Authentication is handled.
+- [ ] Authorization is handled.
+- [ ] Database queries are parameterized.
+- [ ] Errors are handled correctly.
 
 ## Frontend
 
-* [ ] UI works correctly.
-* [ ] Loading state handled.
-* [ ] Error state handled.
-* [ ] API errors handled.
-* [ ] No unnecessary duplicated logic.
+- [ ] UI works correctly.
+- [ ] Loading state handled.
+- [ ] Error state handled.
+- [ ] API errors handled.
+- [ ] No unnecessary duplicated logic.
 
 ## Database
 
-* [ ] Migration added if required.
-* [ ] Foreign keys reviewed.
-* [ ] Constraints reviewed.
-* [ ] Migration tested locally.
+- [ ] Migration added if required.
+- [ ] Foreign keys reviewed.
+- [ ] Constraints reviewed.
+- [ ] Migration tested locally.
 
 ## Testing
 
-* [ ] Existing tests pass.
-* [ ] New functionality tested.
-* [ ] Error cases tested.
-* [ ] Authorization tested where applicable.
-* [ ] Manual user flow verified.
+- [ ] Existing tests pass.
+- [ ] New functionality tested.
+- [ ] Error cases tested.
+- [ ] Authorization tested where applicable.
+- [ ] Manual user flow verified.
 
 ## Documentation
 
-* [ ] README updated if necessary.
-* [ ] API documentation updated.
-* [ ] Requirements updated if necessary.
-* [ ] Architecture documentation updated if necessary.
-* [ ] Security documentation updated if necessary.
+- [ ] README updated if necessary.
+- [ ] API documentation updated.
+- [ ] Requirements updated if necessary.
+- [ ] Architecture documentation updated if necessary.
+- [ ] Security documentation updated if necessary.
 
 ## Git
 
-* [ ] Commit messages are meaningful.
-* [ ] No unrelated files are included.
-* [ ] Branch is up to date.
-* [ ] No secrets are committed.
+- [ ] Commit messages are meaningful.
+- [ ] No unrelated files are included.
+- [ ] Branch is up to date.
+- [ ] No secrets are committed.
 
 ---
 
@@ -1188,10 +1188,10 @@ Never assume that client input is trustworthy.
 
 Always verify:
 
-* Authentication.
-* Authorization.
-* Ownership.
-* Input validity.
+- Authentication.
+- Authorization.
+- Ownership.
+- Input validity.
 
 ---
 
