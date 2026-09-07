@@ -33,13 +33,13 @@ export const requestLogger = pinoHttp({
     return "info";
   },
 
-  customSuccessMessage: (req, res) =>
+  customSuccessMessage: (req) =>
     `${req.method} ${req.originalUrl} completed`,
 
-  customErrorMessage: (req, res, error) =>
+  customErrorMessage: (req) =>
     `${req.method} ${req.originalUrl} failed`,
 
-  customProps: (req, res) => ({
+  customProps: (req) => ({
     userId: req.user?.id ?? null,
   }),
 });

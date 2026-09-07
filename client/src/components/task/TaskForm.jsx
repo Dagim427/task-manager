@@ -61,8 +61,8 @@ function TaskForm({
       nextErrors.title = "Title must not exceed 200 characters.";
     }
 
-    if (form.description.length > 2000) {
-      nextErrors.description = "Description must not exceed 2000 characters.";
+    if (form.description.length > 5000) {
+      nextErrors.description = "Description must not exceed 5000 characters.";
     }
 
     setErrors(nextErrors);
@@ -138,7 +138,7 @@ function TaskForm({
           id="task-description"
           name="description"
           rows={5}
-          maxLength={2000}
+          maxLength={5000}
           value={form.description}
           onChange={handleChange}
           disabled={isSubmitting}

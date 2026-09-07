@@ -57,7 +57,7 @@ export const updateTaskValidator = [
     .notEmpty()
     .withMessage("Title cannot be empty.")
     .isLength({ max: 200 })
-    .withMessage("Title must not exceed 255 characters."),
+    .withMessage("Title must not exceed 200 characters."),
 
   body("description")
     .optional({ nullable: true })

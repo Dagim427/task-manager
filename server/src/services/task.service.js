@@ -67,6 +67,8 @@ export const getTasks = async ({
   status = "",
   priority = "",
 }) => {
+  const parsedPage = Number(page);
+  const parsedLimit = Number(limit);
   const offset = (page - 1) * limit;
 
   const normalizedSearch = search.trim();
@@ -76,7 +78,7 @@ export const getTasks = async ({
   const [tasks, total] = await Promise.all([
     findTasksByUserId({
       userId,
-      limit,
+      limit: parsedLimit,
       offset,
       search: normalizedSearch,
       status: normalizedStatus,
@@ -94,8 +96,8 @@ export const getTasks = async ({
   return {
     tasks,
     pagination: {
-      page,
-      limit,
+      page:parsedPage,
+      limit:parsedLimit,
       total,
       totalPages: Math.ceil(total / limit),
     },
