@@ -326,12 +326,17 @@ button[type="submit"]:disabled {
 }
 
 .task-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 120px 120px; 
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
   padding: 16px 0;
   border-bottom: 1px solid #eaecf0;
+}
+
+/* Centers the priority text inside its designated grid column */
+.task-item > div:nth-child(2) {
+  text-align: center;
 }
 
 .task-item:last-child {

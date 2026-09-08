@@ -6,7 +6,7 @@ import {
   getTask,
   getTasks,
   updateTask,
-  getTaskStats
+  getTaskStats,
 } from "../controllers/task.controller.js";
 
 import { authenticate } from "../middleware/auth.middleware.js";
@@ -24,43 +24,15 @@ const router = Router();
 
 router.use(authenticate);
 
-router.post(
-  "/",
-  createTaskValidator,
-  validate,
-  createTask,
-);
+router.post("/", createTaskValidator, validate, createTask);
 
-router.get(
-  "/",
-  listTasksValidator,
-  validate,
-  getTasks,
-);
+router.get("/", listTasksValidator, validate, getTasks);
 
-router.get(
-  "/stats",
-  getTaskStats
-);
+router.get("/stats", getTaskStats);
 
-router.get(
-  "/:taskId",
-  taskIdValidator,
-  validate,
-  getTask,
-);
-router.patch(
-  "/:taskId",
-  updateTaskValidator,
-  validate,
-  updateTask,
-);
+router.get("/:taskId", taskIdValidator, validate, getTask);
+router.patch("/:taskId", updateTaskValidator, validate, updateTask);
 
-router.delete(
-  "/:taskId",
-  taskIdValidator,
-  validate,
-  deleteTask,
-);
+router.delete("/:taskId", taskIdValidator, validate, deleteTask);
 
 export default router;

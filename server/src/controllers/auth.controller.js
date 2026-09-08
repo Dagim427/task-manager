@@ -7,7 +7,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const register = asyncHandler(async (req, res) => {
-  const {accessToken, user} = await registerUser({
+  const { accessToken, user } = await registerUser({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
@@ -43,11 +43,7 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
   const user = await getUserById(req.user.id);
 
   if (!user) {
-    throw new ApiError(
-      401,
-      "User account no longer exists.",
-      "USER_NOT_FOUND",
-    );
+    throw new ApiError(401, "User account no longer exists.", "USER_NOT_FOUND");
   }
 
   return res.status(200).json({

@@ -18,7 +18,10 @@ export const errorHandler = (error, req, res, next) => {
     if (isServerInternalError) {
       req.log.error({ err: error }, "Unhandled application error");
     } else {
-      req.log.warn({ err: { message: error.message, code: error.code } }, `Client error: ${error.message}`);
+      req.log.warn(
+        { err: { message: error.message, code: error.code } },
+        `Client error: ${error.message}`,
+      );
     }
   } else {
     console.error(`[Fallback Logger] ${error.message}`);

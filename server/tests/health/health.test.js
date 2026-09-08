@@ -4,8 +4,7 @@ import app from "../../src/app.js";
 
 describe("Health checks", () => {
   it("reports that the application is alive", async () => {
-    const response = await request(app)
-      .get("/health/live");
+    const response = await request(app).get("/health/live");
 
     expect(response.status).toBe(200);
 
@@ -16,8 +15,7 @@ describe("Health checks", () => {
   });
 
   it("reports that the application is ready", async () => {
-    const response = await request(app)
-      .get("/health/ready");
+    const response = await request(app).get("/health/ready");
 
     expect(response.status).toBe(200);
 

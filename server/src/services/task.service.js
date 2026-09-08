@@ -69,7 +69,7 @@ export const getTasks = async ({
 }) => {
   const parsedPage = Number(page);
   const parsedLimit = Number(limit);
-  const offset = (page - 1) * limit;
+  const offset = (parsedPage - 1) * parsedLimit;
 
   const normalizedSearch = search.trim();
   const normalizedStatus = status.trim();
@@ -96,8 +96,8 @@ export const getTasks = async ({
   return {
     tasks,
     pagination: {
-      page:parsedPage,
-      limit:parsedLimit,
+      page: parsedPage,
+      limit: parsedLimit,
       total,
       totalPages: Math.ceil(total / limit),
     },
@@ -128,7 +128,7 @@ export const updateTask = async ({
   if (!existingTask) {
     throw new ApiError(404, "Task not found.", "TASK_NOT_FOUND");
   }
-  
+
   const updates = {};
 
   if (title !== undefined) updates.title = title.trim();

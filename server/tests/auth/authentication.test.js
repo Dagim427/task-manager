@@ -133,7 +133,7 @@ describe("Authentication", () => {
       const response = await request(app)
         .get("/api/auth/me")
         .set("Authorization", `Bearer ${token}`);
-        
+
       expect(response.status).toBe(401);
 
       expect(response.body.code).toBe("INVALID_TOKEN");

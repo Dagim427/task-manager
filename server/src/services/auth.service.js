@@ -101,7 +101,7 @@ export const loginUser = async ({ email, password }) => {
     );
   }
 
-  const accessToken = createAccessToken(user)
+  const accessToken = createAccessToken(user);
   return {
     accessToken,
     user: sanitizeUser(user),

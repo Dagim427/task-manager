@@ -36,7 +36,8 @@ function DashboardPage() {
       } catch (requestError) {
         if (isMounted) {
           setError(
-            requestError.response?.data?.message ?? "Unable to load dashboard data.",
+            requestError.response?.data?.message ??
+              "Unable to load dashboard data.",
           );
         }
       } finally {
@@ -115,14 +116,16 @@ function DashboardPage() {
 
                   {task.description && <p>{task.description}</p>}
                 </div>
-                
-                <span className={`priority priority-${task.priority}`}>
-                  {formatPriority(task.priority)}
-                </span>
-
-                <span className={`task-status task-status-${task.status}`}>
-                  {formatStatus(task.status)}
-                </span>
+                <div>
+                  <span className={`priority priority-${task.priority}`}>
+                    {formatPriority(task.priority)}
+                  </span>
+                </div>
+                <div>
+                  <span className={`task-status task-status-${task.status}`}>
+                    {formatStatus(task.status)}
+                  </span>
+                </div>
               </article>
             ))}
           </div>

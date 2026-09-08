@@ -105,14 +105,10 @@ export const listTasksValidator = [
   query("status")
     .optional()
     .isIn(["todo", "in_progress", "completed"])
-    .withMessage(
-      "Status must be todo, in_progress, or completed.",
-    ),
+    .withMessage("Status must be todo, in_progress, or completed."),
 
   query("priority")
     .optional()
     .isIn(["low", "medium", "high"])
-    .withMessage(
-      "Priority must be low, medium, or high.",
-    ),
+    .withMessage("Priority must be low, medium, or high."),
 ];

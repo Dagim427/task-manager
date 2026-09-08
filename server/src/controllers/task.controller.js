@@ -1,11 +1,11 @@
-import { asyncHandler } from "../utils/asyncHandler.js"; 
+import { asyncHandler } from "../utils/asyncHandler.js";
 import {
   createTask as createTaskService,
   deleteTask as deleteTaskService,
   getTask as getTaskService,
   getTasks as getTasksService,
   updateTask as updateTaskService,
-  getTaskStats as getTaskStatsService
+  getTaskStats as getTaskStatsService,
 } from "../services/task.service.js";
 
 export const createTask = asyncHandler(async (req, res) => {

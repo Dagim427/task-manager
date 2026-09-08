@@ -17,7 +17,6 @@ const app = express();
 
 app.disable("x-powered-by");
 
-
 app.use(helmet());
 
 app.use(cors(corsOptions));

@@ -7,12 +7,10 @@ export const requestLogger = pinoHttp({
   logger,
 
   genReqId: (req, res) => {
-    const incomingRequestId =
-      req.headers["x-request-id"];
+    const incomingRequestId = req.headers["x-request-id"];
 
     const requestId =
-      typeof incomingRequestId === "string" &&
-      incomingRequestId.length <= 100
+      typeof incomingRequestId === "string" && incomingRequestId.length <= 100
         ? incomingRequestId
         : crypto.randomUUID();
 
@@ -33,11 +31,9 @@ export const requestLogger = pinoHttp({
     return "info";
   },
 
-  customSuccessMessage: (req) =>
-    `${req.method} ${req.originalUrl} completed`,
+  customSuccessMessage: (req) => `${req.method} ${req.originalUrl} completed`,
 
-  customErrorMessage: (req) =>
-    `${req.method} ${req.originalUrl} failed`,
+  customErrorMessage: (req) => `${req.method} ${req.originalUrl} failed`,
 
   customProps: (req) => ({
     userId: req.user?.id ?? null,

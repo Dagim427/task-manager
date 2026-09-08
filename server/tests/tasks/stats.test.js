@@ -16,9 +16,7 @@ const userB = {
 };
 
 const login = async (credentials) => {
-  const response = await request(app)
-    .post("/api/auth/login")
-    .send(credentials);
+  const response = await request(app).post("/api/auth/login").send(credentials);
 
   expect(response.status).toBe(200);
 
@@ -40,13 +38,9 @@ describe("GET /api/tasks/stats", () => {
   beforeEach(async () => {
     await clearUsersTable();
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(userA);
+    await request(app).post("/api/auth/register").send(userA);
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(userB);
+    await request(app).post("/api/auth/register").send(userB);
   });
 
   afterAll(async () => {
@@ -254,8 +248,7 @@ describe("GET /api/tasks/stats", () => {
   });
 
   it("rejects unauthenticated requests", async () => {
-    const response = await request(app)
-      .get("/api/tasks/stats");
+    const response = await request(app).get("/api/tasks/stats");
 
     expect(response.status).toBe(401);
   });

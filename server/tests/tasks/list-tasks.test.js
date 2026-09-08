@@ -16,9 +16,7 @@ const userB = {
 };
 
 const login = async (credentials) => {
-  const response = await request(app)
-    .post("/api/auth/login")
-    .send(credentials);
+  const response = await request(app).post("/api/auth/login").send(credentials);
 
   expect(response.status).toBe(200);
 
@@ -40,13 +38,9 @@ describe("GET /api/tasks", () => {
   beforeEach(async () => {
     await clearUsersTable();
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(userA);
+    await request(app).post("/api/auth/register").send(userA);
 
-    await request(app)
-      .post("/api/auth/register")
-      .send(userB);
+    await request(app).post("/api/auth/register").send(userB);
   });
 
   afterAll(async () => {
@@ -82,13 +76,8 @@ describe("GET /api/tasks", () => {
       totalPages: 1,
     });
 
-    expect(
-      response.body.data.tasks.map((task) => task.title),
-    ).toEqual(
-      expect.arrayContaining([
-        "First task",
-        "Second task",
-      ]),
+    expect(response.body.data.tasks.map((task) => task.title)).toEqual(
+      expect.arrayContaining(["First task", "Second task"]),
     );
   });
 
@@ -113,9 +102,7 @@ describe("GET /api/tasks", () => {
     expect(response.body.data.pagination.total).toBe(1);
     expect(response.body.data.tasks).toHaveLength(1);
 
-    expect(response.body.data.tasks[0].title).toBe(
-      "User A private task",
-    );
+    expect(response.body.data.tasks[0].title).toBe("User A private task");
   });
 
   it("supports pagination", async () => {
@@ -151,17 +138,11 @@ describe("GET /api/tasks", () => {
     expect(secondPage.body.data.tasks).toHaveLength(2);
     expect(secondPage.body.data.pagination.page).toBe(2);
 
-    const firstIds = firstPage.body.data.tasks.map(
-      (task) => task.id,
-    );
+    const firstIds = firstPage.body.data.tasks.map((task) => task.id);
 
-    const secondIds = secondPage.body.data.tasks.map(
-      (task) => task.id,
-    );
+    const secondIds = secondPage.body.data.tasks.map((task) => task.id);
 
-    expect(firstIds).not.toEqual(
-      expect.arrayContaining(secondIds),
-    );
+    expect(firstIds).not.toEqual(expect.arrayContaining(secondIds));
   });
 
   it("returns an empty page when the requested page is beyond the last page", async () => {
@@ -207,9 +188,7 @@ describe("GET /api/tasks", () => {
     expect(response.body.data.pagination.total).toBe(1);
     expect(response.body.data.tasks).toHaveLength(1);
 
-    expect(response.body.data.tasks[0].title).toBe(
-      "Build authentication API",
-    );
+    expect(response.body.data.tasks[0].title).toBe("Build authentication API");
   });
 
   it("supports search by description", async () => {
@@ -234,9 +213,7 @@ describe("GET /api/tasks", () => {
     expect(response.body.data.pagination.total).toBe(1);
     expect(response.body.data.tasks).toHaveLength(1);
 
-    expect(response.body.data.tasks[0].title).toBe(
-      "Backend task",
-    );
+    expect(response.body.data.tasks[0].title).toBe("Backend task");
   });
 
   it("supports status filtering", async () => {
@@ -266,13 +243,9 @@ describe("GET /api/tasks", () => {
     expect(response.body.data.pagination.total).toBe(1);
     expect(response.body.data.tasks).toHaveLength(1);
 
-    expect(response.body.data.tasks[0].status).toBe(
-      "completed",
-    );
+    expect(response.body.data.tasks[0].status).toBe("completed");
 
-    expect(response.body.data.tasks[0].title).toBe(
-      "Completed task",
-    );
+    expect(response.body.data.tasks[0].title).toBe("Completed task");
   });
 
   it("supports priority filtering", async () => {
@@ -302,13 +275,9 @@ describe("GET /api/tasks", () => {
     expect(response.body.data.pagination.total).toBe(1);
     expect(response.body.data.tasks).toHaveLength(1);
 
-    expect(response.body.data.tasks[0].priority).toBe(
-      "high",
-    );
+    expect(response.body.data.tasks[0].priority).toBe("high");
 
-    expect(response.body.data.tasks[0].title).toBe(
-      "High priority",
-    );
+    expect(response.body.data.tasks[0].title).toBe("High priority");
   });
 
   it("supports combined search, status, and priority filters", async () => {
@@ -336,9 +305,7 @@ describe("GET /api/tasks", () => {
     });
 
     const response = await request(app)
-      .get(
-        "/api/tasks?search=API&status=in_progress&priority=high",
-      )
+      .get("/api/tasks?search=API&status=in_progress&priority=high")
       .set("Authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -346,17 +313,11 @@ describe("GET /api/tasks", () => {
     expect(response.body.data.pagination.total).toBe(1);
     expect(response.body.data.tasks).toHaveLength(1);
 
-    expect(response.body.data.tasks[0].title).toBe(
-      "Urgent API work",
-    );
+    expect(response.body.data.tasks[0].title).toBe("Urgent API work");
 
-    expect(response.body.data.tasks[0].status).toBe(
-      "in_progress",
-    );
+    expect(response.body.data.tasks[0].status).toBe("in_progress");
 
-    expect(response.body.data.tasks[0].priority).toBe(
-      "high",
-    );
+    expect(response.body.data.tasks[0].priority).toBe("high");
   });
 
   it("rejects an invalid page", async () => {
@@ -412,8 +373,7 @@ describe("GET /api/tasks", () => {
   });
 
   it("rejects unauthenticated requests", async () => {
-    const response = await request(app)
-      .get("/api/tasks");
+    const response = await request(app).get("/api/tasks");
 
     expect(response.status).toBe(401);
   });

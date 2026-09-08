@@ -54,10 +54,9 @@ async function runMigrations() {
           await connection.query(sqlQuery);
 
           // Record successful migration
-          await connection.execute(
-            "INSERT INTO migrations (name) VALUES (?)",
-            [file]
-          );
+          await connection.execute("INSERT INTO migrations (name) VALUES (?)", [
+            file,
+          ]);
 
           await connection.commit();
           console.log(`✓ ${file}`);
@@ -67,10 +66,12 @@ async function runMigrations() {
 
           // Handle case where table already exists safely
           if (err.code === "ER_TABLE_EXISTS_ERROR") {
-            console.warn(`⚠️ Table already exists for ${file}. Marking as executed.`);
+            console.warn(
+              `⚠️ Table already exists for ${file}. Marking as executed.`,
+            );
             await connection.execute(
               "INSERT IGNORE INTO migrations (name) VALUES (?)",
-              [file]
+              [file],
             );
           } else {
             throw err;
