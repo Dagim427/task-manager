@@ -383,47 +383,35 @@ task-manager/
 
 ### Login
 
-Add the V1 login-page screenshot here.
-
-```text
-docs/screenshots/login.png
-```
+![Login](docs/screenshots/login.png)
 
 ### Registration
 
-Add the V1 registration-page screenshot here.
-
-```text
-docs/screenshots/register.png
-```
+![Registration](docs/screenshots/register.png)
 
 ### Dashboard
 
-Add the V1 dashboard screenshot here.
-
-```text
-docs/screenshots/dashboard.png
-```
+![Dashboard](docs/screenshots/dashboard.png)
 
 ### Task Management
 
-Add the V1 task-management screenshot here.
-
-```text
-docs/screenshots/tasks.png
-```
-
-Example Markdown:
-
-```markdown
-![Login](docs/screenshots/login.png)
-
-![Dashboard](docs/screenshots/dashboard.png)
-
 ![Task Management](docs/screenshots/tasks.png)
-```
 
-Screenshots should be added before publishing the final portfolio version of V1.
+### Create Task
+
+![Create Task](docs/screenshots/create-task.png)
+
+### Edit Task
+
+![Edit Task](docs/screenshots/edit-task.png)
+
+### Filters
+
+![Filters](docs/screenshots/filters.png)
+
+### Responsive Design
+
+![Responsive Design](docs/screenshots/responsive-design.png)
 
 ---
 
@@ -926,7 +914,7 @@ Focus: Core Task Management
 - [x] Frontend tests
 - [x] Backend tests
 - [ ] Final production deployment
-- [ ] Final screenshots
+- [X] Final screenshots
 - [ ] Final portfolio presentation
 
 ---
