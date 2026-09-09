@@ -265,7 +265,7 @@ The exact variable names must match the project's configuration.
 Example:
 
 ```env
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=http://localhost:5000/api
 ```
 
 The frontend should only contain values that are safe to expose to the browser.
