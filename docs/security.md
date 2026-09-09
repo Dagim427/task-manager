@@ -614,7 +614,7 @@ DATABASE_PASSWORD=
 JWT_SECRET=
 JWT_EXPIRES_IN=
 
-CORS_ORIGIN=
+CORS_ORIGINS=
 ```
 
 Environment files containing secrets must not be committed to the repository.

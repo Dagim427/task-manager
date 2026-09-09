@@ -178,8 +178,6 @@ The frontend also handles:
 - JSX
 - React Router
 - Axios
-- Tailwind CSS
-- Lucide React
 - Vite
 
 ### Backend

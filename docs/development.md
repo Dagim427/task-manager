@@ -255,7 +255,7 @@ DATABASE_PASSWORD=
 JWT_SECRET=
 JWT_EXPIRES_IN=
 
-CORS_ORIGIN=http://localhost:3000
+CORS_ORIGINS=http://localhost:5173
 ```
 
 The exact variable names must match the project's configuration.

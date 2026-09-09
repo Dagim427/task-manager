@@ -181,7 +181,7 @@ The frontend requires the URL of the production API.
 For example:
 
 ```env
-VITE_API_URL=https://api.example.com
+VITE_API_URL=https://your-backend-domain.com/api/tasks
 ```
 
 If the project uses a different environment variable naming convention, document the actual variable used by the application.
@@ -283,7 +283,7 @@ DATABASE_PASSWORD=********
 JWT_SECRET=********
 JWT_EXPIRES_IN=7d
 
-CORS_ORIGIN=https://app.example.com
+CORS_ORIGINS=https://app.example.com
 ```
 
 The exact variable names must match the project's environment configuration.
@@ -494,7 +494,7 @@ The backend must allow requests from the production frontend.
 Example:
 
 ```env
-CORS_ORIGIN=https://app.example.com
+CORS_ORIGINS=https://app.example.com
 ```
 
 The production CORS configuration should not allow arbitrary origins.
@@ -704,7 +704,7 @@ Example:
 ```env
 NODE_ENV=development
 DATABASE_NAME=task_manager_dev
-CORS_ORIGIN=http://localhost:3000
+CORS_ORIGINS=http://localhost:5173
 ```
 
 Characteristics:
@@ -746,7 +746,7 @@ Example:
 ```env
 NODE_ENV=production
 DATABASE_NAME=task_manager
-CORS_ORIGIN=https://app.example.com
+CORS_ORIGINS=https://app.example.com
 ```
 
 Characteristics:
