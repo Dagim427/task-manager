@@ -1090,7 +1090,7 @@ DATABASE_PASSWORD=your_password
 
 JWT_SECRET=your_jwt_secret
 
-CLIENT_URL=http://localhost:5173
+CORS_ORIGINS=http://localhost:5173
 ```
 
 The exact variable names should match the application's configuration implementation.
@@ -1121,7 +1121,7 @@ DATABASE_NAME=
 DATABASE_USER=
 DATABASE_PASSWORD=
 JWT_SECRET=
-CLIENT_URL=
+CORS_ORIGINS=
 ```
 
 ---

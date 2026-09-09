@@ -1,79 +1,16 @@
-Yes. For `deployment.md`, I would make it **practical and V1-focused**, while clearly separating what you currently deploy from future production infrastructure. Since your stack is React + Node/Express + MySQL, the documentation should show the complete deployment flow.
-
 # Task Management SaaS — Deployment Documentation
 
 ## 1. Deployment Overview
 
-The Task Management SaaS consists of three primary components:
+This document explains how to deploy the Task Management SaaS application to a production environment.
 
-```text
-┌──────────────────────┐
-│      Frontend        │
-│   React Application  │
-└──────────┬───────────┘
-           │ HTTPS
-           ▼
-┌──────────────────────┐
-│       Backend        │
-│   Node.js / Express  │
-└──────────┬───────────┘
-           │
-           │ MySQL
-           ▼
-┌──────────────────────┐
-│       Database       │
-│        MySQL         │
-└──────────────────────┘
-```
+The application consists of two main parts:
 
-The deployment process consists of:
+* **Frontend:** React + Vite
+* **Backend:** Node.js + Express
+* **Database:** MySQL
 
-1. Building the frontend.
-2. Deploying the frontend.
-3. Configuring the backend.
-4. Deploying the backend.
-5. Creating the production MySQL database.
-6. Running database migrations.
-7. Configuring CORS.
-8. Configuring environment variables.
-9. Verifying health checks.
-10. Testing the production application.
-
-The V1 deployment should keep the infrastructure simple while providing a clear path toward production scalability.
-
----
-
-# 2. Production Architecture
-
-The production architecture separates the frontend, backend, and database.
-
-```text
-                         Internet
-                            │
-                            ▼
-                   ┌─────────────────┐
-                   │    Frontend     │
-                   │  React / Vercel │
-                   └────────┬────────┘
-                            │
-                         HTTPS
-                            │
-                            ▼
-                   ┌─────────────────┐
-                   │     Backend     │
-                   │ Node.js/Express │
-                   └────────┬────────┘
-                            │
-                         MySQL
-                            │
-                            ▼
-                   ┌─────────────────┐
-                   │    Database     │
-                   │      MySQL      │
-                   └─────────────────┘
-```
-
-### Production Request Flow
+Production architecture:
 
 ```text
 User
@@ -81,191 +18,69 @@ User
  ▼
 React Frontend
  │
- │ HTTPS API Request
+ │ HTTPS API Requests
  ▼
-Node.js API
+Node.js + Express API
  │
- │ SQL Query
+ │ MySQL Connection
  ▼
-MySQL
- │
- │ Result
- ▼
-Node.js API
- │
- │ JSON Response
- ▼
-React Frontend
- │
- ▼
-User
+MySQL Database
 ```
 
-### Production Requirements
-
-The production environment should provide:
-
-- HTTPS.
-- Secure environment variables.
-- Production database credentials.
-- Restricted CORS.
-- Database backups.
-- Health checks.
-- Application logging.
-- Secure authentication configuration.
+The frontend and backend are deployed separately and communicate through the production API URL.
 
 ---
 
-# 3. Frontend Deployment
+## 2. Deployment Requirements
 
-The frontend is a React application.
+Before deployment, make sure you have:
 
-The frontend is responsible for:
-
-- Rendering the user interface.
-- Managing client-side application state.
-- Sending requests to the backend API.
-- Handling authentication state.
-- Displaying tasks and user information.
-
-The frontend can be deployed using a static hosting platform such as Vercel.
+* A Git repository containing the project
+* A production hosting provider for the frontend
+* A production hosting provider for the backend
+* A production MySQL database
+* Node.js installed locally for testing
+* Git installed locally
+* Production environment variables prepared
 
 ---
 
-## 3.1 Build
+## 3. Pre-Deployment Checklist
 
-Before deployment, create a production build.
+Before deploying, verify that the application works correctly in development.
 
-Example:
+### Backend
 
 ```bash
+cd server
+npm ci
+npm test
+npm run lint
+```
+
+### Frontend
+
+```bash
+cd client
+npm ci
+npm test
+npm run lint
 npm run build
 ```
 
-The build process:
-
-```text
-React Source Code
-       │
-       ▼
-npm run build
-       │
-       ▼
-Production Build
-       │
-       ▼
-Static Assets
-       │
-       ▼
-Deployment Platform
-```
-
-The build should complete successfully before deployment.
-
-### Build Verification
-
-Before deploying, verify:
-
-- No build errors.
-- No unresolved imports.
-- No missing environment variables.
-- API URL points to the production backend.
-- Production assets are generated correctly.
+All tests, linting, and the production build should complete successfully before deployment.
 
 ---
 
-## 3.2 Environment Variables
+## 4. Environment Variables
 
-The frontend requires the URL of the production API.
+Environment variables contain configuration that should not be hard-coded into the application.
 
-For example:
+Do not commit production secrets to Git.
 
-```env
-VITE_API_URL=https://your-backend-domain.com/api/tasks
-```
+### 4.1 Backend Environment Variables
 
-If the project uses a different environment variable naming convention, document the actual variable used by the application.
-
-### Important
-
-Frontend environment variables should **never contain secrets**.
-
-Anything included in a frontend build can potentially be viewed by users.
-
-Therefore, never expose:
-
-```text
-JWT_SECRET
-DATABASE_PASSWORD
-Database credentials
-Private API keys
-```
-
-through frontend environment variables.
-
----
-
-## 3.3 Deployment
-
-A typical Vercel deployment flow is:
-
-```text
-GitHub Repository
-       │
-       ▼
-Vercel
-       │
-       ▼
-Install Dependencies
-       │
-       ▼
-Run Build
-       │
-       ▼
-Deploy Frontend
-       │
-       ▼
-Production URL
-```
-
-The production frontend should be configured to communicate with the production backend API.
-
-After deployment, verify:
-
-```text
-Homepage
-Login
-Registration
-Dashboard
-Task Creation
-Task Update
-Task Deletion
-Logout
-```
-
----
-
-# 4. Backend Deployment
-
-The backend is a Node.js / Express application.
-
-The backend provides:
-
-- Authentication.
-- Authorization.
-- Task management.
-- Validation.
-- Database access.
-- Health checks.
-- Error handling.
-
-The backend must run in a server environment capable of running Node.js.
-
----
-
-## 4.1 Environment Variables
-
-The production backend requires its own environment configuration.
+Create a production `.env` file for the backend.
 
 Example:
 
@@ -274,826 +89,475 @@ NODE_ENV=production
 
 PORT=5000
 
-DATABASE_HOST=production-db-host
+DATABASE_HOST=your-production-database-host
 DATABASE_PORT=3306
+DATABASE_USER=your-production-database-user
+DATABASE_PASSWORD=your-production-database-password
 DATABASE_NAME=task_manager
-DATABASE_USER=task_manager_user
-DATABASE_PASSWORD=********
 
-JWT_SECRET=********
-JWT_EXPIRES_IN=7d
+JWT_SECRET=your-long-random-production-secret
 
-CORS_ORIGINS=https://app.example.com
+CORS_ORIGINS=https://your-frontend-domain.com
 ```
 
-The exact variable names must match the project's environment configuration.
+### Backend Variable Description
 
-### Production Secrets
+| Variable            | Description                         |
+| ------------------- | ----------------------------------- |
+| `NODE_ENV`          | Application environment             |
+| `PORT`              | Port used by the Express server     |
+| `DATABASE_HOST`     | Production MySQL host               |
+| `DATABASE_PORT`     | MySQL port                          |
+| `DATABASE_USER`     | MySQL username                      |
+| `DATABASE_PASSWORD` | MySQL password                      |
+| `DATABASE_NAME`     | Production database name            |
+| `JWT_SECRET`        | Secret used to sign and verify JWTs |
+| `CORS_ORIGINS`      | Allowed frontend origin             |
 
-Production secrets should be configured through the hosting provider's environment-variable system.
+Use a strong, randomly generated value for `JWT_SECRET`.
 
-Do not commit production `.env` files to Git.
+Never use a development JWT secret in production.
 
 ---
 
-## 4.2 Production Dependencies
+## 5. Frontend Environment Variables
 
-Only required production dependencies should be installed in the production environment.
+The frontend requires the production backend API URL.
 
-Example:
+Create the production frontend environment configuration:
 
-```bash
-npm ci --omit=dev
+```env
+VITE_API_URL=https://your-backend-domain.com/api
 ```
 
-The exact command depends on the project's package configuration and deployment platform.
-
-The production application should include the dependencies required to run:
-
-```text
-Express
-MySQL driver
-JWT
-bcrypt
-Validation libraries
-Security middleware
-Other runtime dependencies
-```
-
-Development-only tools should not be required by the running production server.
-
----
-
-## 4.3 Start Command
-
-The production server should use the project's production start command.
+The `/api` path is required because the frontend API client uses the configured API base URL for backend requests.
 
 For example:
+
+```text
+Frontend
+https://your-frontend-domain.com
+
+Backend API
+https://your-backend-domain.com/api
+```
+
+---
+
+## 6. Database Deployment
+
+Create a production MySQL database using your selected database provider.
+
+Configure the backend with the production database credentials.
+
+Before running migrations, verify that:
+
+* The database exists
+* The database user has the required permissions
+* The backend can connect to the database
+* The database host is reachable from the backend server
+
+Do not use your local development database for production.
+
+---
+
+## 7. Run Database Migrations
+
+The project uses database migrations to create and update the database schema.
+
+From the backend directory:
+
+```bash
+cd server
+npm run migrate
+```
+
+The migration system should create the required database tables.
+
+After migration, verify that the production database contains the expected tables.
+
+---
+
+## 8. Backend Deployment
+
+Deploy the `server` application to your selected Node.js hosting provider.
+
+The backend should:
+
+1. Install dependencies.
+2. Load production environment variables.
+3. Connect to the production MySQL database.
+4. Start the Express application.
+5. Expose the API over HTTPS.
+
+Typical production start command:
 
 ```bash
 npm start
 ```
 
-or:
-
-```bash
-node src/server.js
-```
-
-The exact command must match the actual `package.json` configuration.
-
-### Production Startup
-
-```text
-Deploy Backend
-      │
-      ▼
-Install Dependencies
-      │
-      ▼
-Load Environment Variables
-      │
-      ▼
-Connect to MySQL
-      │
-      ▼
-Start Express Server
-      │
-      ▼
-Health Check
-      │
-      ▼
-Application Ready
-```
+The exact build and start configuration depends on the hosting provider.
 
 ---
 
-# 5. Database Deployment
+## 9. Backend Health Check
 
-The production database uses MySQL.
+After deploying the backend, verify that the API is running.
 
-The database should be separated from development and testing databases.
+Use the health endpoint:
 
 ```text
-Development
-    │
-    └── task_manager_dev
-
-Testing
-    │
-    └── task_manager_test
-
-Production
-    │
-    └── task_manager
+https://your-backend-domain.com/health
 ```
 
-Production credentials must not be reused for development or testing.
+The endpoint should return a successful response.
+
+Also verify the readiness endpoint:
+
+```text
+https://your-backend-domain.com/ready
+```
+
+The readiness check should confirm that the application and required dependencies are available.
 
 ---
 
-## 5.1 MySQL Configuration
-
-The production MySQL instance should be configured with:
-
-- A dedicated database.
-- A dedicated application database user.
-- A strong database password.
-- Restricted network access.
-- Appropriate connection limits.
-- Automated backups where supported.
-- Appropriate database permissions.
-
-The backend should connect using the production database credentials.
-
----
-
-## 5.2 Database Creation
-
-Create the production database before starting the application.
-
-Example:
-
-```sql
-CREATE DATABASE task_manager;
-```
-
-A dedicated database user should be created rather than using a highly privileged administrator account.
-
-Example concept:
-
-```text
-Database
-   │
-   └── task_manager
-          │
-          └── Application User
-```
-
-The application user should have only the permissions required by the application.
-
----
-
-## 5.3 Running Migrations
-
-Database migrations create the required production schema.
-
-Example migration structure:
-
-```text
-migrations/
-├── 001_create_users_table.sql
-└── 002_create_tasks_table.sql
-```
-
-Run migrations before starting the production application.
-
-Example:
-
-```bash
-npm run migrate
-```
-
-Migration flow:
-
-```text
-Production MySQL
-       │
-       ▼
-Run Migration 001
-       │
-       ▼
-Create Users Table
-       │
-       ▼
-Run Migration 002
-       │
-       ▼
-Create Tasks Table
-       │
-       ▼
-Database Ready
-```
-
-### Migration Safety
-
-Before applying destructive schema changes:
-
-1. Back up the database.
-2. Review the migration.
-3. Test the migration in a non-production environment.
-4. Apply the migration.
-5. Verify the database schema.
-
----
-
-# 6. CORS Configuration
+## 10. Configure CORS
 
 The backend must allow requests from the production frontend.
 
-Example:
+Set:
 
 ```env
-CORS_ORIGINS=https://app.example.com
+CORS_ORIGINS=https://your-frontend-domain.com
 ```
 
-The production CORS configuration should not allow arbitrary origins.
-
-Avoid configurations such as:
-
-```text
-*
-```
-
-for authenticated production APIs unless there is a specific reason and the security implications have been evaluated.
-
-### Production Request
-
-```text
-https://app.example.com
-          │
-          │ API Request
-          ▼
-https://api.example.com
-          │
-          ▼
-      CORS Check
-          │
-          ▼
-       Allowed
-```
-
-The production frontend URL and backend CORS configuration must match.
-
----
-
-# 7. Production Security
-
-The production environment should apply the security controls documented in `security.md`.
-
-Important controls include:
-
-### HTTPS
-
-All production communication should use HTTPS.
-
-```text
-Browser
-   │
-   │ HTTPS
-   ▼
-Backend API
-```
-
-### Environment Secrets
-
-Production secrets must be stored securely.
-
-### JWT Secret
-
-The JWT secret must be:
-
-- Strong.
-- Random.
-- Stored only on the backend.
-- Different from development secrets.
-
-### Password Hashing
-
-Passwords continue to be hashed using bcrypt.
-
-### SQL Injection Protection
-
-Database queries continue to use parameterized queries.
-
-### CORS
-
-Only trusted frontend origins should be allowed.
-
-### HTTP Security Headers
-
-Security headers should be enabled according to the backend configuration.
-
-### Database Security
-
-The production database should not be publicly accessible unless required.
-
----
-
-# 8. Logging
-
-Production logging should provide enough information to diagnose application problems without exposing sensitive information.
-
-Useful production logs include:
-
-```text
-Server started
-Database connected
-Request errors
-Application errors
-Migration errors
-Authentication failures
-```
-
-Do not log:
-
-```text
-Passwords
-Password hashes
-JWT tokens
-JWT secrets
-Database passwords
-Sensitive request data
-```
-
-### Example
-
-Safe:
-
-```text
-[INFO] API server started
-[INFO] Database connection established
-[ERROR] Task creation failed
-```
-
-Unsafe:
-
-```text
-[INFO] JWT: eyJhbGciOi...
-[INFO] DATABASE_PASSWORD: password123
-```
-
-Production logs should also be retained according to the hosting environment's logging policy.
-
----
-
-# 9. Health Checks
-
-The backend provides health endpoints for monitoring application availability.
-
-## Liveness
-
-```http
-GET /health/live
-```
-
-The liveness endpoint verifies that the application process is running.
-
-Expected:
-
-```text
-200 OK
-```
-
-## Readiness
-
-```http
-GET /health/ready
-```
-
-The readiness endpoint verifies that the application is ready to serve requests and, where implemented, that the database connection is available.
-
-Expected:
-
-```text
-200 OK
-```
-
-### Health Check Flow
-
-```text
-Monitoring System
-       │
-       ▼
-/health/live
-       │
-       ▼
-Application Running?
-       │
-       ├── Yes → 200
-       └── No  → Failure
-```
-
-Readiness:
-
-```text
-Monitoring System
-       │
-       ▼
-/health/ready
-       │
-       ▼
-Application + Database Ready?
-       │
-       ├── Yes → 200
-       └── No  → Failure
-```
-
----
-
-# 10. Environment Configuration
-
-The application uses separate environments to prevent configuration and data from being mixed.
-
-## Development
-
-Used for local development.
-
-Example:
+Do not use:
 
 ```env
-NODE_ENV=development
-DATABASE_NAME=task_manager_dev
-CORS_ORIGINS=http://localhost:5173
+CORS_ORIGINS=*
 ```
 
-Characteristics:
+for the production application when a specific frontend origin can be configured.
 
-- Local database.
-- Development API.
-- Debug logging.
-- Local frontend.
-- Development secrets.
+If the application is deployed on a different frontend domain, update `CORS_ORIGINS` accordingly.
 
 ---
 
-## Testing
+## 11. Frontend Deployment
 
-Used for automated tests.
+Deploy the `client` application to your selected frontend hosting provider.
 
-Example:
+Before building the application, configure:
 
 ```env
-NODE_ENV=test
-DATABASE_NAME=task_manager_test
+VITE_API_URL=https://your-backend-domain.com/api
 ```
 
-Characteristics:
+Then build the frontend:
 
-- Separate test database.
-- Test-specific configuration.
-- Isolated test data.
-- No production credentials.
+```bash
+cd client
+npm ci
+npm run build
+```
+
+The generated production files can then be deployed by the selected hosting provider.
 
 ---
 
-## Production
+## 12. Production Application Flow
 
-Used by the deployed application.
-
-Example:
-
-```env
-NODE_ENV=production
-DATABASE_NAME=task_manager
-CORS_ORIGINS=https://app.example.com
-```
-
-Characteristics:
-
-- Production database.
-- Production secrets.
-- HTTPS.
-- Restricted CORS.
-- Production logging.
-- Monitoring.
-- Backups.
-
-### Environment Separation
+After deployment, the application should work as follows:
 
 ```text
-             Application
-                  │
-       ┌──────────┼──────────┐
-       │          │          │
-       ▼          ▼          ▼
- Development    Testing   Production
-       │          │          │
-       ▼          ▼          ▼
-     Dev DB    Test DB    Prod DB
+User
+ │
+ ▼
+Production React Application
+ │
+ │ HTTPS
+ ▼
+Production Express API
+ │
+ ├── Authentication
+ │
+ ├── Task Management
+ │
+ ├── Validation
+ │
+ └── Authorization
+ │
+ ▼
+Production MySQL
+```
+
+Authentication flow:
+
+```text
+User
+ │
+ ▼
+Login
+ │
+ ▼
+Frontend
+ │
+ ▼
+POST /api/auth/login
+ │
+ ▼
+Express API
+ │
+ ▼
+Validate Credentials
+ │
+ ▼
+Generate JWT
+ │
+ ▼
+Frontend receives JWT
+ │
+ ▼
+Authenticated API Requests
 ```
 
 ---
 
-# 11. Deployment Checklist
+## 13. Production Security Checklist
 
-Use the following checklist before considering V1 production-ready.
+Before making the application publicly available, verify:
 
-## Frontend
-
-- [ ] Production build succeeds.
-- [ ] Production API URL configured.
-- [ ] No development API URLs remain.
-- [ ] No secrets are included in frontend variables.
-- [ ] Frontend deployment succeeds.
-- [ ] Login works.
-- [ ] Registration works.
-- [ ] Dashboard works.
-- [ ] Task CRUD works.
-
-## Backend
-
-- [ ] Production dependencies installed.
-- [ ] Production environment variables configured.
-- [ ] Strong JWT secret configured.
-- [ ] Database credentials configured.
-- [ ] CORS configured.
-- [ ] Security middleware configured.
-- [ ] Production start command works.
-- [ ] `/health/live` works.
-- [ ] `/health/ready` works.
-- [ ] Logs do not expose secrets.
-
-## Database
-
-- [ ] Production database created.
-- [ ] Dedicated database user created.
-- [ ] Database permissions configured.
-- [ ] Migrations executed.
-- [ ] Tables verified.
-- [ ] Foreign keys verified.
-- [ ] Database backup strategy configured.
-
-## Security
-
-- [ ] HTTPS enabled.
-- [ ] JWT secret secured.
-- [ ] Password hashing enabled.
-- [ ] Parameterized SQL queries used.
-- [ ] CORS restricted.
-- [ ] Sensitive errors sanitized.
-- [ ] Production secrets excluded from Git.
-
-## Final Verification
-
-- [ ] Register user.
-- [ ] Login user.
-- [ ] Access `/api/auth/me`.
-- [ ] Create task.
-- [ ] View tasks.
-- [ ] Update task.
-- [ ] Delete task.
-- [ ] Verify task ownership.
-- [ ] Verify another user cannot access the task.
-- [ ] Logout.
-- [ ] Verify health endpoints.
+* [ ] `NODE_ENV=production`
+* [ ] Strong production `JWT_SECRET`
+* [ ] Production database credentials are configured securely
+* [ ] Production secrets are not committed to Git
+* [ ] CORS is restricted to the production frontend
+* [ ] HTTPS is enabled
+* [ ] Helmet security middleware is enabled
+* [ ] Rate limiting is enabled
+* [ ] Passwords are hashed with bcrypt
+* [ ] SQL queries use parameterized values
+* [ ] Authentication middleware protects private routes
+* [ ] Users can only access their own tasks
+* [ ] Production error responses do not expose sensitive information
 
 ---
 
-# 12. Troubleshooting
+## 14. Post-Deployment Testing
 
-## Frontend Cannot Connect to Backend
+After both frontend and backend are deployed, test the complete application.
 
-Check:
+### Authentication
+
+* [ ] Register a new account
+* [ ] Login with valid credentials
+* [ ] Reject invalid credentials
+* [ ] Access the authenticated dashboard
+* [ ] Logout successfully
+
+### Task Management
+
+* [ ] Create a task
+* [ ] View tasks
+* [ ] Search tasks
+* [ ] Filter tasks
+* [ ] Update a task
+* [ ] Change task status
+* [ ] Change task priority
+* [ ] Set a due date
+* [ ] Delete a task
+
+### Authorization
+
+Create two test accounts.
+
+Verify that:
 
 ```text
-Frontend API URL
+User A
+  │
+  └── Task A
+
+User B
+  │
+  └── Task B
+```
+
+User B must not be able to view, update, or delete User A's task.
+
+### Error Handling
+
+Test:
+
+* Invalid login
+* Invalid registration
+* Missing authentication token
+* Expired/invalid JWT
+* Invalid task ID
+* Invalid task data
+* Unauthorized task access
+* Invalid API requests
+
+---
+
+## 15. Production Smoke Test
+
+After deployment, perform one complete end-to-end test:
+
+```text
+Open Production Website
         ↓
-Backend URL
+Register
         ↓
-CORS configuration
+Login
         ↓
-Backend availability
+Open Dashboard
+        ↓
+Create Task
+        ↓
+View Task
+        ↓
+Edit Task
+        ↓
+Filter/Search
+        ↓
+Change Status
+        ↓
+Change Priority
+        ↓
+Delete Task
+        ↓
+Logout
 ```
 
-Verify the frontend environment variable points to the correct backend URL.
+The complete flow should work without errors.
 
 ---
 
-## CORS Error
+## 16. Monitoring and Logs
 
-Check:
+After deployment, monitor the backend for:
 
-1. Production frontend origin.
-2. Backend `CORS_ORIGIN`.
-3. Protocol (`http` vs `https`).
-4. Domain.
-5. Port.
-6. Backend CORS middleware.
+* Application startup errors
+* Database connection errors
+* Authentication errors
+* API errors
+* Unexpected 4xx/5xx responses
+* Rate-limit events
+* Production crashes
 
-Example:
+Use the hosting provider's logs and monitoring tools to investigate production issues.
+
+---
+
+## 17. Deployment Updates
+
+When deploying future changes:
 
 ```text
-Frontend:
-https://app.example.com
-
-Backend allowed origin:
-https://app.example.com
+Make Changes
+     ↓
+Run Tests
+     ↓
+Run Lint
+     ↓
+Build Frontend
+     ↓
+Review Changes
+     ↓
+Commit
+     ↓
+Push to Git
+     ↓
+Deploy
+     ↓
+Run Production Smoke Test
 ```
 
-These must match.
+Do not deploy untested changes directly to production.
 
 ---
 
-## Database Connection Failure
+## 18. Rollback
 
-Check:
+If a deployment introduces a serious production problem:
+
+1. Identify the failing release.
+2. Check application and database logs.
+3. Revert the problematic code if necessary.
+4. Redeploy the last known working version.
+5. Verify the production health endpoints.
+6. Perform the production smoke test again.
+
+Database migrations should be handled carefully because schema changes may not always be safely reversible.
+
+---
+
+## 19. Production Completion Checklist
+
+The deployment is considered complete when:
+
+* [ ] Production MySQL database is created
+* [ ] Database migrations have been executed
+* [ ] Backend is deployed
+* [ ] Backend health endpoint works
+* [ ] Backend readiness endpoint works
+* [ ] Production CORS is configured
+* [ ] Frontend production API URL is configured
+* [ ] Frontend is deployed
+* [ ] HTTPS works
+* [ ] Registration works
+* [ ] Login works
+* [ ] Task CRUD works
+* [ ] Search and filtering work
+* [ ] Authorization works
+* [ ] Logout works
+* [ ] Production smoke test passes
+* [ ] No production secrets are exposed in Git
+
+---
+
+## 20. Deployment Architecture
+
+Final production architecture:
 
 ```text
-DATABASE_HOST
-DATABASE_PORT
-DATABASE_NAME
-DATABASE_USER
-DATABASE_PASSWORD
-```
-
-Also verify:
-
-- MySQL is running.
-- Database exists.
-- Database user exists.
-- Network access is allowed.
-- Database credentials are correct.
-- The database accepts connections from the backend.
-
----
-
-## Migration Failure
-
-Check:
-
-1. Database connection.
-2. Migration SQL.
-3. Existing tables.
-4. Foreign-key constraints.
-5. Database permissions.
-
-Do not repeatedly run a failed migration without understanding why it failed.
-
----
-
-## JWT Authentication Failure
-
-Check:
-
-```text
-JWT_SECRET
-JWT_EXPIRES_IN
-Authorization header
-Bearer token
-```
-
-The backend and token-generation logic must use the correct production JWT configuration.
-
----
-
-## Application Does Not Start
-
-Check:
-
-```text
-Environment variables
-      ↓
-Dependencies
-      ↓
-Database connection
-      ↓
-Migration status
-      ↓
-Application logs
-```
-
-Then verify the production start command.
-
----
-
-# 13. Future Infrastructure Improvements
-
-The V1 infrastructure intentionally remains relatively simple.
-
-Future versions can introduce more advanced infrastructure.
-
-## V2
-
-Potential improvements:
-
-- Managed MySQL database.
-- Automated database backups.
-- CI/CD pipeline.
-- Automated tests during deployment.
-- Automated database migrations.
-- Monitoring.
-- Centralized logging.
-- Custom domains.
-- CDN configuration.
-- Staging environment.
-
-Example:
-
-```text
-GitHub
-   │
-   ▼
-CI/CD
-   │
-   ├── Lint
-   ├── Test
-   ├── Build
-   └── Deploy
-          │
-          ▼
-      Production
+                    ┌──────────────────────┐
+                    │        User          │
+                    └──────────┬───────────┘
+                               │
+                               │ HTTPS
+                               ▼
+                    ┌──────────────────────┐
+                    │   React + Vite       │
+                    │      Frontend        │
+                    └──────────┬───────────┘
+                               │
+                               │ HTTPS API
+                               ▼
+                    ┌──────────────────────┐
+                    │   Node.js + Express  │
+                    │      Backend API     │
+                    └──────────┬───────────┘
+                               │
+                               │ MySQL
+                               ▼
+                    ┌──────────────────────┐
+                    │    MySQL Database    │
+                    └──────────────────────┘
 ```
 
 ---
 
-## V3
+## 21. Important Production Notes
 
-For a larger SaaS application:
-
-```text
-                    Load Balancer
-                         │
-              ┌──────────┴──────────┐
-              ▼                     ▼
-        Backend Instance       Backend Instance
-              │                     │
-              └──────────┬──────────┘
-                         ▼
-                   Database
-                         │
-                  ┌──────┴──────┐
-                  ▼             ▼
-               Backup         Cache
-```
-
-Potential improvements include:
-
-- Multiple backend instances.
-- Load balancing.
-- Redis caching.
-- Database read replicas.
-- Object storage.
-- CDN.
-- Automated scaling.
-- Containerization.
-- Infrastructure as Code.
-- Advanced monitoring.
-- Disaster recovery.
-- Blue-green deployments.
-
----
-
-# Deployment Summary
-
-The V1 deployment architecture is intentionally simple:
-
-```text
-                  ┌──────────────────┐
-                  │      User        │
-                  └────────┬─────────┘
-                           │
-                         HTTPS
-                           │
-                           ▼
-                  ┌──────────────────┐
-                  │ React Frontend   │
-                  │     Vercel       │
-                  └────────┬─────────┘
-                           │
-                      REST API
-                           │
-                           ▼
-                  ┌──────────────────┐
-                  │ Node.js/Express  │
-                  │     Backend      │
-                  └────────┬─────────┘
-                           │
-                         SQL
-                           │
-                           ▼
-                  ┌──────────────────┐
-                  │      MySQL       │
-                  │    Production    │
-                  └──────────────────┘
-```
-
-The deployment process should follow this order:
-
-```text
-1. Build Frontend
-       ↓
-2. Deploy Frontend
-       ↓
-3. Configure Backend
-       ↓
-4. Create Production Database
-       ↓
-5. Run Migrations
-       ↓
-6. Deploy Backend
-       ↓
-7. Configure CORS
-       ↓
-8. Verify Health Checks
-       ↓
-9. Test Authentication
-       ↓
-10. Test Task CRUD
-       ↓
-11. Verify Security
-       ↓
-12. Production Ready
-```
-
-**Important for your V1 documentation:** keep `deployment.md` factual. If you have not actually deployed the backend, configured rate limiting, created automated backups, or set up CI/CD yet, don't mark those as implemented. Put them under **Future Infrastructure Improvements** instead. This makes your GitHub project documentation look much more professional because it clearly distinguishes **implemented V1 functionality from planned architecture**.
+* Never commit `.env` files containing real credentials.
+* Keep `.env.example` files free of real secrets.
+* Use HTTPS for production traffic.
+* Use a strong unique JWT secret.
+* Restrict CORS to the actual production frontend.
+* Keep production database credentials private.
+* Run tests before every deployment.
+* Run database migrations carefully.
+* Verify the application after every deployment.
