@@ -207,7 +207,7 @@ After deploying the backend, verify that the API is running.
 Use the health endpoint:
 
 ```text
-https://your-backend-domain.com/health
+https://your-backend-domain.com/health/live
 ```
 
 The endpoint should return a successful response.
@@ -215,7 +215,7 @@ The endpoint should return a successful response.
 Also verify the readiness endpoint:
 
 ```text
-https://your-backend-domain.com/ready
+https://your-backend-domain.com/health/ready
 ```
 
 The readiness check should confirm that the application and required dependencies are available.
