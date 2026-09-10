@@ -3,11 +3,11 @@ import mysql from "mysql2/promise";
 import { env } from "./env.js";
 
 const pool = mysql.createPool({
-  host: env.DATABASE_HOST,
-  port: env.DATABASE_PORT,
-  database: env.DATABASE_NAME,
-  user: env.DATABASE_USER,
-  password: env.DATABASE_PASSWORD,
+  host: env.MYSQLHOST,
+  port: env.MYSQLPORT,
+  database: env.MYSQLDATABASE,
+  user: env.MYSQLUSER,
+  password: env.MYSQLPASSWORD,
 
   waitForConnections: true,
   connectionLimit: env.NODE_ENV === "production" ? 20 : 10,
